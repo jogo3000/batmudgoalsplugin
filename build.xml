@@ -31,8 +31,8 @@
 
 	<target name="package" description="Builds jar-files" depends="compile">
 
-		<delete file="${build.dir}/myplugin.jar" />
-		<jar jarfile="${build.dir}/myplugin.jar">
+		<delete file="${build.dir}/batmudgoalsplugin.jar" />
+		<jar jarfile="${build.dir}/batmudgoalsplugin.jar">
 
 			<manifest>
 				<attribute name="Built-By" value="Your name" />
@@ -40,7 +40,7 @@
 			</manifest>
 
 			<fileset dir="${build.dir}/bin">
-				<include name="BatmudGoalsPlugins/**/*.class" />
+				<include name="batmudgoalsplugin/**/*.class" />
 			</fileset>
 
 		</jar>
