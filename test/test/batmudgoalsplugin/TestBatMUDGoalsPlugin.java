@@ -30,7 +30,7 @@ public class TestBatMUDGoalsPlugin {
 		plugin.trigger(new ParsedResult(
 				",-------------------------------------------------."));
 		plugin.trigger(new ParsedResult(
-				"| Cost of training Attack                         |"));
+				"| Cost of training Attack                         |\n"));
 		plugin.trigger(new ParsedResult(
 				"|-------------------------------------------------|"));
 		plugin.trigger(new ParsedResult(
@@ -58,15 +58,20 @@ public class TestBatMUDGoalsPlugin {
 		plugin.trigger(new ParsedResult(
 				"|   10% =           177  |   60% =         16643  |"));
 		plugin.trigger(new ParsedResult(
-				"|   11% =           203  |   61% =         17768  |"));
+				"|   11% =           203  |   86% =         17768  |"));
+
+		plugin.trigger(new ParsedResult(
+				"| Attack                      |  85 |  85 | 100 |       22015 |\n"));
 
 		plugin.trigger("goal looting and burning");
-		assertEquals("looting and burning not in library", plugin.getPrints()
+		assertEquals("looting and burning not in library\n", plugin.getPrints()
 				.get(0));
 		plugin.trigger("goal attack");
-		assertEquals("Next goal is attack", plugin.getPrints().get(1));
+		assertEquals("Next goal is attack\n", plugin.getPrints().get(1));
 		plugin.trigger("exp");
-		assertEquals("attack: 80", plugin.getPrints().get(2));
+		assertEquals("Goal attack: 17768\n", plugin.getPrints().get(2));
+		plugin.trigger("goal");
+		assertEquals("attack\n", plugin.getPrints().get(3));
 
 	}
 
