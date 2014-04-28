@@ -11,7 +11,7 @@ import javax.swing.JTextPane;
 
 import org.junit.Test;
 
-import batmudgoalsplugin.GoalCommandPlugin;
+import batmudgoalsplugin.BatMUDGoalsPlugin;
 
 import com.mythicscape.batclient.interfaces.BatButton;
 import com.mythicscape.batclient.interfaces.BatScrollPane;
@@ -75,7 +75,7 @@ public class TestBatMUDGoalsPlugin {
 
 	}
 
-	private static class MockGoalCommandPlugin extends GoalCommandPlugin {
+	private static class MockGoalCommandPlugin extends BatMUDGoalsPlugin {
 		List<String> prints = new ArrayList<String>();
 
 		public List<String> getPrints() {
