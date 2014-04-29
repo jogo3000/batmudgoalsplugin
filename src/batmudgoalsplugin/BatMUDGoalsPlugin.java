@@ -16,6 +16,13 @@ import com.mythicscape.batclient.interfaces.BatClientPluginTrigger;
 import com.mythicscape.batclient.interfaces.BatClientPluginUtil;
 import com.mythicscape.batclient.interfaces.ParsedResult;
 
+/**
+ * Plugin for BatClient. Player can set a goal of improving a skill in her
+ * guild. Experience needed to reach the next percent is then shown upon 'exp'
+ * command.
+ * 
+ * @author Jogo
+ */
 public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		BatClientPluginCommandTrigger, BatClientPluginTrigger,
 		BatClientPluginUtil {
@@ -37,19 +44,23 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			new HashMap<String, Map<String, String>>(),
 			new HashMap<String, SkillStatus>());
 
+	/*
+	 * Catches 'goal' and 'exp' commands. (non-Javadoc)
+	 * 
+	 * @see
+	 * com.mythicscape.batclient.interfaces.BatClientPluginCommandTrigger#trigger
+	 * (java.lang.String)
+	 */
 	@Override
 	public String trigger(String input) {
 		// Handle goal command
 		Matcher m = goalcommandpattern.matcher(input);
 		if (m.matches()) {
 			String goalParameter = m.group(1);
+			// If a skill is given as goal parameter, normalize skill name and
+			// set goal
 			if (goalParameter != null) {
-				StringBuilder sb = new StringBuilder();
-				for (String s : goalParameter.split("\\s")) {
-					sb.append(s);
-					sb.append(" ");
-				}
-				data.goalSkill = sb.toString().trim();
+				data.goalSkill = normalizeSkillName(goalParameter);
 				if (!data.skills.containsKey(data.goalSkill)) {
 					getClientGUI().printText("generic",
 							data.goalSkill + " not in library\n");
@@ -81,23 +92,37 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		return null;
 	}
 
+	/**
+	 * Removes extra whitespaces and puts to lowercase
+	 * 
+	 * @param originalSkillName
+	 * @return normalized skill name
+	 */
+	private String normalizeSkillName(String originalSkillName) {
+		StringBuilder sb = new StringBuilder();
+		for (String s : originalSkillName.split("\\s")) {
+			sb.append(s);
+			sb.append(" ");
+		}
+		return sb.toString().trim().toLowerCase();
+	}
+
+	/*
+	 * Catch output from 'cost train skill' and 'train' commands (non-Javadoc)
+	 * 
+	 * @see
+	 * com.mythicscape.batclient.interfaces.BatClientPluginTrigger#trigger(com
+	 * .mythicscape.batclient.interfaces.ParsedResult)
+	 */
 	@Override
 	public ParsedResult trigger(ParsedResult input) {
-		Matcher skillmatcher = skillpattern.matcher(input.getOriginalText());
-		if (skillmatcher.matches()) {
-			latestSkillName = skillmatcher.group(1).toLowerCase().trim();
-			if (!data.skills.containsKey(latestSkillName)) {
-				data.skills.put(latestSkillName, new HashMap<String, String>());
-			}
-		}
-		Matcher percentcostmatcher = percentcostpattern.matcher(input
-				.getOriginalText());
-		while (percentcostmatcher.find()) {
-			Map<String, String> skilltable = data.skills.get(latestSkillName);
-			skilltable.put(percentcostmatcher.group(1),
-					percentcostmatcher.group(2));
-		}
+		catchSkillName(input);
+		catchPercentCost(input);
+		catchTrainCommandOutput(input);
+		return input;
+	}
 
+	private void catchTrainCommandOutput(ParsedResult input) {
 		Matcher skillstatusmatcher = skillstatuspattern.matcher(input
 				.getOriginalText());
 		if (skillstatusmatcher.matches()) {
@@ -110,7 +135,26 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 					new SkillStatus(Integer.parseInt(cur), Integer
 							.parseInt(max)));
 		}
-		return input;
+	}
+
+	private void catchPercentCost(ParsedResult input) {
+		Matcher percentcostmatcher = percentcostpattern.matcher(input
+				.getOriginalText());
+		while (percentcostmatcher.find()) {
+			Map<String, String> skilltable = data.skills.get(latestSkillName);
+			skilltable.put(percentcostmatcher.group(1),
+					percentcostmatcher.group(2));
+		}
+	}
+
+	private void catchSkillName(ParsedResult input) {
+		Matcher skillmatcher = skillpattern.matcher(input.getOriginalText());
+		if (skillmatcher.matches()) {
+			latestSkillName = skillmatcher.group(1).toLowerCase().trim();
+			if (!data.skills.containsKey(latestSkillName)) {
+				data.skills.put(latestSkillName, new HashMap<String, String>());
+			}
+		}
 	}
 
 	@Override
