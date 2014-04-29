@@ -72,7 +72,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				for (String skillName : data.skills.keySet())
 					getClientGUI().printText("generic", skillName + "\n");
 			}
-			return "";
+			return ""; // Stop command from being processed by client
 		}
 
 		// Handle exp command
@@ -87,7 +87,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 							+ ": "
 							+ data.skills.get(data.goalSkill).get(
 									data.goalPercent) + "\n");
-			return input;
+			return input; // Let client process the command after we're done
 		}
 		return null;
 	}
