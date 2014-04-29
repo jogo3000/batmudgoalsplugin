@@ -123,7 +123,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		try {
 			data = (BatMUDGoalsPluginData) generateJAXBContext()
 					.createUnmarshaller().unmarshal(createPersistenceFile());
-		} catch (JAXBException | IOException e) {
+		} catch (Exception e) {
 			getClientGUI().printText("generic", e.toString());
 			e.printStackTrace();
 		}
