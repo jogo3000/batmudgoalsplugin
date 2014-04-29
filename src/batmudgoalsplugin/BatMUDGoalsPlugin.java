@@ -1,15 +1,14 @@
 package batmudgoalsplugin;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import com.mythicscape.batclient.interfaces.BatClientPluginCommandTrigger;
@@ -32,29 +31,15 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			Pattern.CASE_INSENSITIVE);
 	private Pattern exppattern = Pattern.compile("\\s*exp\\s*");
 
-	private Map<String, Map<String, String>> skills = new HashMap<String, Map<String, String>>();
-	private Map<String, SkillStatus> skillStatuses = new HashMap<String, SkillStatus>();
-
-	public static class SkillStatus {
-		public SkillStatus(int cur, int max) {
-			this.cur = cur;
-			this.max = max;
-		}
-
-		public SkillStatus(String string, String string2) {
-			this(Integer.parseInt(string), Integer.parseInt(string2));
-		}
-
-		public Integer cur;
-		public Integer max;
-	}
-
 	private String latestSkillName;
-	private String goalSkill;
-	private String goalPercent;
+
+	private BatMUDGoalsPluginData data = new BatMUDGoalsPluginData(
+			new HashMap<String, Map<String, String>>(),
+			new HashMap<String, SkillStatus>());
 
 	@Override
 	public String trigger(String input) {
+		// Handle goal command
 		Matcher m = goalcommandpattern.matcher(input);
 		if (m.matches()) {
 			String goalParameter = m.group(1);
@@ -64,28 +49,33 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 					sb.append(s);
 					sb.append(" ");
 				}
-				goalSkill = sb.toString().trim();
-				if (!skills.containsKey(goalSkill)) {
+				data.goalSkill = sb.toString().trim();
+				if (!data.skills.containsKey(data.goalSkill)) {
 					getClientGUI().printText("generic",
-							goalSkill + " not in library\n");
+							data.goalSkill + " not in library\n");
 				} else {
 					getClientGUI().printText("generic",
-							"Next goal is " + goalSkill + "\n");
+							"Next goal is " + data.goalSkill + "\n");
 				}
 			} else {
-				for (String skillName : skills.keySet())
+				for (String skillName : data.skills.keySet())
 					getClientGUI().printText("generic", skillName + "\n");
 			}
 			return "";
 		}
+
+		// Handle exp command
 		m = exppattern.matcher(input);
 		if (m.matches()) {
-			goalPercent = Integer
-					.toString(skillStatuses.get(goalSkill).cur + 1);
+			data.goalPercent = Integer.toString(data.skillStatuses
+					.get(data.goalSkill).cur + 1);
 			getClientGUI().printText(
 					"generic",
-					"Goal " + goalSkill + ": "
-							+ skills.get(goalSkill).get(goalPercent) + "\n");
+					"Goal "
+							+ data.goalSkill
+							+ ": "
+							+ data.skills.get(data.goalSkill).get(
+									data.goalPercent) + "\n");
 			return input;
 		}
 		return null;
@@ -96,14 +86,14 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		Matcher skillmatcher = skillpattern.matcher(input.getOriginalText());
 		if (skillmatcher.matches()) {
 			latestSkillName = skillmatcher.group(1).toLowerCase().trim();
-			if (!skills.containsKey(latestSkillName)) {
-				skills.put(latestSkillName, new HashMap<String, String>());
+			if (!data.skills.containsKey(latestSkillName)) {
+				data.skills.put(latestSkillName, new HashMap<String, String>());
 			}
 		}
 		Matcher percentcostmatcher = percentcostpattern.matcher(input
 				.getOriginalText());
 		while (percentcostmatcher.find()) {
-			Map<String, String> skilltable = skills.get(latestSkillName);
+			Map<String, String> skilltable = data.skills.get(latestSkillName);
 			skilltable.put(percentcostmatcher.group(1),
 					percentcostmatcher.group(2));
 		}
@@ -115,8 +105,10 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			String cur = skillstatusmatcher.group(2);
 			String max = skillstatusmatcher.group(4);
 
-			skillStatuses.put(skillName, new SkillStatus(Integer.parseInt(cur),
-					Integer.parseInt(max)));
+			data.skillStatuses.put(
+					skillName,
+					new SkillStatus(Integer.parseInt(cur), Integer
+							.parseInt(max)));
 		}
 		return input;
 	}
@@ -128,90 +120,36 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 	@Override
 	public void loadPlugin() {
-		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(
-					new FileReader(getPersistenceFileName()));
-			assertSectionIsNext(reader, "[Goal]");
-			goalSkill = reader.readLine().replace("skill=", "");
-			goalPercent = reader.readLine().replace("percent=", "");
-			reader.readLine(); // empty row
-
-			// Read skills table
-			assertSectionIsNext(reader, "[skills]");
-			String line;
-			while ((line = reader.readLine()) != "") {
-				String[] parts = line.split(",");
-				if (!skills.containsKey(parts[0])) {
-					skills.put(parts[0], new HashMap<String, String>());
-				}
-				skills.get(parts[0]).put(parts[1], parts[2]);
-			}
-
-			assertSectionIsNext(reader, "skillStatuses");
-			while ((line = reader.readLine()) != "") {
-				String[] parts = line.split(",");
-				skillStatuses
-						.put(parts[0], new SkillStatus(parts[1], parts[2]));
-			}
-
-			reader.close();
-		} catch (IOException e) {
-			// Auto-generated catch block
+			data = (BatMUDGoalsPluginData) generateJAXBContext()
+					.createUnmarshaller().unmarshal(createPersistenceFile());
+		} catch (JAXBException | IOException e) {
+			getClientGUI().printText("generic", e.toString());
 			e.printStackTrace();
-		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					// Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 
-	private void assertSectionIsNext(BufferedReader reader, String sectionName)
-			throws IOException {
-		if (!sectionName.equalsIgnoreCase(reader.readLine())) {
-			throw new IOException(sectionName + " section is missing");
-		}
+	private File createPersistenceFile() throws IOException {
+		File file = new File(getClientGUI().getBaseDirectory()
+				+ "/conf/batmudgoalsplugin/BatMUDGoalsInfo.xml");
+		if (!file.exists())
+			file.createNewFile();
+		return file;
+	}
+
+	private JAXBContext generateJAXBContext() throws JAXBException {
+		JAXBContext ctx = JAXBContext.newInstance(BatMUDGoalsPluginData.class);
+		return ctx;
 	}
 
 	@Override
 	public void clientExit() {
 		try {
-			PrintWriter writer = new PrintWriter(getPersistenceFileName());
-			writer.println("[Goal]");
-			writer.println("skill=" + goalSkill);
-			writer.println("percent=" + goalPercent);
-
-			writer.println();
-			writer.println("[skills]");
-			for (Entry<String, Map<String, String>> key : skills.entrySet()) {
-				for (Entry<String, String> value : key.getValue().entrySet()) {
-					writer.println(key.getKey() + "," + value.getKey() + ","
-							+ value.getValue());
-				}
-			}
-			writer.println();
-			writer.print("[skillStatuses]");
-			for (Entry<String, SkillStatus> skillstatus : skillStatuses
-					.entrySet()) {
-				writer.println(skillstatus.getKey() + ","
-						+ skillstatus.getValue().cur + ","
-						+ skillstatus.getValue().max);
-			}
-			writer.flush();
-			writer.close();
-		} catch (FileNotFoundException e) {
-			// Auto-generated catch block
+			generateJAXBContext().createMarshaller().marshal(data,
+					createPersistenceFile());
+		} catch (JAXBException | IOException e) {
+			getClientGUI().printText("generic", e.toString());
 			e.printStackTrace();
 		}
-	}
-
-	private String getPersistenceFileName() {
-		return getClientGUI().getBaseDirectory()
-				+ "/conf/batmudgoalsplugin/BatMUDGoalsInfo.file";
 	}
 }
