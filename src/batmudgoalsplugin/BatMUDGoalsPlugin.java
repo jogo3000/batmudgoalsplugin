@@ -162,6 +162,11 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		return "BatMUDGoalsPlugin";
 	}
 
+	/*
+	 * Load state from persistent storage (non-Javadoc)
+	 * 
+	 * @see com.mythicscape.batclient.interfaces.BatClientPlugin#loadPlugin()
+	 */
 	@Override
 	public void loadPlugin() {
 		try {
@@ -173,6 +178,29 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 	}
 
+	/*
+	 * Persist current goal and stored skill information (non-Javadoc)
+	 * 
+	 * @see
+	 * com.mythicscape.batclient.interfaces.BatClientPluginUtil#clientExit()
+	 */
+	@Override
+	public void clientExit() {
+		try {
+			generateJAXBContext().createMarshaller().marshal(data,
+					createPersistenceFile());
+		} catch (JAXBException | IOException e) {
+			getClientGUI().printText("generic", e.toString());
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * If file exists opens the file, otherwise a new one is created
+	 * 
+	 * @return {@link File} used to store plugin's state
+	 * @throws IOException
+	 */
 	private File createPersistenceFile() throws IOException {
 		File file = new File(getClientGUI().getBaseDirectory()
 				+ "/conf/batmudgoalsplugin/BatMUDGoalsInfo.xml");
@@ -184,16 +212,5 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private JAXBContext generateJAXBContext() throws JAXBException {
 		JAXBContext ctx = JAXBContext.newInstance(BatMUDGoalsPluginData.class);
 		return ctx;
-	}
-
-	@Override
-	public void clientExit() {
-		try {
-			generateJAXBContext().createMarshaller().marshal(data,
-					createPersistenceFile());
-		} catch (JAXBException | IOException e) {
-			getClientGUI().printText("generic", e.toString());
-			e.printStackTrace();
-		}
 	}
 }
