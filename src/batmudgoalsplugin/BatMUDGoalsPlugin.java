@@ -33,7 +33,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private Pattern percentcostpattern = Pattern
 			.compile("(\\d+)%\\s+=\\s+(\\d+)");
 	private Pattern skillstatuspattern = Pattern
-			.compile("\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+");
+			.compile("\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s+");
 	private Pattern goalcommandpattern = Pattern.compile("goal\\s*(.+)*",
 			Pattern.CASE_INSENSITIVE);
 	private Pattern exppattern = Pattern.compile("\\s*exp\\s*");
@@ -78,15 +78,19 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		// Handle exp command
 		m = exppattern.matcher(input);
 		if (m.matches()) {
-			data.goalPercent = Integer.toString(data.skillStatuses
-					.get(data.goalSkill).cur + 1);
-			getClientGUI().printText(
-					"generic",
-					"Goal "
-							+ data.goalSkill
-							+ ": "
-							+ data.skills.get(data.goalSkill).get(
-									data.goalPercent) + "\n");
+			SkillStatus skillStatus = data.skillStatuses.get(data.goalSkill);
+			String goalString = "Goal " + data.goalSkill + ": ";
+			if (skillStatus.max <= skillStatus.cur) {
+				getClientGUI().printText("generic",
+						goalString + "needs level\n");
+			} else {
+				data.goalPercent = Integer.toString(skillStatus.cur + 1);
+				getClientGUI().printText(
+						"generic",
+						goalString
+								+ data.skills.get(data.goalSkill).get(
+										data.goalPercent) + "\n");
+			}
 			return input; // Let client process the command after we're done
 		}
 		return null;

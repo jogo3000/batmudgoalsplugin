@@ -25,6 +25,21 @@ public class TestBatMUDGoalsPlugin {
 
 	@Test
 	public void testParseCostTrain() {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+
+		plugin.trigger("goal looting and burning");
+		assertEquals("looting and burning not in library\n", plugin.getPrints()
+				.get(0));
+		plugin.trigger("goal attack");
+		assertEquals("Next goal is attack\n", plugin.getPrints().get(1));
+		plugin.trigger("exp");
+		assertEquals("Goal attack: 17768\n", plugin.getPrints().get(2));
+		plugin.trigger("goal");
+		assertEquals("attack\n", plugin.getPrints().get(3));
+
+	}
+
+	private MockGoalCommandPlugin initiatePlugin() {
 		MockGoalCommandPlugin plugin = new MockGoalCommandPlugin();
 
 		plugin.trigger(new ParsedResult(
@@ -62,16 +77,27 @@ public class TestBatMUDGoalsPlugin {
 
 		plugin.trigger(new ParsedResult(
 				"| Attack                      |  85 |  85 | 100 |       22015 |\n"));
+		return plugin;
+	}
 
-		plugin.trigger("goal looting and burning");
-		assertEquals("looting and burning not in library\n", plugin.getPrints()
-				.get(0));
+	@Test
+	public void testNeedAnotherLevel() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.trigger(new ParsedResult(
+				"| Attack                      |  85 |  85 | 85 |       22015 |\n"));
 		plugin.trigger("goal attack");
-		assertEquals("Next goal is attack\n", plugin.getPrints().get(1));
 		plugin.trigger("exp");
-		assertEquals("Goal attack: 17768\n", plugin.getPrints().get(2));
-		plugin.trigger("goal");
-		assertEquals("attack\n", plugin.getPrints().get(3));
+		assertEquals("Goal attack: needs level\n", plugin.getPrints().get(1));
+	}
+
+	@Test
+	public void testSkillIsFull() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.trigger(new ParsedResult(
+				"| Attack                      |  100 |  85 | 100 |       (n/a) |\n"));
+		plugin.trigger("goal attack");
+		plugin.trigger("exp");
+		assertEquals("Goal attack: needs level\n", plugin.getPrints().get(1));
 
 	}
 
