@@ -106,19 +106,15 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		catchSkillName(input);
 		catchPercentCost(input);
 		catchTrainCommandOutput(input);
+		catchTrainedSkillOutput(input);
+		catchExpCommandOutput(input);
 
-		Matcher m = trainpattern.matcher(input.getOriginalText());
-		if (m.matches()) {
-			String skillName = m.group(1).trim().toLowerCase();
-			String percent = m.group(2).trim();
-			if (!data.skillStatuses.containsKey(skillName)) {
-				data.skillStatuses.put(skillName, new SkillStatus());
-			}
-			SkillStatus skillStatus = data.skillStatuses.get(skillName);
-			skillStatus.cur = Integer.parseInt(percent);
-		}
+		return input;
+	}
 
+	private void catchExpCommandOutput(ParsedResult input) {
 		// Handle exp command
+		Matcher m;
 		m = exppattern.matcher(input.getOriginalText());
 		if (m.matches()) {
 			SkillStatus skillStatus = data.skillStatuses.get(data.goalSkill);
@@ -139,10 +135,20 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 							data.goalSkill, neededExp, neededExp - currentExp));
 				}
 			}
-			return input; // Let client process the command after we're done
 		}
+	}
 
-		return input;
+	private void catchTrainedSkillOutput(ParsedResult input) {
+		Matcher m = trainpattern.matcher(input.getOriginalText());
+		if (m.matches()) {
+			String skillName = m.group(1).trim().toLowerCase();
+			String percent = m.group(2).trim();
+			if (!data.skillStatuses.containsKey(skillName)) {
+				data.skillStatuses.put(skillName, new SkillStatus());
+			}
+			SkillStatus skillStatus = data.skillStatuses.get(skillName);
+			skillStatus.cur = Integer.parseInt(percent);
+		}
 	}
 
 	private void printMessage(String message) {
