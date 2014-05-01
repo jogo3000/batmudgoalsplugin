@@ -65,15 +65,13 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			if (goalParameter != null) {
 				data.goalSkill = normalizeSkillName(goalParameter);
 				if (!data.skills.containsKey(data.goalSkill)) {
-					getClientGUI().printText("generic",
-							data.goalSkill + " not in library\n");
+					printMessage(data.goalSkill + " not in library");
 				} else {
-					getClientGUI().printText("generic",
-							"Next goal is " + data.goalSkill + "\n");
+					printMessage("Next goal is " + data.goalSkill);
 				}
 			} else {
 				for (String skillName : data.skills.keySet())
-					getClientGUI().printText("generic", skillName + "\n");
+					printMessage(skillName);
 			}
 			return ""; // Stop command from being processed by client
 		}
@@ -127,10 +125,9 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			String goalString = "Goal " + data.goalSkill + ": ";
 			if (skillStatus.max <= skillStatus.cur) {
 				if (skillStatus.cur == 100) {
-					getClientGUI().printText("generic", goalString + "full\n");
+					printMessage(goalString + "full");
 				} else {
-					getClientGUI().printText("generic",
-							goalString + "needs level\n");
+					printMessage(goalString + "needs level");
 				}
 			} else {
 				data.goalPercent = Integer.toString(skillStatus.cur + 1);
@@ -203,7 +200,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			data = (BatMUDGoalsPluginData) generateJAXBContext()
 					.createUnmarshaller().unmarshal(createPersistenceFile());
 		} catch (Exception e) {
-			getClientGUI().printText("generic", e.toString());
+			printMessage(e.toString());
 			e.printStackTrace();
 		}
 	}
@@ -220,7 +217,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			generateJAXBContext().createMarshaller().marshal(data,
 					createPersistenceFile());
 		} catch (JAXBException | IOException e) {
-			getClientGUI().printText("generic", e.toString());
+			printMessage(e.toString());
 			e.printStackTrace();
 		}
 	}
