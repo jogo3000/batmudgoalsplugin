@@ -28,28 +28,45 @@ public class TestBatMUDGoalsPlugin {
 	public void testSkillNotInLibrary() throws Exception {
 		MockGoalCommandPlugin plugin = initiatePlugin();
 		plugin.trigger("goal looting and burning");
-		assertPluginPrints("looting and burning not in library", 0, plugin);
+		plugin.assertPluginPrints("looting and burning not in library", 0);
 	}
 
 	@Test
 	public void testSetGoalSuccesfully() throws Exception {
 		MockGoalCommandPlugin plugin = initiatePlugin();
 		plugin.trigger("goal attack");
-		assertPluginPrints("Next goal is attack", 0, plugin);
+		plugin.assertPluginPrints("Next goal is attack", 0);
+	}
+
+	@Test
+	public void testGoalSetListGoals() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.receiveText(",-------------------------------------------------.");
+		plugin.receiveText("| Cost of training Looting and burning                         |\n");
+		plugin.receiveText("|-------------------------------------------------|");
+		plugin.receiveText("| Percent     Exp        | Percent     Exp        |");
+		plugin.receiveText("|=================================================|");
+		plugin.receiveText("|    1% =            80  |   51% =          9046  |");
+		plugin.receiveText("|    2% =            82  |   52% =          9700  |");
+		plugin.receiveText("|    3% =            86  |   53% =         10395  |");
+		plugin.trigger("goal attack");
+		plugin.trigger("goal");
+
+		plugin.assertPluginPrints("attack (*)", 1);
+		plugin.assertPluginPrints("looting and burning", 2);
 	}
 
 	@Test
 	public void testParseCostTrain() {
 		MockGoalCommandPlugin plugin = initiatePlugin();
 		plugin.trigger("goal attack");
-		plugin.trigger(new ParsedResult(
-				"Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
-		assertPluginPrints(
+		plugin.receiveText("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
+		plugin.assertPluginPrints(
 				"Goal attack: 17768 You need: "
-						+ Integer.toString(17768 - 12920), 1, plugin);
+						+ Integer.toString(17768 - 12920), 1);
 
 		plugin.trigger("goal");
-		assertPluginPrints("attack", 2, plugin);
+		plugin.assertPluginPrints("attack (*)", 2);
 
 	}
 
@@ -57,42 +74,36 @@ public class TestBatMUDGoalsPlugin {
 	public void testExpOutputWithZeroValues() {
 		MockGoalCommandPlugin plugin = initiatePlugin();
 		plugin.trigger("goal attack");
-		plugin.trigger(new ParsedResult(
-				"Exp: 12920 Money: 0 Bank: 0 Exp pool: 0\n"));
-		assertPluginPrints(
+		plugin.receiveText("Exp: 12920 Money: 0 Bank: 0 Exp pool: 0\n");
+		plugin.assertPluginPrints(
 				"Goal attack: 17768 You need: "
-						+ Integer.toString(17768 - 12920), 1, plugin);
+						+ Integer.toString(17768 - 12920), 1);
 	}
 
 	@Test
 	public void testEnoughExp() throws Exception {
 		MockGoalCommandPlugin plugin = initiatePlugin();
 		plugin.trigger("goal attack");
-		plugin.trigger(new ParsedResult(
-				"Exp: 100000 Money: 0 Bank: 0 Exp pool: 0\n"));
-		assertPluginPrints("Goal attack: 17768 You have enough to advance", 1,
-				plugin);
+		plugin.receiveText("Exp: 100000 Money: 0 Bank: 0 Exp pool: 0\n");
+		plugin.assertPluginPrints(
+				"Goal attack: 17768 You have enough to advance", 1);
 	}
 
 	@Test
 	public void testNeedAnotherLevel() throws Exception {
 		MockGoalCommandPlugin plugin = initiatePlugin();
-		plugin.trigger(new ParsedResult(
-				"| Attack                      |  85 |  85 | 85 |       22015 |\n"));
+		plugin.receiveText("| Attack                      |  85 |  85 | 85 |       22015 |\n");
 		plugin.trigger("goal attack");
-		plugin.trigger(new ParsedResult(
-				"Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
+		plugin.receiveText("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
 		assertEquals("Goal attack: needs level\n", plugin.getPrints().get(1));
 	}
 
 	@Test
 	public void testSkillIsFull() throws Exception {
 		MockGoalCommandPlugin plugin = initiatePlugin();
-		plugin.trigger(new ParsedResult(
-				"| Attack                      |  100 |  85 | 100 |       (n/a) |\n"));
+		plugin.receiveText("| Attack                      |  100 |  85 | 100 |       (n/a) |\n");
 		plugin.trigger("goal attack");
-		plugin.trigger(new ParsedResult(
-				"Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
+		plugin.receiveText("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
 		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
 
 	}
@@ -100,60 +111,34 @@ public class TestBatMUDGoalsPlugin {
 	@Test
 	public void testTrainOutput() throws Exception {
 		MockGoalCommandPlugin plugin = initiatePlugin();
-		plugin.trigger(new ParsedResult(
-				"You now have 'Attack' at 100% without special bonuses.\n"));
+		plugin.receiveText("You now have 'Attack' at 100% without special bonuses.\n");
 		plugin.trigger("goal attack");
-		plugin.trigger(new ParsedResult(
-				"Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
+		plugin.receiveText("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
 		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
-	}
-
-	private void assertPluginPrints(String expected, int printNumber,
-			MockGoalCommandPlugin plugin) {
-		List<String> prints = plugin.prints;
-		assertTrue(prints.size() - 1 >= printNumber);
-		assertEquals(expected + "\n", prints.get(printNumber));
 	}
 
 	private MockGoalCommandPlugin initiatePlugin() {
 		MockGoalCommandPlugin plugin = new MockGoalCommandPlugin();
 
-		plugin.trigger(new ParsedResult(
-				",-------------------------------------------------."));
-		plugin.trigger(new ParsedResult(
-				"| Cost of training Attack                         |\n"));
-		plugin.trigger(new ParsedResult(
-				"|-------------------------------------------------|"));
-		plugin.trigger(new ParsedResult(
-				"| Percent     Exp        | Percent     Exp        |"));
-		plugin.trigger(new ParsedResult(
-				"|=================================================|"));
-		plugin.trigger(new ParsedResult(
-				"|    1% =            80  |   51% =          9046  |"));
-		plugin.trigger(new ParsedResult(
-				"|    2% =            82  |   52% =          9700  |"));
-		plugin.trigger(new ParsedResult(
-				"|    3% =            86  |   53% =         10395  |"));
-		plugin.trigger(new ParsedResult(
-				"|    4% =            91  |   54% =         11135  |"));
-		plugin.trigger(new ParsedResult(
-				"|    5% =            99  |   55% =         11921  |"));
-		plugin.trigger(new ParsedResult(
-				"|    6% =           109  |   56% =         12756  |"));
-		plugin.trigger(new ParsedResult(
-				"|    7% =           121  |   57% =         13642  |"));
-		plugin.trigger(new ParsedResult(
-				"|    8% =           137  |   58% =         14584  |"));
-		plugin.trigger(new ParsedResult(
-				"|    9% =           155  |   59% =         15583  |"));
-		plugin.trigger(new ParsedResult(
-				"|   10% =           177  |   60% =         16643  |"));
-		plugin.trigger(new ParsedResult(
-				"|   11% =           203  |   86% =         17768  |"));
-		plugin.trigger(new ParsedResult("|   1% to 86% =         200000000  |"));
+		plugin.receiveText(",-------------------------------------------------.");
+		plugin.receiveText("| Cost of training Attack                         |\n");
+		plugin.receiveText("|-------------------------------------------------|");
+		plugin.receiveText("| Percent     Exp        | Percent     Exp        |");
+		plugin.receiveText("|=================================================|");
+		plugin.receiveText("|    1% =            80  |   51% =          9046  |");
+		plugin.receiveText("|    2% =            82  |   52% =          9700  |");
+		plugin.receiveText("|    3% =            86  |   53% =         10395  |");
+		plugin.receiveText("|    4% =            91  |   54% =         11135  |");
+		plugin.receiveText("|    5% =            99  |   55% =         11921  |");
+		plugin.receiveText("|    6% =           109  |   56% =         12756  |");
+		plugin.receiveText("|    7% =           121  |   57% =         13642  |");
+		plugin.receiveText("|    8% =           137  |   58% =         14584  |");
+		plugin.receiveText("|    9% =           155  |   59% =         15583  |");
+		plugin.receiveText("|   10% =           177  |   60% =         16643  |");
+		plugin.receiveText("|   11% =           203  |   86% =         17768  |");
+		plugin.receiveText("|   1% to 86% =         200000000  |");
 
-		plugin.trigger(new ParsedResult(
-				"| Attack                      |  85 |  85 | 100 |       22015 |\n"));
+		plugin.receiveText("| Attack                      |  85 |  85 | 100 |       22015 |\n");
 		return plugin;
 	}
 
@@ -162,6 +147,26 @@ public class TestBatMUDGoalsPlugin {
 
 		public List<String> getPrints() {
 			return prints;
+		}
+
+		/**
+		 * Convenience method to assert a print generated by plugin
+		 * 
+		 * @param expected
+		 * @param printNumber
+		 */
+		public void assertPluginPrints(String expected, int printNumber) {
+			assertTrue(prints.size() - 1 >= printNumber);
+			assertEquals(expected + "\n", prints.get(printNumber));
+		}
+
+		/**
+		 * Convenience method to call client's trigger(ParsedResult) method
+		 * 
+		 * @param text
+		 */
+		public void receiveText(String text) {
+			trigger(new ParsedResult(text));
 		}
 
 		@Override

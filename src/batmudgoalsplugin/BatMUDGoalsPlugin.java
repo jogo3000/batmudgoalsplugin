@@ -70,7 +70,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				}
 			} else {
 				for (String skillName : data.skills.keySet())
-					printMessage(skillName);
+					printMessage("%s%s", skillName,
+							skillName.equals(data.goalSkill) ? " (*)" : "");
 			}
 			return ""; // Stop command from being processed by client
 		}
