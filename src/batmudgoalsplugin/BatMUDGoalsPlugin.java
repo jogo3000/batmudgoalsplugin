@@ -48,7 +48,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			new HashMap<String, SkillStatus>());
 
 	/*
-	 * Catches 'goal' and 'exp' commands. (non-Javadoc)
+	 * Catches 'goal' command. (non-Javadoc)
 	 * 
 	 * @see
 	 * com.mythicscape.batclient.interfaces.BatClientPluginCommandTrigger#trigger
@@ -56,7 +56,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	@Override
 	public String trigger(String input) {
-		// Handle goal command
 		Matcher m = goalcommandpattern.matcher(input);
 		if (m.matches()) {
 			String goalParameter = m.group(1);
@@ -108,22 +107,28 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		catchTrainCommandOutput(input);
 		catchTrainedSkillOutput(input);
 		catchExpCommandOutput(input);
-
 		return input;
 	}
 
+	/**
+	 * Exp command output is something like this: <br>
+	 * Exp: 135670 Money: 0.00 Bank: 644404.00 Exp pool: 0<br>
+	 * Takes exp amount, outputs goal skill, needed exp and amount missing from
+	 * next percent
+	 * 
+	 * @param input
+	 */
 	private void catchExpCommandOutput(ParsedResult input) {
-		// Handle exp command
 		Matcher m;
 		m = exppattern.matcher(input.getOriginalText());
 		if (m.matches()) {
 			SkillStatus skillStatus = data.skillStatuses.get(data.goalSkill);
-			String goalString = "Goal " + data.goalSkill + ": ";
 			if (skillStatus.max <= skillStatus.cur) {
 				if (skillStatus.cur == 100) {
-					printMessage(goalString + "full");
+					printMessage(String.format("Goal %s: full", data.goalSkill));
 				} else {
-					printMessage(goalString + "needs level");
+					printMessage(String.format("Goal %s: needs level",
+							data.goalSkill));
 				}
 			} else {
 				data.goalPercent = Integer.toString(skillStatus.cur + 1);
