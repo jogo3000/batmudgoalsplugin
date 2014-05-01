@@ -53,6 +53,17 @@ public class TestBatMUDGoalsPlugin {
 
 	}
 
+	@Test
+	public void testExpOutputWithZeroValues() {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.trigger("goal attack");
+		plugin.trigger(new ParsedResult(
+				"Exp: 12920 Money: 0 Bank: 0 Exp pool: 0\n"));
+		assertPluginPrints(
+				"Goal attack: 17768 You need: "
+						+ Integer.toString(17768 - 12920), 1, plugin);
+	}
+
 	private void assertPluginPrints(String expected, int printNumber,
 			MockGoalCommandPlugin plugin) {
 		List<String> prints = plugin.prints;

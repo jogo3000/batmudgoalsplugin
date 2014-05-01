@@ -37,7 +37,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private Pattern goalcommandpattern = Pattern.compile("goal\\s*(.+)*",
 			Pattern.CASE_INSENSITIVE);
 	private Pattern exppattern = Pattern
-			.compile("Exp: (\\d+) Money: (\\d+)\\.(\\d+) Bank: (\\d+)\\.(\\d+) Exp pool: (\\d+)\\.(\\d+)\\s+");
+			.compile("Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
 	private Pattern trainpattern = Pattern
 			.compile("You now have '([^']+)' at (\\d+)% without special bonuses.\\s+");
 
@@ -109,7 +109,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		catchTrainCommandOutput(input);
 		catchTrainedSkillOutput(input);
 		catchExpCommandOutput(input);
-		return input;
+		return input; // return input to be processed by the client
 	}
 
 	/**
