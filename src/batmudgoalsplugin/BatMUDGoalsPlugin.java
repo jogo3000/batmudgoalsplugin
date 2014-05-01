@@ -125,7 +125,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		m = exppattern.matcher(input.getOriginalText());
 		if (m.matches()) {
 			SkillStatus skillStatus = data.skillStatuses.get(data.goalSkill);
-			if (skillStatus.max <= skillStatus.cur) {
+			if (skillStatus.cur >= skillStatus.max) {
 				if (skillStatus.cur == 100) {
 					printMessage(String.format("Goal %s: full", data.goalSkill));
 				} else {
