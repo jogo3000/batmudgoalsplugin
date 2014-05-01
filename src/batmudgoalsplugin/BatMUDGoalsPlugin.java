@@ -64,11 +64,9 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			if (goalParameter != null) {
 				data.goalSkill = normalizeSkillName(goalParameter);
 				if (!data.skills.containsKey(data.goalSkill)) {
-					printMessage(String.format("%s not in library",
-							data.goalSkill));
+					printMessage("%s not in library", data.goalSkill);
 				} else {
-					printMessage(String.format("Next goal is %s",
-							data.goalSkill));
+					printMessage("Next goal is %s", data.goalSkill);
 				}
 			} else {
 				for (String skillName : data.skills.keySet())
@@ -127,10 +125,9 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			SkillStatus skillStatus = data.skillStatuses.get(data.goalSkill);
 			if (skillStatus.cur >= skillStatus.max) {
 				if (skillStatus.cur == 100) {
-					printMessage(String.format("Goal %s: full", data.goalSkill));
+					printMessage("Goal %s: full", data.goalSkill);
 				} else {
-					printMessage(String.format("Goal %s: needs level",
-							data.goalSkill));
+					printMessage("Goal %s: needs level", data.goalSkill);
 				}
 			} else {
 				data.goalPercent = Integer.toString(skillStatus.cur + 1);
@@ -138,8 +135,11 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 						.get(data.goalSkill).get(data.goalPercent));
 				int currentExp = Integer.parseInt(m.group(1));
 				if (currentExp < neededExp) {
-					printMessage(String.format("Goal %s: %d You need: %d",
-							data.goalSkill, neededExp, neededExp - currentExp));
+					printMessage("Goal %s: %d You need: %d", data.goalSkill,
+							neededExp, neededExp - currentExp);
+				} else {
+					printMessage("Goal %s: %d You have enough to advance",
+							data.goalSkill, neededExp);
 				}
 			}
 		}
@@ -160,6 +160,10 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 	private void printMessage(String message) {
 		getClientGUI().printText("generic", String.format("%s\n", message));
+	}
+
+	private void printMessage(String format, Object... args) {
+		printMessage(String.format(format, args));
 	}
 
 	private void catchTrainCommandOutput(ParsedResult input) {

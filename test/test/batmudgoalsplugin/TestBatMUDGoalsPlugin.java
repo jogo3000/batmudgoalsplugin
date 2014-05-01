@@ -64,11 +64,14 @@ public class TestBatMUDGoalsPlugin {
 						+ Integer.toString(17768 - 12920), 1, plugin);
 	}
 
-	private void assertPluginPrints(String expected, int printNumber,
-			MockGoalCommandPlugin plugin) {
-		List<String> prints = plugin.prints;
-		assertTrue(prints.size() - 1 >= printNumber);
-		assertEquals(expected + "\n", prints.get(printNumber));
+	@Test
+	public void testEnoughExp() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.trigger("goal attack");
+		plugin.trigger(new ParsedResult(
+				"Exp: 100000 Money: 0 Bank: 0 Exp pool: 0\n"));
+		assertPluginPrints("Goal attack: 17768 You have enough to advance", 1,
+				plugin);
 	}
 
 	@Test
@@ -103,6 +106,13 @@ public class TestBatMUDGoalsPlugin {
 		plugin.trigger(new ParsedResult(
 				"Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
 		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
+	}
+
+	private void assertPluginPrints(String expected, int printNumber,
+			MockGoalCommandPlugin plugin) {
+		List<String> prints = plugin.prints;
+		assertTrue(prints.size() - 1 >= printNumber);
+		assertEquals(expected + "\n", prints.get(printNumber));
 	}
 
 	private MockGoalCommandPlugin initiatePlugin() {
