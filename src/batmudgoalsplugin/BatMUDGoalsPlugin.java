@@ -31,7 +31,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			"\\|\\s+Cost\\s+of\\s+training\\s+([^\\|]+)\\s+\\|\\s+",
 			Pattern.CASE_INSENSITIVE);
 	private Pattern percentcostpattern = Pattern
-			.compile("(\\d+)%\\s+=\\s+(\\d+)");
+			.compile("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)");
 	private Pattern skillstatuspattern = Pattern
 			.compile("\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s+");
 	private Pattern goalcommandpattern = Pattern.compile("goal\\s*(.+)*",
@@ -64,9 +64,11 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			if (goalParameter != null) {
 				data.goalSkill = normalizeSkillName(goalParameter);
 				if (!data.skills.containsKey(data.goalSkill)) {
-					printMessage(data.goalSkill + " not in library");
+					printMessage(String.format("%s not in library",
+							data.goalSkill));
 				} else {
-					printMessage("Next goal is " + data.goalSkill);
+					printMessage(String.format("Next goal is %s",
+							data.goalSkill));
 				}
 			} else {
 				for (String skillName : data.skills.keySet())

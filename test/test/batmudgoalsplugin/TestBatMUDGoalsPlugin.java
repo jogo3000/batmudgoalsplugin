@@ -129,6 +129,7 @@ public class TestBatMUDGoalsPlugin {
 				"|   10% =           177  |   60% =         16643  |"));
 		plugin.trigger(new ParsedResult(
 				"|   11% =           203  |   86% =         17768  |"));
+		plugin.trigger(new ParsedResult("|   1% to 86% =         200000000  |"));
 
 		plugin.trigger(new ParsedResult(
 				"| Attack                      |  85 |  85 | 100 |       22015 |\n"));
