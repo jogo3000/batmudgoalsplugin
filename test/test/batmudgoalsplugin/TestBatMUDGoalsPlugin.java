@@ -97,8 +97,18 @@ public class TestBatMUDGoalsPlugin {
 				"| Attack                      |  100 |  85 | 100 |       (n/a) |\n"));
 		plugin.trigger("goal attack");
 		plugin.trigger("exp");
-		assertEquals("Goal attack: needs level\n", plugin.getPrints().get(1));
+		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
 
+	}
+
+	@Test
+	public void testTrainOutput() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.trigger(new ParsedResult(
+				"You now have 'Attack' at 100% without special bonuses.\n"));
+		plugin.trigger("goal attack");
+		plugin.trigger("exp");
+		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
 	}
 
 	private static class MockGoalCommandPlugin extends BatMUDGoalsPlugin {

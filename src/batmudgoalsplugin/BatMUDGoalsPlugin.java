@@ -37,6 +37,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private Pattern goalcommandpattern = Pattern.compile("goal\\s*(.+)*",
 			Pattern.CASE_INSENSITIVE);
 	private Pattern exppattern = Pattern.compile("\\s*exp\\s*");
+	private Pattern trainpattern = Pattern
+			.compile("You now have '([^']+)' at (\\d+)% without special bonuses.\n");
 
 	private String latestSkillName;
 
@@ -81,8 +83,12 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			SkillStatus skillStatus = data.skillStatuses.get(data.goalSkill);
 			String goalString = "Goal " + data.goalSkill + ": ";
 			if (skillStatus.max <= skillStatus.cur) {
-				getClientGUI().printText("generic",
-						goalString + "needs level\n");
+				if (skillStatus.cur == 100) {
+					getClientGUI().printText("generic", goalString + "full\n");
+				} else {
+					getClientGUI().printText("generic",
+							goalString + "needs level\n");
+				}
 			} else {
 				data.goalPercent = Integer.toString(skillStatus.cur + 1);
 				getClientGUI().printText(
@@ -123,6 +129,17 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		catchSkillName(input);
 		catchPercentCost(input);
 		catchTrainCommandOutput(input);
+
+		Matcher m = trainpattern.matcher(input.getOriginalText());
+		if (m.matches()) {
+			String skillName = m.group(1).trim().toLowerCase();
+			String percent = m.group(2).trim();
+			if (!data.skillStatuses.containsKey(skillName)) {
+				data.skillStatuses.put(skillName, new SkillStatus());
+			}
+			SkillStatus skillStatus = data.skillStatuses.get(skillName);
+			skillStatus.cur = Integer.parseInt(percent);
+		}
 		return input;
 	}
 
