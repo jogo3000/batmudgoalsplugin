@@ -131,9 +131,9 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 					printMessage("Goal %s: needs level", data.goalSkill);
 				}
 			} else {
-				data.goalPercent = Integer.toString(skillStatus.cur + 1);
 				int neededExp = Integer.parseInt(data.skills
-						.get(data.goalSkill).get(data.goalPercent));
+						.get(data.goalSkill).get(
+								Integer.toString(skillStatus.cur + 1)));
 				int currentExp = Integer.parseInt(m.group(1));
 				if (currentExp < neededExp) {
 					printMessage("Goal %s: %d You need: %d", data.goalSkill,
