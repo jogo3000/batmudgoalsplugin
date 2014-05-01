@@ -1,6 +1,7 @@
 package test.batmudgoalsplugin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Component;
 import java.awt.event.ActionListener;
@@ -24,19 +25,73 @@ import com.mythicscape.batclient.interfaces.SoundPlayer;
 public class TestBatMUDGoalsPlugin {
 
 	@Test
+	public void testSkillNotInLibrary() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.trigger("goal looting and burning");
+		assertPluginPrints("looting and burning not in library", 0, plugin);
+	}
+
+	@Test
+	public void testSetGoalSuccesfully() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.trigger("goal attack");
+		assertPluginPrints("Next goal is attack", 0, plugin);
+	}
+
+	@Test
 	public void testParseCostTrain() {
 		MockGoalCommandPlugin plugin = initiatePlugin();
-
-		plugin.trigger("goal looting and burning");
-		assertEquals("looting and burning not in library\n", plugin.getPrints()
-				.get(0));
 		plugin.trigger("goal attack");
-		assertEquals("Next goal is attack\n", plugin.getPrints().get(1));
-		plugin.trigger("exp");
-		assertEquals("Goal attack: 17768\n", plugin.getPrints().get(2));
-		plugin.trigger("goal");
-		assertEquals("attack\n", plugin.getPrints().get(3));
+		plugin.trigger(new ParsedResult(
+				"Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
+		assertPluginPrints(
+				"Goal attack: 17768 You need: "
+						+ Integer.toString(17768 - 12920), 1, plugin);
 
+		plugin.trigger("goal");
+		assertPluginPrints("attack", 2, plugin);
+
+	}
+
+	private void assertPluginPrints(String expected, int printNumber,
+			MockGoalCommandPlugin plugin) {
+		List<String> prints = plugin.prints;
+		assertTrue(prints.size() - 1 >= printNumber);
+		assertEquals(expected + "\n", prints.get(printNumber));
+	}
+
+	@Test
+	public void testNeedAnotherLevel() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.trigger(new ParsedResult(
+				"| Attack                      |  85 |  85 | 85 |       22015 |\n"));
+		plugin.trigger("goal attack");
+		plugin.trigger(new ParsedResult(
+				"Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
+		assertEquals("Goal attack: needs level\n", plugin.getPrints().get(1));
+	}
+
+	@Test
+	public void testSkillIsFull() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.trigger(new ParsedResult(
+				"| Attack                      |  100 |  85 | 100 |       (n/a) |\n"));
+		plugin.trigger("goal attack");
+		plugin.trigger(new ParsedResult(
+				"Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
+		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
+
+	}
+
+	@Test
+	public void testTrainOutput() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+		plugin.trigger(new ParsedResult(
+				"You now have 'Attack' at 100% without special bonuses.\n"));
+		plugin.trigger("goal attack");
+		plugin.trigger(new ParsedResult(
+				"Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
+		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
 	}
 
 	private MockGoalCommandPlugin initiatePlugin() {
@@ -78,37 +133,6 @@ public class TestBatMUDGoalsPlugin {
 		plugin.trigger(new ParsedResult(
 				"| Attack                      |  85 |  85 | 100 |       22015 |\n"));
 		return plugin;
-	}
-
-	@Test
-	public void testNeedAnotherLevel() throws Exception {
-		MockGoalCommandPlugin plugin = initiatePlugin();
-		plugin.trigger(new ParsedResult(
-				"| Attack                      |  85 |  85 | 85 |       22015 |\n"));
-		plugin.trigger("goal attack");
-		plugin.trigger("exp");
-		assertEquals("Goal attack: needs level\n", plugin.getPrints().get(1));
-	}
-
-	@Test
-	public void testSkillIsFull() throws Exception {
-		MockGoalCommandPlugin plugin = initiatePlugin();
-		plugin.trigger(new ParsedResult(
-				"| Attack                      |  100 |  85 | 100 |       (n/a) |\n"));
-		plugin.trigger("goal attack");
-		plugin.trigger("exp");
-		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
-
-	}
-
-	@Test
-	public void testTrainOutput() throws Exception {
-		MockGoalCommandPlugin plugin = initiatePlugin();
-		plugin.trigger(new ParsedResult(
-				"You now have 'Attack' at 100% without special bonuses.\n"));
-		plugin.trigger("goal attack");
-		plugin.trigger("exp");
-		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
 	}
 
 	private static class MockGoalCommandPlugin extends BatMUDGoalsPlugin {

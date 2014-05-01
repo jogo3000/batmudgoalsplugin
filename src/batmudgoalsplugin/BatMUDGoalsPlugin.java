@@ -36,9 +36,10 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			.compile("\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s+");
 	private Pattern goalcommandpattern = Pattern.compile("goal\\s*(.+)*",
 			Pattern.CASE_INSENSITIVE);
-	private Pattern exppattern = Pattern.compile("\\s*exp\\s*");
+	private Pattern exppattern = Pattern
+			.compile("Exp: (\\d+) Money: (\\d+)\\.(\\d+) Bank: (\\d+)\\.(\\d+) Exp pool: (\\d+)\\.(\\d+)\\s+");
 	private Pattern trainpattern = Pattern
-			.compile("You now have '([^']+)' at (\\d+)% without special bonuses.\n");
+			.compile("You now have '([^']+)' at (\\d+)% without special bonuses.\\s+");
 
 	private String latestSkillName;
 
@@ -77,28 +78,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			return ""; // Stop command from being processed by client
 		}
 
-		// Handle exp command
-		m = exppattern.matcher(input);
-		if (m.matches()) {
-			SkillStatus skillStatus = data.skillStatuses.get(data.goalSkill);
-			String goalString = "Goal " + data.goalSkill + ": ";
-			if (skillStatus.max <= skillStatus.cur) {
-				if (skillStatus.cur == 100) {
-					getClientGUI().printText("generic", goalString + "full\n");
-				} else {
-					getClientGUI().printText("generic",
-							goalString + "needs level\n");
-				}
-			} else {
-				data.goalPercent = Integer.toString(skillStatus.cur + 1);
-				getClientGUI().printText(
-						"generic",
-						goalString
-								+ data.skills.get(data.goalSkill).get(
-										data.goalPercent) + "\n");
-			}
-			return input; // Let client process the command after we're done
-		}
 		return null;
 	}
 
@@ -140,7 +119,37 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			SkillStatus skillStatus = data.skillStatuses.get(skillName);
 			skillStatus.cur = Integer.parseInt(percent);
 		}
+
+		// Handle exp command
+		m = exppattern.matcher(input.getOriginalText());
+		if (m.matches()) {
+			SkillStatus skillStatus = data.skillStatuses.get(data.goalSkill);
+			String goalString = "Goal " + data.goalSkill + ": ";
+			if (skillStatus.max <= skillStatus.cur) {
+				if (skillStatus.cur == 100) {
+					getClientGUI().printText("generic", goalString + "full\n");
+				} else {
+					getClientGUI().printText("generic",
+							goalString + "needs level\n");
+				}
+			} else {
+				data.goalPercent = Integer.toString(skillStatus.cur + 1);
+				int neededExp = Integer.parseInt(data.skills
+						.get(data.goalSkill).get(data.goalPercent));
+				int currentExp = Integer.parseInt(m.group(1));
+				if (currentExp < neededExp) {
+					printMessage(String.format("Goal %s: %d You need: %d",
+							data.goalSkill, neededExp, neededExp - currentExp));
+				}
+			}
+			return input; // Let client process the command after we're done
+		}
+
 		return input;
+	}
+
+	private void printMessage(String message) {
+		getClientGUI().printText("generic", String.format("%s\n", message));
 	}
 
 	private void catchTrainCommandOutput(ParsedResult input) {
