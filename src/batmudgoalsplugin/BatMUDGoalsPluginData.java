@@ -10,14 +10,14 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class BatMUDGoalsPluginData {
 
 	@XmlJavaTypeAdapter(SkillCostLibraryMapAdapter.class)
-	public Map<String, Map<String, String>> skills;
+	public Map<String, Map<Integer, Integer>> skills;
 	public Map<String, SkillStatus> skillStatuses;
 	public String goalSkill;
 	public String goalPercent;
 
-	public BatMUDGoalsPluginData(HashMap<String, Map<String, String>> skills,
+	public BatMUDGoalsPluginData(HashMap<String, Map<Integer, Integer>> map,
 			Map<String, SkillStatus> skillStatuses) {
-		this.skills = skills;
+		this.skills = map;
 		this.skillStatuses = skillStatuses;
 	}
 

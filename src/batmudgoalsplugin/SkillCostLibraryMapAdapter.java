@@ -8,27 +8,27 @@ import java.util.Map.Entry;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class SkillCostLibraryMapAdapter extends
-		XmlAdapter<AdaptedSkillCostList, Map<String, Map<String, String>>> {
+		XmlAdapter<AdaptedSkillCostList, Map<String, Map<Integer, Integer>>> {
 
 	@Override
-	public Map<String, Map<String, String>> unmarshal(AdaptedSkillCostList v)
+	public Map<String, Map<Integer, Integer>> unmarshal(AdaptedSkillCostList v)
 			throws Exception {
-		Map<String, Map<String, String>> map = new HashMap<String, Map<String, String>>();
+		Map<String, Map<Integer, Integer>> map = new HashMap<String, Map<Integer, Integer>>();
 		for (AdaptedSkillCostEntry entry : v.list) {
 			if (!map.containsKey(entry.skill))
-				map.put(entry.skill, new HashMap<String, String>());
+				map.put(entry.skill, new HashMap<Integer, Integer>());
 			map.get(entry.skill).put(entry.percent, entry.cost);
 		}
 		return map;
 	}
 
 	@Override
-	public AdaptedSkillCostList marshal(Map<String, Map<String, String>> v)
+	public AdaptedSkillCostList marshal(Map<String, Map<Integer, Integer>> v)
 			throws Exception {
 		AdaptedSkillCostList list = new AdaptedSkillCostList();
 		list.list = new ArrayList<AdaptedSkillCostEntry>();
-		for (Entry<String, Map<String, String>> skillEntry : v.entrySet()) {
-			for (Entry<String, String> valueEntry : skillEntry.getValue()
+		for (Entry<String, Map<Integer, Integer>> skillEntry : v.entrySet()) {
+			for (Entry<Integer, Integer> valueEntry : skillEntry.getValue()
 					.entrySet()) {
 				list.list.add(new AdaptedSkillCostEntry(skillEntry.getKey(),
 						valueEntry.getKey(), valueEntry.getValue()));

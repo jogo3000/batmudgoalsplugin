@@ -22,15 +22,15 @@ public class TestPersistence {
 	@Test
 	public void test() throws Exception {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData(
-				new HashMap<String, Map<String, String>>(),
+				new HashMap<String, Map<Integer, Integer>>(),
 				new HashMap<String, SkillStatus>());
 
 		data.goalPercent = "1";
 		data.goalSkill = "attack";
 
-		HashMap<String, String> skillCostMap = new HashMap<String, String>();
-		skillCostMap.put("1", "1001");
-		skillCostMap.put("2", "1002");
+		Map<Integer, Integer> skillCostMap = new HashMap<Integer, Integer>();
+		skillCostMap.put(1, 1001);
+		skillCostMap.put(2, 1002);
 		data.skills.put("attack", skillCostMap);
 
 		data.skillStatuses.put("looting and burning", new SkillStatus(76, 100));
@@ -49,9 +49,9 @@ public class TestPersistence {
 		assertEquals("attack", o.goalSkill);
 		assertTrue(o.skills.containsKey("attack"));
 
-		Map<String, String> ummap = o.skills.get("attack");
-		assertEquals("1001", ummap.get("1"));
-		assertEquals("1002", ummap.get("2"));
+		Map<Integer, Integer> ummap = o.skills.get("attack");
+		assertEquals(1001, ummap.get(1).intValue());
+		assertEquals(1002, ummap.get(2).intValue());
 
 		assertEquals(76,
 				o.skillStatuses.get("looting and burning").cur.intValue());

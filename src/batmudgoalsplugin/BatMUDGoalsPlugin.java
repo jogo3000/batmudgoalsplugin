@@ -44,7 +44,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private String latestSkillName;
 
 	private BatMUDGoalsPluginData data = new BatMUDGoalsPluginData(
-			new HashMap<String, Map<String, String>>(),
+			new HashMap<String, Map<Integer, Integer>>(),
 			new HashMap<String, SkillStatus>());
 
 	/*
@@ -131,9 +131,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 					printMessage("Goal %s: needs level", data.goalSkill);
 				}
 			} else {
-				int neededExp = Integer.parseInt(data.skills
-						.get(data.goalSkill).get(
-								Integer.toString(skillStatus.cur + 1)));
+				int neededExp = data.skills.get(data.goalSkill).get(
+						skillStatus.cur + 1);
 				int currentExp = Integer.parseInt(m.group(1));
 				if (currentExp < neededExp) {
 					printMessage("Goal %s: %d You need: %d", data.goalSkill,
@@ -186,9 +185,9 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		Matcher percentcostmatcher = percentcostpattern.matcher(input
 				.getOriginalText());
 		while (percentcostmatcher.find()) {
-			Map<String, String> skilltable = data.skills.get(latestSkillName);
-			skilltable.put(percentcostmatcher.group(1),
-					percentcostmatcher.group(2));
+			Map<Integer, Integer> skilltable = data.skills.get(latestSkillName);
+			skilltable.put(Integer.parseInt(percentcostmatcher.group(1)),
+					Integer.parseInt(percentcostmatcher.group(2)));
 		}
 	}
 
@@ -197,7 +196,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		if (skillmatcher.matches()) {
 			latestSkillName = skillmatcher.group(1).toLowerCase().trim();
 			if (!data.skills.containsKey(latestSkillName)) {
-				data.skills.put(latestSkillName, new HashMap<String, String>());
+				data.skills.put(latestSkillName,
+						new HashMap<Integer, Integer>());
 			}
 		}
 	}
