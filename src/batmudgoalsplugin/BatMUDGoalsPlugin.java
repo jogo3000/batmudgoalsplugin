@@ -146,7 +146,19 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		catchTrainCommandOutput(input);
 		catchTrainedSkillOutput(input);
 		catchExpCommandOutput(input);
+		catchGuildInfoCommandOutput(input);
 
+		return input; // return input to be processed by the client
+	}
+
+	/**
+	 * Player must use guildcommand info command to output max percents for each
+	 * skill at each level. This method parses all outputs from said info
+	 * command and stores {@link SkillMaxInfo}
+	 * 
+	 * @param input
+	 */
+	private void catchGuildInfoCommandOutput(ParsedResult input) {
 		Matcher m = guildInfoCommandOutput_playerlevel.matcher(input
 				.getOriginalText());
 		if (m.matches()) {
@@ -169,8 +181,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 							.toLowerCase(), guildInfoCommandOutput_level,
 							Integer.parseInt(m.group(2))));
 		}
-
-		return input; // return input to be processed by the client
 	}
 
 	/**
