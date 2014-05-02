@@ -60,10 +60,9 @@ public class TestBatMUDGoalsPlugin {
 	public void testParseCostTrain() {
 		MockGoalCommandPlugin plugin = initiatePlugin();
 		plugin.trigger("goal attack");
-		plugin.receiveText("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
+		plugin.receiveText("Exp: 2 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
 		plugin.assertPluginPrints(
-				"Goal attack: 17768 You need: "
-						+ Integer.toString(17768 - 12920), 1);
+				"Goal attack: 82 You need: " + Integer.toString(82 - 2), 1);
 
 		plugin.trigger("goal");
 		plugin.assertPluginPrints("attack (*)", 2);
@@ -74,10 +73,9 @@ public class TestBatMUDGoalsPlugin {
 	public void testExpOutputWithZeroValues() {
 		MockGoalCommandPlugin plugin = initiatePlugin();
 		plugin.trigger("goal attack");
-		plugin.receiveText("Exp: 12920 Money: 0 Bank: 0 Exp pool: 0\n");
+		plugin.receiveText("Exp: 2 Money: 0 Bank: 0 Exp pool: 0\n");
 		plugin.assertPluginPrints(
-				"Goal attack: 17768 You need: "
-						+ Integer.toString(17768 - 12920), 1);
+				"Goal attack: 82 You need: " + Integer.toString(82 - 2), 1);
 	}
 
 	@Test
@@ -86,7 +84,8 @@ public class TestBatMUDGoalsPlugin {
 		plugin.trigger("goal attack");
 		plugin.receiveText("Exp: 100000 Money: 0 Bank: 0 Exp pool: 0\n");
 		plugin.assertPluginPrints(
-				"Goal attack: 17768 You have enough to advance", 1);
+				"Goal attack: 82 You have enough to advance in: ranger, barbarian",
+				1);
 	}
 
 	@Test
@@ -95,7 +94,7 @@ public class TestBatMUDGoalsPlugin {
 		plugin.receiveText("| Attack                      |  85 |  85 | 85 |       22015 |\n");
 		plugin.trigger("goal attack");
 		plugin.receiveText("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
-		assertEquals("Goal attack: needs level\n", plugin.getPrints().get(1));
+		plugin.assertPluginPrints("Goal attack: needs level", 1);
 	}
 
 	@Test
@@ -104,7 +103,7 @@ public class TestBatMUDGoalsPlugin {
 		plugin.receiveText("| Attack                      |  100 |  85 | 100 |       (n/a) |\n");
 		plugin.trigger("goal attack");
 		plugin.receiveText("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
-		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
+		plugin.assertPluginPrints("Goal attack: full", 1);
 
 	}
 
@@ -114,7 +113,40 @@ public class TestBatMUDGoalsPlugin {
 		plugin.receiveText("You now have 'Attack' at 100% without special bonuses.\n");
 		plugin.trigger("goal attack");
 		plugin.receiveText("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
-		assertEquals("Goal attack: full\n", plugin.getPrints().get(1));
+		plugin.assertPluginPrints("Goal attack: full", 1);
+	}
+
+	@Test
+	public void testGuildinfo() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+
+		plugin.trigger("train");
+		plugin.receiveText("| Skills available at level  1  | Cur | Rac | Max | Exp         |");
+		plugin.receiveText("| Attack                        |   0 |  85 | 10  |       22015 |");
+
+		plugin.trigger("goal attack");
+		plugin.receiveText("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
+
+		plugin.assertPluginPrints(
+				"Goal attack: 80 You have enough to advance in: ranger, barbarian",
+				1);
+	}
+
+	@Test
+	public void testGuildinfoCanAdvanceInOneOfGuilds() throws Exception {
+		MockGoalCommandPlugin plugin = initiatePlugin();
+
+		plugin.trigger("train");
+		plugin.receiveText("| Skills available at level  1  | Cur | Rac | Max | Exp         |");
+		// Attack at max in barbarians but this will still allow improvement in
+		// Rangers
+		plugin.receiveText("| Attack                        |   10 |  85 | 10  |       22015 |");
+
+		plugin.trigger("goal attack");
+		plugin.receiveText("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
+
+		plugin.assertPluginPrints(
+				"Goal attack: 203 You have enough to advance in: ranger", 1);
 	}
 
 	private MockGoalCommandPlugin initiatePlugin() {
@@ -138,16 +170,81 @@ public class TestBatMUDGoalsPlugin {
 		plugin.receiveText("|   11% =           203  |   86% =         17768  |");
 		plugin.receiveText("|   1% to 86% =         200000000  |");
 
-		plugin.receiveText("| Attack                      |  85 |  85 | 100 |       22015 |\n");
+		plugin.receiveText("| Attack                      |  1 |  85 | 100 |       22015 |");
+
+		plugin.trigger("ranger info");
+		plugin.receiveText("Name: Rangers");
+		plugin.receiveText("Command: ranger");
+		plugin.receiveText("Creators: Duke");
+		plugin.receiveText("Your level: 2");
+		plugin.receiveText("Maximum level: 35");
+
+		plugin.receiveText("Description:");
+		plugin.receiveText("The mighty barbarian guild is a loosely run group of battle hardened warriors.");
+		plugin.receiveText(" Through intense training in the wilds, members become both mentally and");
+		plugin.receiveText("physically tough.  These ferocious warriors excel at many combat skills.");
+
+		plugin.receiveText("Joining requirements:");
+		plugin.receiveText(" Background must be nomad (passed)");
+		plugin.receiveText("Abilities gained when joining:");
+		plugin.receiveText(" In the name of Groo wear the shrunken skull necklace with pride.");
+		plugin.receiveText(" May train skill Attack to 20%");
+		plugin.receiveText(" May train skill Push to 40%");
+		plugin.receiveText(" May train skill Alcohol tolerance to 3%");
+		plugin.receiveText(" May train skill Consider to 10%");
+		plugin.receiveText(" May train skill Hunting to 20%");
+		plugin.receiveText(" May train skill Fishing to 20%");
+		plugin.receiveText(" May train skill Torch creation to 15%");
+		plugin.receiveText(" May train skill Looting and burning to 30%");
+		plugin.receiveText(" May train skill Vandalism to 10%");
+		plugin.receiveText(" May train skill Axes to 10%");
+
+		plugin.receiveText("Abilities and requirements at each level:");
+		plugin.receiveText(" Level 2:");
+		plugin.receiveText("  Abilities:");
+		plugin.receiveText("   May train skill Attack to 57%");
+		plugin.receiveText("   May train skill Push to 100%");
+		plugin.receiveText("   May train skill Bash to 10%");
+
+		plugin.trigger("barbarian info");
+		plugin.receiveText("Name: Barbarian Guild");
+		plugin.receiveText("Command: barbarian");
+		plugin.receiveText("Creators: Duke");
+		plugin.receiveText("Your level: 1");
+		plugin.receiveText("Maximum level: 35");
+
+		plugin.receiveText("Description:");
+		plugin.receiveText("The mighty barbarian guild is a loosely run group of battle hardened warriors.");
+		plugin.receiveText(" Through intense training in the wilds, members become both mentally and");
+		plugin.receiveText("physically tough.  These ferocious warriors excel at many combat skills.");
+
+		plugin.receiveText("Joining requirements:");
+		plugin.receiveText(" Background must be nomad (passed)");
+		plugin.receiveText("Abilities gained when joining:");
+		plugin.receiveText(" In the name of Groo wear the shrunken skull necklace with pride.");
+		plugin.receiveText(" May train skill Attack to 10%");
+		plugin.receiveText(" May train skill Push to 40%");
+		plugin.receiveText(" May train skill Alcohol tolerance to 3%");
+		plugin.receiveText(" May train skill Consider to 10%");
+		plugin.receiveText(" May train skill Hunting to 20%");
+		plugin.receiveText(" May train skill Fishing to 20%");
+		plugin.receiveText(" May train skill Torch creation to 15%");
+		plugin.receiveText(" May train skill Looting and burning to 30%");
+		plugin.receiveText(" May train skill Vandalism to 10%");
+		plugin.receiveText(" May train skill Axes to 10%");
+
+		plugin.receiveText("Abilities and requirements at each level:");
+		plugin.receiveText(" Level 2:");
+		plugin.receiveText("  Abilities:");
+		plugin.receiveText("   May train skill Attack to 57%");
+		plugin.receiveText("   May train skill Push to 100%");
+		plugin.receiveText("   May train skill Bash to 10%");
+
 		return plugin;
 	}
 
 	private static class MockGoalCommandPlugin extends BatMUDGoalsPlugin {
 		List<String> prints = new ArrayList<String>();
-
-		public List<String> getPrints() {
-			return prints;
-		}
 
 		/**
 		 * Convenience method to assert a print generated by plugin
@@ -166,7 +263,7 @@ public class TestBatMUDGoalsPlugin {
 		 * @param text
 		 */
 		public void receiveText(String text) {
-			trigger(new ParsedResult(text));
+			trigger(new ParsedResult(String.format("%s\n", text)));
 		}
 
 		@Override

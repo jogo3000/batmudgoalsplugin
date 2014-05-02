@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -14,8 +15,9 @@ import javax.xml.bind.Unmarshaller;
 
 import org.junit.Test;
 
-import batmudgoalsplugin.BatMUDGoalsPluginData;
-import batmudgoalsplugin.SkillStatus;
+import batmudgoalsplugin.data.BatMUDGoalsPluginData;
+import batmudgoalsplugin.data.SkillMaxInfo;
+import batmudgoalsplugin.data.SkillStatus;
 
 public class TestPersistence {
 
@@ -23,9 +25,10 @@ public class TestPersistence {
 	public void test() throws Exception {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData(
 				new HashMap<String, Map<Integer, Integer>>(),
-				new HashMap<String, SkillStatus>());
+				new HashMap<String, SkillStatus>(),
+				new HashSet<SkillMaxInfo>(), new HashMap<String, Integer>());
 
-		data.goalPercent = "1";
+		data.goalPercent = 1;
 		data.goalSkill = "attack";
 
 		Map<Integer, Integer> skillCostMap = new HashMap<Integer, Integer>();
@@ -34,6 +37,8 @@ public class TestPersistence {
 		data.skills.put("attack", skillCostMap);
 
 		data.skillStatuses.put("looting and burning", new SkillStatus(76, 100));
+
+		data.skillMaxes.add(new SkillMaxInfo("Rangers", "attack", 1, 1));
 
 		JAXBContext ctx = JAXBContext.newInstance(BatMUDGoalsPluginData.class,
 				SkillStatus.class);
@@ -45,7 +50,7 @@ public class TestPersistence {
 		BatMUDGoalsPluginData o = (BatMUDGoalsPluginData) u
 				.unmarshal(new StringReader(writer.toString()));
 
-		assertEquals("1", o.goalPercent);
+		assertEquals(1, o.goalPercent.intValue());
 		assertEquals("attack", o.goalSkill);
 		assertTrue(o.skills.containsKey("attack"));
 
@@ -57,5 +62,8 @@ public class TestPersistence {
 				o.skillStatuses.get("looting and burning").cur.intValue());
 		assertEquals(100,
 				o.skillStatuses.get("looting and burning").max.intValue());
+
+		assertTrue(o.skillMaxes.contains(new SkillMaxInfo("Rangers", "attack",
+				1, 1)));
 	}
 }

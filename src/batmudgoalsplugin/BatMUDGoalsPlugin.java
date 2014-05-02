@@ -2,13 +2,20 @@ package batmudgoalsplugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+
+import batmudgoalsplugin.data.BatMUDGoalsPluginData;
+import batmudgoalsplugin.data.SkillMaxInfo;
+import batmudgoalsplugin.data.SkillStatus;
 
 import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import com.mythicscape.batclient.interfaces.BatClientPluginCommandTrigger;
@@ -40,12 +47,26 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			.compile("Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
 	private Pattern trainpattern = Pattern
 			.compile("You now have '([^']+)' at (\\d+)% without special bonuses.\\s+");
+	private Pattern guildinfocommandpattern = Pattern
+			.compile("\\s*(.+)\\sinfo\\s*");
+	private Pattern guildInfoCommandOutput_playerlevel = Pattern
+			.compile("Your level:\\s+(\\d+)\\s+");
+
+	private Pattern guildInfoCommandOutput_firstlevel = Pattern
+			.compile("Abilities gained when joining:\\s+");
+	private Pattern guildInfoCommandOutput_nextlevels = Pattern
+			.compile("\\s*Level\\s+(\\d+):\\s*");
+	private Pattern guildInfoCommandOutput_maytrain = Pattern
+			.compile("\\s+May\\s+train\\s+skill\\s+(.+)\\s+to\\s+(\\d+)%\\s+");
 
 	private String latestSkillName;
+	private String guildnameFromInfoCommand;
+	private int guildInfoCommandOutput_level;
 
 	private BatMUDGoalsPluginData data = new BatMUDGoalsPluginData(
 			new HashMap<String, Map<Integer, Integer>>(),
-			new HashMap<String, SkillStatus>());
+			new HashMap<String, SkillStatus>(), new HashSet<SkillMaxInfo>(),
+			new HashMap<String, Integer>());
 
 	/*
 	 * Catches 'goal' command. (non-Javadoc)
@@ -56,6 +77,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	@Override
 	public String trigger(String input) {
+		// Handle goal command
 		Matcher m = goalcommandpattern.matcher(input);
 		if (m.matches()) {
 			String goalParameter = m.group(1);
@@ -67,6 +89,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 					printMessage("%s not in library", data.goalSkill);
 				} else {
 					printMessage("Next goal is %s", data.goalSkill);
+					data.goalPercent = data.skillStatuses.get(data.goalSkill).cur;
 				}
 			} else {
 				for (String skillName : data.skills.keySet())
@@ -74,6 +97,12 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 							skillName.equals(data.goalSkill) ? " (*)" : "");
 			}
 			return ""; // Stop command from being processed by client
+		}
+
+		// Handle <guildcommand> info commands
+		m = guildinfocommandpattern.matcher(input);
+		if (m.matches()) {
+			guildnameFromInfoCommand = m.group(1);
 		}
 
 		return null;
@@ -94,6 +123,15 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		return sb.toString().trim().toLowerCase();
 	}
 
+	private String concatGuildNames(Collection<String> guilds) {
+		StringBuilder sb = new StringBuilder();
+		for (String s : guilds) {
+			sb.append(s);
+			sb.append(", ");
+		}
+		return sb.toString().substring(0, sb.length() - 2).toLowerCase();
+	}
+
 	/*
 	 * Catch output from 'cost train skill' and 'train' commands (non-Javadoc)
 	 * 
@@ -108,6 +146,28 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		catchTrainCommandOutput(input);
 		catchTrainedSkillOutput(input);
 		catchExpCommandOutput(input);
+
+		Matcher m = guildInfoCommandOutput_playerlevel.matcher(input
+				.getOriginalText());
+		if (m.matches()) {
+			data.guildlevels.put(guildnameFromInfoCommand,
+					Integer.parseInt(m.group(1)));
+		}
+
+		m = guildInfoCommandOutput_firstlevel.matcher(input.getOriginalText());
+		if (m.matches()) {
+			guildInfoCommandOutput_level = 1;
+		}
+		m = guildInfoCommandOutput_nextlevels.matcher(input.getOriginalText());
+		if (m.matches()) {
+			guildInfoCommandOutput_level = Integer.parseInt(m.group(1));
+		}
+		m = guildInfoCommandOutput_maytrain.matcher(input.getOriginalText());
+		if (m.matches()) {
+			data.skillMaxes.add(new SkillMaxInfo(guildnameFromInfoCommand, m
+					.group(1).toLowerCase(), guildInfoCommandOutput_level,
+					Integer.parseInt(m.group(2))));
+		}
 		return input; // return input to be processed by the client
 	}
 
@@ -123,24 +183,39 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		Matcher m;
 		m = exppattern.matcher(input.getOriginalText());
 		if (m.matches()) {
-			SkillStatus skillStatus = data.skillStatuses.get(data.goalSkill);
-			if (skillStatus.cur >= skillStatus.max) {
-				if (skillStatus.cur == 100) {
-					printMessage("Goal %s: full", data.goalSkill);
-				} else {
-					printMessage("Goal %s: needs level", data.goalSkill);
-				}
+			if (data.skillStatuses.get(data.goalSkill).cur == 100) {
+				printMessage("Goal %s: full", data.goalSkill);
 			} else {
-				int neededExp = data.skills.get(data.goalSkill).get(
-						skillStatus.cur + 1);
-				int currentExp = Integer.parseInt(m.group(1));
-				if (currentExp < neededExp) {
-					printMessage("Goal %s: %d You need: %d", data.goalSkill,
-							neededExp, neededExp - currentExp);
-				} else {
-					printMessage("Goal %s: %d You have enough to advance",
-							data.goalSkill, neededExp);
+				// get skillmaxinfo for this skill
+				Collection<SkillMaxInfo> skillmaxinfo = new ArrayList<SkillMaxInfo>();
+				Collection<String> guilds = new HashSet<String>();
+				for (SkillMaxInfo s : data.skillMaxes) {
+					if (s.skill.equals(data.goalSkill)
+							&& s.level <= data.guildlevels.get(s.guild)
+							&& s.max >= data.skillStatuses.get(data.goalSkill).cur + 1) {
+						skillmaxinfo.add(s);
+						guilds.add(s.guild);
+					}
 				}
+
+				if (skillmaxinfo.isEmpty()) {
+					printMessage("Goal %s: needs level", data.goalSkill);
+				} else {
+					int neededExp = data.skills.get(data.goalSkill).get(
+							data.skillStatuses.get(data.goalSkill).cur + 1);
+					int currentExp = Integer.parseInt(m.group(1));
+					if (currentExp < neededExp) {
+						printMessage("Goal %s: %d You need: %d",
+								data.goalSkill, neededExp, neededExp
+										- currentExp);
+					} else {
+						printMessage(
+								"Goal %s: %d You have enough to advance in: %s",
+								data.goalSkill, neededExp,
+								concatGuildNames(guilds));
+					}
+				}
+
 			}
 		}
 	}
