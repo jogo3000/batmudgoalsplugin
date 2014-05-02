@@ -150,7 +150,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		Matcher m = guildInfoCommandOutput_playerlevel.matcher(input
 				.getOriginalText());
 		if (m.matches()) {
-			data.guildlevels.put(guildnameFromInfoCommand,
+			data.getGuildlevels().put(guildnameFromInfoCommand,
 					Integer.parseInt(m.group(1)));
 		}
 
@@ -164,10 +164,12 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 		m = guildInfoCommandOutput_maytrain.matcher(input.getOriginalText());
 		if (m.matches()) {
-			data.skillMaxes.add(new SkillMaxInfo(guildnameFromInfoCommand, m
-					.group(1).toLowerCase(), guildInfoCommandOutput_level,
-					Integer.parseInt(m.group(2))));
+			data.getSkillMaxes().add(
+					new SkillMaxInfo(guildnameFromInfoCommand, m.group(1)
+							.toLowerCase(), guildInfoCommandOutput_level,
+							Integer.parseInt(m.group(2))));
 		}
+
 		return input; // return input to be processed by the client
 	}
 
@@ -189,9 +191,9 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				// get skillmaxinfo for this skill
 				Collection<SkillMaxInfo> skillmaxinfo = new ArrayList<SkillMaxInfo>();
 				Collection<String> guilds = new HashSet<String>();
-				for (SkillMaxInfo s : data.skillMaxes) {
+				for (SkillMaxInfo s : data.getSkillMaxes()) {
 					if (s.skill.equals(data.goalSkill)
-							&& s.level <= data.guildlevels.get(s.guild)
+							&& s.level <= data.getGuildlevels().get(s.guild)
 							&& s.max >= data.skillStatuses.get(data.goalSkill).cur + 1) {
 						skillmaxinfo.add(s);
 						guilds.add(s.guild);

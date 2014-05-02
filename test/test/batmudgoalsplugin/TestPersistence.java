@@ -38,7 +38,7 @@ public class TestPersistence {
 
 		data.skillStatuses.put("looting and burning", new SkillStatus(76, 100));
 
-		data.skillMaxes.add(new SkillMaxInfo("Rangers", "attack", 1, 1));
+		data.getSkillMaxes().add(new SkillMaxInfo("Rangers", "attack", 1, 1));
 
 		JAXBContext ctx = JAXBContext.newInstance(BatMUDGoalsPluginData.class,
 				SkillStatus.class);
@@ -63,7 +63,7 @@ public class TestPersistence {
 		assertEquals(100,
 				o.skillStatuses.get("looting and burning").max.intValue());
 
-		assertTrue(o.skillMaxes.contains(new SkillMaxInfo("Rangers", "attack",
-				1, 1)));
+		assertTrue(o.getSkillMaxes().contains(
+				new SkillMaxInfo("Rangers", "attack", 1, 1)));
 	}
 }
