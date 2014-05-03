@@ -168,15 +168,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		return null;
 	}
 
-	private String concatGuildNames(Collection<String> guilds) {
-		StringBuilder sb = new StringBuilder();
-		for (String s : guilds) {
-			sb.append(s);
-			sb.append(", ");
-		}
-		return sb.toString().substring(0, sb.length() - 2).toLowerCase();
-	}
-
 	/*
 	 * Catch output from 'cost train skill' and 'train' commands (non-Javadoc)
 	 * 
@@ -320,6 +311,15 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		public ExpCommandOutputProcessor() {
 			super(
 					"Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
+		}
+
+		private String concatGuildNames(Collection<String> guilds) {
+			StringBuilder sb = new StringBuilder();
+			for (String s : guilds) {
+				sb.append(s);
+				sb.append(", ");
+			}
+			return sb.toString().substring(0, sb.length() - 2).toLowerCase();
 		}
 
 		@Override
