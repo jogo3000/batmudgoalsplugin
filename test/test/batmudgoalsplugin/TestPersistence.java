@@ -28,6 +28,7 @@ public class TestPersistence {
 
 		data.setSkillStatus("looting and burning", 76);
 		data.setSkillStatus("attack", 0);
+		data.setGuildLevel("ranger", 32);
 
 		data.getSkillMaxes().add(new SkillMaxInfo("Rangers", "attack", 1, 1));
 
@@ -45,7 +46,7 @@ public class TestPersistence {
 
 		assertEquals(1001, o.getSkillCost("attack", 1));
 		assertEquals(1002, o.getSkillCost("attack", 2));
-
+		assertEquals(32, o.getGuildLevel("ranger"));
 		assertEquals(76, o.getCurrentSkillStatus("looting and burning"));
 
 		assertTrue(o.getSkillMaxes().contains(
