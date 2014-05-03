@@ -110,10 +110,32 @@ public class BatMUDGoalsPluginData {
 	}
 
 	/**
+	 * Sets the cost to improve a skill to a given percent value
+	 * 
+	 * @param skill
+	 * @param percent
+	 * @param cost
+	 */
+	public void setSkillCost(String skill, int percent, int cost) {
+		Map<String, Map<Integer, Integer>> skillcosts = getSkills();
+		if (!skillcosts.containsKey(skill)) {
+			skillcosts.put(skill, new HashMap<Integer, Integer>());
+		}
+		skillcosts.get(skill).put(percent, cost);
+	}
+
+	/**
 	 * @return next percent of goal skill
 	 */
 	public int getGoalPercent() {
 		return getSkillStatuses().get(goalSkill) + 1;
+	}
+
+	/**
+	 * @return cost to improve the goal skill to the given percent value
+	 */
+	public int getImproveGoalSkillCost() {
+		return getSkills().get(goalSkill).get(getGoalPercent());
 	}
 
 }

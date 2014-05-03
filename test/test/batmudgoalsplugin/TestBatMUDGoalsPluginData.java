@@ -69,4 +69,13 @@ public class TestBatMUDGoalsPluginData {
 		assertEquals(101, data.getGoalPercent());
 	}
 
+	@Test
+	public void testImproveGoalSkillCost() throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		data.setGoalSkill("brawling");
+		data.setSkillStatus("brawling", 0);
+		data.setSkillCost("brawling", 1, 1011);
+		assertEquals(1011, data.getImproveGoalSkillCost());
+	}
+
 }

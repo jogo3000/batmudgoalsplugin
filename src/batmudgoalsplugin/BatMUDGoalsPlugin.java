@@ -342,8 +342,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				if (skillmaxinfo.isEmpty()) {
 					printMessage("Goal %s: needs level", data.goalSkill);
 				} else {
-					int neededExp = data.getSkills().get(data.goalSkill)
-							.get(data.getGoalPercent());
+					int neededExp = data.getImproveGoalSkillCost();
 					int currentExp = Integer.parseInt(m.group(1));
 					if (currentExp < neededExp) {
 						printMessage("Goal %s: %d You need: %d",
