@@ -15,7 +15,6 @@ import javax.xml.bind.JAXBException;
 
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 import batmudgoalsplugin.data.SkillMaxInfo;
-import batmudgoalsplugin.data.SkillStatus;
 
 import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import com.mythicscape.batclient.interfaces.BatClientPluginCommandTrigger;
@@ -65,7 +64,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 	private BatMUDGoalsPluginData data = new BatMUDGoalsPluginData(
 			new HashMap<String, Map<Integer, Integer>>(),
-			new HashMap<String, SkillStatus>(), new HashSet<SkillMaxInfo>(),
+			new HashMap<String, Integer>(), new HashSet<SkillMaxInfo>(),
 			new HashMap<String, Integer>());
 
 	/*
@@ -89,7 +88,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 					printMessage("%s not in library", data.goalSkill);
 				} else {
 					printMessage("Next goal is %s", data.goalSkill);
-					data.goalPercent = data.skillStatuses.get(data.goalSkill).cur;
+					data.goalPercent = data.skillStatuses.get(data.goalSkill);
 				}
 			} else {
 				for (String skillName : data.skills.keySet())
@@ -195,7 +194,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		Matcher m;
 		m = exppattern.matcher(originalText);
 		if (m.matches()) {
-			if (data.skillStatuses.get(data.goalSkill).cur == 100) {
+			if (data.skillStatuses.get(data.goalSkill) == 100) {
 				printMessage("Goal %s: full", data.goalSkill);
 			} else {
 				// get skillmaxinfo for this skill
@@ -204,7 +203,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				for (SkillMaxInfo s : data.getSkillMaxes()) {
 					if (s.skill.equals(data.goalSkill)
 							&& s.level <= data.getGuildlevels().get(s.guild)
-							&& s.max >= data.skillStatuses.get(data.goalSkill).cur + 1) {
+							&& s.max >= data.skillStatuses.get(data.goalSkill) + 1) {
 						skillmaxinfo.add(s);
 						guilds.add(s.guild);
 					}
@@ -214,7 +213,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 					printMessage("Goal %s: needs level", data.goalSkill);
 				} else {
 					int neededExp = data.skills.get(data.goalSkill).get(
-							data.skillStatuses.get(data.goalSkill).cur + 1);
+							data.skillStatuses.get(data.goalSkill) + 1);
 					int currentExp = Integer.parseInt(m.group(1));
 					if (currentExp < neededExp) {
 						printMessage("Goal %s: %d You need: %d",
@@ -237,11 +236,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		if (m.matches()) {
 			String skillName = m.group(1).trim().toLowerCase();
 			String percent = m.group(2).trim();
-			if (!data.skillStatuses.containsKey(skillName)) {
-				data.skillStatuses.put(skillName, new SkillStatus());
-			}
-			SkillStatus skillStatus = data.skillStatuses.get(skillName);
-			skillStatus.cur = Integer.parseInt(percent);
+			data.skillStatuses.put(skillName, Integer.parseInt(percent));
 		}
 	}
 
@@ -260,10 +255,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			String cur = skillstatusmatcher.group(2);
 			String max = skillstatusmatcher.group(4);
 
-			data.skillStatuses.put(
-					skillName,
-					new SkillStatus(Integer.parseInt(cur), Integer
-							.parseInt(max)));
+			data.skillStatuses.put(skillName, Integer.parseInt(cur));
 		}
 	}
 
