@@ -36,25 +36,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private Collection<AbstractCommandProcessor> outputProcessors;
 
 	/**
-	 * Catches goal command without parameters and prints list of possible goal
-	 * skills
-	 */
-	private class GoalCommandWithoutParametersProcessor extends
-			AbstractCommandProcessor {
-		public GoalCommandWithoutParametersProcessor(ClientGUI clientGUI, BatMUDGoalsPluginData data) {
-			super("\\s*goal\\s*", clientGUI, data);
-		}
-
-		@Override
-		protected boolean process(Matcher m) {
-			for (String skillName : data.getStoredSkills())
-				printMessage("%s%s", skillName,
-						data.isGoalSkill(skillName) ? " (*)" : "");
-			return true;
-		}
-	}
-
-	/**
 	 * Catches parameterised goal command, e.g. 'goal attack' and sets the goal
 	 * if possible
 	 */
