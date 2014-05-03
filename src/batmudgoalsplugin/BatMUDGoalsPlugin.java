@@ -3,7 +3,6 @@ package batmudgoalsplugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.regex.Matcher;
@@ -34,30 +33,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private BatMUDGoalsPluginData data;
 	private Collection<AbstractCommandProcessor> commandProcessors;
 	private Collection<AbstractCommandProcessor> outputProcessors;
-
-	/**
-	 * Catches guild info commands, e.g. 'barbarian info' and stores the guild
-	 * name from that command.
-	 */
-	private class GuildCommandProcessor extends AbstractCommandProcessor {
-
-		private Collection<IGuildNameListener> listeners;
-
-		public GuildCommandProcessor(IGuildNameListener... listeners) {
-			super("\\s*(.+)\\sinfo\\s*");
-			this.listeners = new ArrayList<IGuildNameListener>(
-					Arrays.asList(listeners));
-		}
-
-		@Override
-		protected boolean process(Matcher m) {
-			for (IGuildNameListener l : listeners) {
-				l.setGuild(m.group(1));
-			}
-			return false; // Always forward the command to client
-		}
-
-	}
 
 	/**
 	 * Catches goal command without parameters and prints list of possible goal
