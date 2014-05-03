@@ -3,6 +3,8 @@ package batmudgoalsplugin;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import batmudgoalsplugin.data.BatMUDGoalsPluginData;
+
 import com.mythicscape.batclient.interfaces.ClientGUI;
 
 /**
@@ -14,17 +16,24 @@ import com.mythicscape.batclient.interfaces.ClientGUI;
 abstract class AbstractCommandProcessor {
 	private final Pattern pattern;
 	private ClientGUI clientGUI;
+	protected BatMUDGoalsPluginData data;
 
 	/**
 	 * Extending classes should call this constructor to provide a regular
-	 * expression and optionally a ClientGUI if they want to print messages to
-	 * the user
+	 * expression and optionally a {@link ClientGUI} if they want to print
+	 * messages to the user and {@link BatMUDGoalsPluginData} if they need the
+	 * data scraped from commands and outputs
 	 * 
 	 * @param regexp
 	 * @param clientGui
+	 *            optional
+	 * @param data
+	 *            optional
 	 */
-	public AbstractCommandProcessor(String regexp, ClientGUI clientGui) {
+	public AbstractCommandProcessor(String regexp, ClientGUI clientGui,
+			BatMUDGoalsPluginData data) {
 		this.clientGUI = clientGui;
+		this.data = data;
 		this.pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
 	}
 

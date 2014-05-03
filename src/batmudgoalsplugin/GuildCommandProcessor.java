@@ -14,7 +14,7 @@ public class GuildCommandProcessor extends AbstractCommandProcessor {
 	private Collection<IGuildNameListener> listeners;
 
 	public GuildCommandProcessor(IGuildNameListener... listeners) {
-		super("(?:.*;)*\\s*(.+)\\sinfo\\s*;*.*", null);
+		super("(?:.*;)*\\s*(.+)\\sinfo\\s*;*.*", null, null);
 		this.listeners = new ArrayList<IGuildNameListener>(
 				Arrays.asList(listeners));
 	}
