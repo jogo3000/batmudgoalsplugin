@@ -173,32 +173,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	}
 
 	/**
-	 * Processes output from 'train' command. Stores the skill percents shown in
-	 * the train skill table.
-	 */
-	private class TrainCommandOutputProcessor extends AbstractCommandProcessor {
-		public TrainCommandOutputProcessor(BatMUDGoalsPluginData data) {
-			super(
-					"\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s+",
-					null, data);
-		}
-
-		@Override
-		protected boolean process(Matcher m) {
-			data.setSkillStatus(readSkillName(m), readSkillStatus(m));
-			return false;
-		}
-
-		private int readSkillStatus(Matcher m) {
-			return Integer.parseInt(m.group(2));
-		}
-
-		private String readSkillName(Matcher m) {
-			return m.group(1).trim().toLowerCase();
-		}
-	}
-
-	/**
 	 * Processes output from 'cost train <skill>' command. Stores the experience
 	 * costs of skill percents.
 	 */
