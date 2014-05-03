@@ -3,6 +3,7 @@ package batmudgoalsplugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,20 +45,19 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	private class GuildCommandProcessor extends AbstractCommandProcessor {
 
-		private PlayerLevelOutputProcessor op;
-		private InfoCommandSkillMaxOutputProcessor op2;
+		private Collection<IGuildNameListener> listeners;
 
-		public GuildCommandProcessor(PlayerLevelOutputProcessor op,
-				InfoCommandSkillMaxOutputProcessor op2) {
+		public GuildCommandProcessor(IGuildNameListener... listeners) {
 			super("\\s*(.+)\\sinfo\\s*");
-			this.op = op;
-			this.op2 = op2;
+			this.listeners = new ArrayList<IGuildNameListener>(
+					Arrays.asList(listeners));
 		}
 
 		@Override
 		protected boolean process(Matcher m) {
-			op.setGuild(m.group(1));
-			op2.setGuild(m.group(1));
+			for (IGuildNameListener l : listeners) {
+				l.setGuild(m.group(1));
+			}
 			return false; // Always forward the command to client
 		}
 
@@ -197,7 +197,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * Processes output from guildcommand info command - e.g. 'ranger info'.
 	 * Stores the player level in that guild.
 	 */
-	private class PlayerLevelOutputProcessor extends AbstractCommandProcessor {
+	private class PlayerLevelOutputProcessor extends AbstractCommandProcessor
+			implements IGuildNameListener {
 
 		private String guild;
 
@@ -205,6 +206,12 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			super("Your level:\\s+(\\d+)\\s+");
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see batmudgoalsplugin.GuildNameListener#setGuild(java.lang.String)
+		 */
+		@Override
 		public void setGuild(String guild) {
 			this.guild = guild;
 		}
@@ -268,7 +275,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * the client telling the guild name and guild level.
 	 */
 	private class InfoCommandSkillMaxOutputProcessor extends
-			AbstractCommandProcessor {
+			AbstractCommandProcessor implements IGuildNameListener {
 
 		private int level;
 		private String guild;
@@ -281,6 +288,12 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			this.level = level;
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see batmudgoalsplugin.IGuildNameListener#setGuild(java.lang.String)
+		 */
+		@Override
 		public void setGuild(String guild) {
 			this.guild = guild;
 		}
