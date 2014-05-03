@@ -149,6 +149,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			{
 				add(new TrainCommandOutputProcessor());
 				add(new PercentCostOutputProcessor());
+				add(new TrainedSkillOutputProcessor());
 			}
 		};
 	}
@@ -191,7 +192,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			op.receive(originalText);
 		}
 		catchSkillName(originalText);
-		catchTrainedSkillOutput(originalText);
 		catchExpCommandOutput(originalText);
 		catchGuildInfoCommandOutput(originalText);
 
@@ -278,13 +278,19 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 	}
 
-	private void catchTrainedSkillOutput(String originalText) {
-		Matcher m = trainpattern.matcher(originalText);
-		if (m.matches()) {
-			String skillName = m.group(1).trim().toLowerCase();
-			String percent = m.group(2).trim();
-			data.skillStatuses.put(skillName, Integer.parseInt(percent));
+	private class TrainedSkillOutputProcessor extends AbstractCommandProcessor {
+		public TrainedSkillOutputProcessor() {
+			super(
+					"You now have '([^']+)' at (\\d+)% without special bonuses.\\s+");
 		}
+
+		@Override
+		protected boolean process(Matcher m) {
+			data.skillStatuses.put(m.group(1).trim().toLowerCase(),
+					Integer.parseInt(m.group(2).trim()));
+			return false;
+		}
+
 	}
 
 	private void printMessage(String message) {
