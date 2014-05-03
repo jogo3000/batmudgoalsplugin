@@ -46,8 +46,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			.compile("Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
 	private Pattern trainpattern = Pattern
 			.compile("You now have '([^']+)' at (\\d+)% without special bonuses.\\s+");
-	private Pattern guildinfocommandpattern = Pattern
-			.compile("\\s*(.+)\\sinfo\\s*");
 	private Pattern guildInfoCommandOutput_playerlevel = Pattern
 			.compile("Your level:\\s+(\\d+)\\s+");
 
@@ -63,6 +61,41 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private int guildInfoCommandOutput_level;
 
 	private BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+	private GuildCommandProcessor guildCommandProcessor;
+
+	private abstract class CommandProcessor {
+		private final Pattern pattern;
+
+		public CommandProcessor(Pattern pattern) {
+			this.pattern = pattern;
+		}
+
+		public void receive(String input) {
+			Matcher m = pattern.matcher(input);
+			if (m.matches()) {
+				process(m);
+			}
+		}
+
+		protected abstract void process(Matcher m);
+	}
+
+	private class GuildCommandProcessor extends CommandProcessor {
+
+		public GuildCommandProcessor() {
+			super(Pattern.compile("\\s*(.+)\\sinfo\\s*"));
+		}
+
+		@Override
+		protected void process(Matcher m) {
+			guildnameFromInfoCommand = m.group(1);
+		}
+
+	}
+
+	public BatMUDGoalsPlugin() {
+		guildCommandProcessor = new GuildCommandProcessor();
+	}
 
 	/*
 	 * Catches 'goal' command. (non-Javadoc)
@@ -96,11 +129,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 
 		// Handle <guildcommand> info commands
-		m = guildinfocommandpattern.matcher(input);
-		if (m.matches()) {
-			guildnameFromInfoCommand = m.group(1);
-		}
-
+		guildCommandProcessor.receive(input);
 		return null;
 	}
 
