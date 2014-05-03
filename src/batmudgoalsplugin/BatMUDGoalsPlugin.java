@@ -73,7 +73,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		@Override
 		protected boolean process(Matcher m) {
-			for (String skillName : data.getSkills().keySet())
+			for (String skillName : data.getSkillCosts().keySet())
 				printMessage("%s%s", skillName,
 						data.isGoalSkill(skillName) ? " (*)" : "");
 			return true;
@@ -95,7 +95,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			// If a skill is given as goal parameter, normalize skill name and
 			// set goal
 			data.setGoalSkill(normalizeSkillName(goalParameter));
-			if (!data.getSkills().containsKey(data.goalSkill)) {
+			if (!data.getSkillCosts().containsKey(data.goalSkill)) {
 				printMessage("%s not in library", data.goalSkill);
 			} else {
 				printMessage("Next goal is %s", data.goalSkill);
@@ -435,7 +435,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		@Override
 		protected boolean process(Matcher m) {
-			Map<Integer, Integer> skilltable = data.getSkills().get(skill);
+			Map<Integer, Integer> skilltable = data.getSkillCosts().get(skill);
 			skilltable.put(Integer.parseInt(m.group(1)),
 					Integer.parseInt(m.group(2)));
 			return false;
@@ -461,8 +461,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		protected boolean process(Matcher m) {
 			String skill = m.group(1).toLowerCase().trim();
 			op.setSkill(skill);
-			if (!data.getSkills().containsKey(skill)) {
-				data.getSkills().put(skill, new HashMap<Integer, Integer>());
+			if (!data.getSkillCosts().containsKey(skill)) {
+				data.getSkillCosts().put(skill, new HashMap<Integer, Integer>());
 			}
 			return false;
 		}

@@ -33,7 +33,7 @@ public class TestPersistence {
 		Map<Integer, Integer> skillCostMap = new HashMap<Integer, Integer>();
 		skillCostMap.put(1, 1001);
 		skillCostMap.put(2, 1002);
-		data.skills.put("attack", skillCostMap);
+		data.skillCosts.put("attack", skillCostMap);
 
 		data.skillStatuses.put("looting and burning", 76);
 
@@ -50,9 +50,9 @@ public class TestPersistence {
 
 		assertEquals(1, o.goalPercent.intValue());
 		assertEquals("attack", o.goalSkill);
-		assertTrue(o.skills.containsKey("attack"));
+		assertTrue(o.skillCosts.containsKey("attack"));
 
-		Map<Integer, Integer> ummap = o.skills.get("attack");
+		Map<Integer, Integer> ummap = o.skillCosts.get("attack");
 		assertEquals(1001, ummap.get(1).intValue());
 		assertEquals(1002, ummap.get(2).intValue());
 

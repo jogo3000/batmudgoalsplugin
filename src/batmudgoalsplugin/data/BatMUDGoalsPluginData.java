@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class BatMUDGoalsPluginData {
 
 	@XmlJavaTypeAdapter(SkillCostLibraryMapAdapter.class)
-	public Map<String, Map<Integer, Integer>> skills;
+	public Map<String, Map<Integer, Integer>> skillCosts;
 	public Map<String, Integer> skillStatuses;
 	public Set<SkillMaxInfo> skillMaxes;
 	public String goalSkill;
@@ -22,7 +22,7 @@ public class BatMUDGoalsPluginData {
 	public BatMUDGoalsPluginData(Map<String, Map<Integer, Integer>> map,
 			Map<String, Integer> skillStatuses, Set<SkillMaxInfo> skillMaxInfo,
 			Map<String, Integer> guildlevels) {
-		this.skills = map;
+		this.skillCosts = map;
 		this.skillStatuses = skillStatuses;
 		this.skillMaxes = skillMaxInfo;
 		this.guildlevels = guildlevels;
@@ -42,11 +42,11 @@ public class BatMUDGoalsPluginData {
 	/**
 	 * @return the skills
 	 */
-	public Map<String, Map<Integer, Integer>> getSkills() {
-		if (skills == null) {
-			skills = new HashMap<String, Map<Integer, Integer>>();
+	public Map<String, Map<Integer, Integer>> getSkillCosts() {
+		if (skillCosts == null) {
+			skillCosts = new HashMap<String, Map<Integer, Integer>>();
 		}
-		return skills;
+		return skillCosts;
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class BatMUDGoalsPluginData {
 	 * @param cost
 	 */
 	public void setSkillCost(String skill, int percent, int cost) {
-		Map<String, Map<Integer, Integer>> skillcosts = getSkills();
+		Map<String, Map<Integer, Integer>> skillcosts = getSkillCosts();
 		if (!skillcosts.containsKey(skill)) {
 			skillcosts.put(skill, new HashMap<Integer, Integer>());
 		}
@@ -135,7 +135,7 @@ public class BatMUDGoalsPluginData {
 	 * @return cost to improve the goal skill to the given percent value
 	 */
 	public int getImproveGoalSkillCost() {
-		return getSkills().get(goalSkill).get(getGoalPercent());
+		return getSkillCosts().get(goalSkill).get(getGoalPercent());
 	}
 
 }
