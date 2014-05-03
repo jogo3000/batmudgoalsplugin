@@ -33,8 +33,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		BatClientPluginCommandTrigger, BatClientPluginTrigger,
 		BatClientPluginUtil {
 
-	private String latestSkillName;
-
 	private BatMUDGoalsPluginData data;
 	private Collection<AbstractCommandProcessor> commandProcessors;
 	private Collection<AbstractCommandProcessor> outputProcessors;
@@ -127,6 +125,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		data = new BatMUDGoalsPluginData();
 		final PlayerLevelOutputProcessor playerLevelOutputProcessor = new PlayerLevelOutputProcessor();
 		final InfoCommandSkillMaxOutputProcessor infoCommandSkillMaxOutputProcessor = new InfoCommandSkillMaxOutputProcessor();
+		final PercentCostOutputProcessor percentCostOutputProcessor = new PercentCostOutputProcessor();
+
 		commandProcessors = new ArrayList<AbstractCommandProcessor>() {
 			{
 				add(new GuildCommandProcessor(playerLevelOutputProcessor,
@@ -138,9 +138,10 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		outputProcessors = new ArrayList<AbstractCommandProcessor>() {
 			{
 				add(new TrainCommandOutputProcessor());
-				add(new PercentCostOutputProcessor());
+				add(percentCostOutputProcessor);
 				add(new TrainedSkillOutputProcessor());
-				add(new CostOfTrainingSkillNameOutputProcessor());
+				add(new CostOfTrainingSkillNameOutputProcessor(
+						percentCostOutputProcessor));
 				add(new ExpCommandOutputProcessor());
 				add(playerLevelOutputProcessor);
 				add(new InfoCommandFirstLevelProcessor(
@@ -409,8 +410,15 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * costs of skill percents.
 	 */
 	private class PercentCostOutputProcessor extends AbstractCommandProcessor {
+
+		private String skill;
+
 		public PercentCostOutputProcessor() {
 			super("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)");
+		}
+
+		public void setSkill(String skill) {
+			this.skill = skill;
 		}
 
 		@Override
@@ -423,8 +431,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		@Override
 		protected boolean process(Matcher m) {
-			Map<Integer, Integer> skilltable = data.getSkills().get(
-					latestSkillName);
+			Map<Integer, Integer> skilltable = data.getSkills().get(skill);
 			skilltable.put(Integer.parseInt(m.group(1)),
 					Integer.parseInt(m.group(2)));
 			return false;
@@ -437,16 +444,21 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	private class CostOfTrainingSkillNameOutputProcessor extends
 			AbstractCommandProcessor {
-		public CostOfTrainingSkillNameOutputProcessor() {
+
+		private PercentCostOutputProcessor op;
+
+		public CostOfTrainingSkillNameOutputProcessor(
+				PercentCostOutputProcessor op) {
 			super("\\|\\s+Cost\\s+of\\s+training\\s+([^\\|]+)\\s+\\|\\s+");
+			this.op = op;
 		}
 
 		@Override
 		protected boolean process(Matcher m) {
-			latestSkillName = m.group(1).toLowerCase().trim();
-			if (!data.getSkills().containsKey(latestSkillName)) {
-				data.getSkills().put(latestSkillName,
-						new HashMap<Integer, Integer>());
+			String skill = m.group(1).toLowerCase().trim();
+			op.setSkill(skill);
+			if (!data.getSkills().containsKey(skill)) {
+				data.getSkills().put(skill, new HashMap<Integer, Integer>());
 			}
 			return false;
 		}
