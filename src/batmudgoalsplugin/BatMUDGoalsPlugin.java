@@ -33,9 +33,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		BatClientPluginCommandTrigger, BatClientPluginTrigger,
 		BatClientPluginUtil {
 
-	private Pattern guildInfoCommandOutput_playerlevel = Pattern
-			.compile("Your level:\\s+(\\d+)\\s+");
-
 	private Pattern guildInfoCommandOutput_firstlevel = Pattern
 			.compile("Abilities gained when joining:\\s+");
 	private Pattern guildInfoCommandOutput_nextlevels = Pattern
@@ -145,6 +142,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				add(new TrainedSkillOutputProcessor());
 				add(new CostOfTrainingSkillNameOutputProcessor());
 				add(new ExpCommandOutputProcessor());
+				add(new PlayerLevelOutputProcessor());
 			}
 		};
 	}
@@ -192,6 +190,23 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	}
 
 	/**
+	 * Processes output from guildcommand info command - e.g. 'ranger info'.
+	 * Stores the player level in that guild.
+	 */
+	private class PlayerLevelOutputProcessor extends AbstractCommandProcessor {
+		public PlayerLevelOutputProcessor() {
+			super("Your level:\\s+(\\d+)\\s+");
+		}
+
+		@Override
+		protected boolean process(Matcher m) {
+			data.getGuildlevels().put(guildnameFromInfoCommand,
+					Integer.parseInt(m.group(1)));
+			return false;
+		}
+	}
+
+	/**
 	 * Player must use guildcommand info command to output max percents for each
 	 * skill at each level. This method parses all outputs from said info
 	 * command and stores {@link SkillMaxInfo}
@@ -199,11 +214,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * @param originalText
 	 */
 	private void catchGuildInfoCommandOutput(String originalText) {
-		Matcher m = guildInfoCommandOutput_playerlevel.matcher(originalText);
-		if (m.matches()) {
-			data.getGuildlevels().put(guildnameFromInfoCommand,
-					Integer.parseInt(m.group(1)));
-		}
+		Matcher m;
 
 		m = guildInfoCommandOutput_firstlevel.matcher(originalText);
 		if (m.matches()) {
