@@ -1,5 +1,6 @@
 package test.batmudgoalsplugin;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -50,6 +51,22 @@ public class TestBatMUDGoalsPluginData {
 		data.setGoalSkill("attack");
 		data.setSkillStatus("attack", 100);
 		assertTrue(data.isGoalSkillMaxed());
+	}
+
+	@Test
+	public void testGetGoalPercent() throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		data.setGoalSkill("attack");
+		data.setSkillStatus("attack", 87);
+		assertEquals(88, data.getGoalPercent());
+	}
+
+	@Test
+	public void testGetGoalPercentFull() throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		data.setGoalSkill("attack");
+		data.setSkillStatus("attack", 100);
+		assertEquals(101, data.getGoalPercent());
 	}
 
 }

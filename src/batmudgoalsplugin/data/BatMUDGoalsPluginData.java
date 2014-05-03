@@ -109,4 +109,11 @@ public class BatMUDGoalsPluginData {
 		getSkillStatuses().put(skill, percent);
 	}
 
+	/**
+	 * @return next percent of goal skill
+	 */
+	public int getGoalPercent() {
+		return getSkillStatuses().get(goalSkill) + 1;
+	}
+
 }
