@@ -301,6 +301,10 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		printMessage(String.format(format, args));
 	}
 
+	/**
+	 * Processes output from 'train' command. Stores the skill percents shown in
+	 * the train skill table.
+	 */
 	private class TrainCommandOutputProcessor extends AbstractCommandProcessor {
 		public TrainCommandOutputProcessor() {
 			super(
