@@ -64,6 +64,10 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 	private Collection<AbstractCommandProcessor> commandProcessors;
 
+	/**
+	 * Catches guild info commands, e.g. 'barbarian info' and stores the guild
+	 * name from that command.
+	 */
 	private class GuildCommandProcessor extends AbstractCommandProcessor {
 
 		public GuildCommandProcessor() {
@@ -78,9 +82,32 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 	}
 
+	/**
+	 * Catches goal command without parameters and prints list of possible goal
+	 * skills
+	 */
+	private class GoalCommandWithoutParametersProcessor extends
+			AbstractCommandProcessor {
+		public GoalCommandWithoutParametersProcessor() {
+			super("\\s*goal\\s*");
+		}
+
+		@Override
+		protected boolean process(Matcher m) {
+			for (String skillName : data.getSkills().keySet())
+				printMessage("%s%s", skillName,
+						skillName.equals(data.goalSkill) ? " (*)" : "");
+			return true;
+		}
+	}
+
+	/**
+	 * Catches parameterised goal command, e.g. 'goal attack' and sets the goal
+	 * if possible
+	 */
 	private class GoalCommandProcessor extends AbstractCommandProcessor {
 		public GoalCommandProcessor() {
-			super("goal\\s*(.+)*");
+			super("goal\\s*(.+)\\s*");
 		}
 
 		@Override
@@ -88,18 +115,12 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			String goalParameter = m.group(1);
 			// If a skill is given as goal parameter, normalize skill name and
 			// set goal
-			if (goalParameter != null) {
-				data.goalSkill = normalizeSkillName(goalParameter);
-				if (!data.getSkills().containsKey(data.goalSkill)) {
-					printMessage("%s not in library", data.goalSkill);
-				} else {
-					printMessage("Next goal is %s", data.goalSkill);
-					data.goalPercent = data.skillStatuses.get(data.goalSkill);
-				}
+			data.goalSkill = normalizeSkillName(goalParameter);
+			if (!data.getSkills().containsKey(data.goalSkill)) {
+				printMessage("%s not in library", data.goalSkill);
 			} else {
-				for (String skillName : data.getSkills().keySet())
-					printMessage("%s%s", skillName,
-							skillName.equals(data.goalSkill) ? " (*)" : "");
+				printMessage("Next goal is %s", data.goalSkill);
+				data.goalPercent = data.skillStatuses.get(data.goalSkill);
 			}
 			return true; // Stop command from being processed by client
 		}
@@ -110,14 +131,13 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		commandProcessors = new ArrayList<AbstractCommandProcessor>() {
 			{
 				add(new GuildCommandProcessor());
+				add(new GoalCommandWithoutParametersProcessor());
 				add(new GoalCommandProcessor());
 			}
 		};
 	}
 
 	/*
-	 * Catches 'goal' command. (non-Javadoc)
-	 * 
 	 * @see
 	 * com.mythicscape.batclient.interfaces.BatClientPluginCommandTrigger#trigger
 	 * (java.lang.String)
