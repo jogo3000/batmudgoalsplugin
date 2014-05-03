@@ -66,4 +66,20 @@ public class BatMUDGoalsPluginData {
 		return skillMaxes;
 	}
 
+	/**
+	 * Sets the goal skill
+	 * 
+	 * @param skill
+	 */
+	public void setGoalSkill(String skill) {
+		goalSkill = skill;
+	}
+
+	/**
+	 * @return true if goal has been set, false if not
+	 */
+	public boolean isGoalSet() {
+		return goalSkill != null;
+	}
+
 }

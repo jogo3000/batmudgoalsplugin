@@ -58,8 +58,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private String guildnameFromInfoCommand;
 	private int guildInfoCommandOutput_level;
 
-	private BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
-
+	private BatMUDGoalsPluginData data;
 	private Collection<AbstractCommandProcessor> commandProcessors;
 
 	/**
@@ -113,7 +112,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			String goalParameter = m.group(1);
 			// If a skill is given as goal parameter, normalize skill name and
 			// set goal
-			data.goalSkill = normalizeSkillName(goalParameter);
+			data.setGoalSkill(normalizeSkillName(goalParameter));
 			if (!data.getSkills().containsKey(data.goalSkill)) {
 				printMessage("%s not in library", data.goalSkill);
 			} else {
@@ -141,6 +140,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 	@SuppressWarnings("serial")
 	public BatMUDGoalsPlugin() {
+		data = new BatMUDGoalsPluginData();
 		commandProcessors = new ArrayList<AbstractCommandProcessor>() {
 			{
 				add(new GuildCommandProcessor());
