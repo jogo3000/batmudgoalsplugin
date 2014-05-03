@@ -30,7 +30,7 @@ public class TestPersistence {
 		data.setSkillStatus("attack", 0);
 		data.setGuildLevel("ranger", 32);
 
-		data.getSkillMaxes().add(new SkillMaxInfo("Rangers", "attack", 1, 1));
+		data.setSkillMaxInfo("Rangers", "attack", 1, 1);
 
 		JAXBContext ctx = JAXBContext.newInstance(BatMUDGoalsPluginData.class);
 		Marshaller m = ctx.createMarshaller();
