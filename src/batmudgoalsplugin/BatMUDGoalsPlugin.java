@@ -33,8 +33,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		BatClientPluginCommandTrigger, BatClientPluginTrigger,
 		BatClientPluginUtil {
 
-	private Pattern exppattern = Pattern
-			.compile("Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
 	private Pattern guildInfoCommandOutput_playerlevel = Pattern
 			.compile("Your level:\\s+(\\d+)\\s+");
 
@@ -146,6 +144,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				add(new PercentCostOutputProcessor());
 				add(new TrainedSkillOutputProcessor());
 				add(new CostOfTrainingSkillNameOutputProcessor());
+				add(new ExpCommandOutputProcessor());
 			}
 		};
 	}
@@ -187,7 +186,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		for (AbstractCommandProcessor op : outputProcessors) {
 			op.receive(originalText);
 		}
-		catchExpCommandOutput(originalText);
 		catchGuildInfoCommandOutput(originalText);
 
 		return input; // return input to be processed by the client
@@ -225,17 +223,21 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	}
 
 	/**
+	 * Processes output from 'exp' command.
+	 * 
 	 * Exp command output is something like this: <br>
 	 * Exp: 135670 Money: 0.00 Bank: 644404.00 Exp pool: 0<br>
 	 * Takes exp amount, outputs goal skill, needed exp and amount missing from
 	 * next percent
-	 * 
-	 * @param originalText
 	 */
-	private void catchExpCommandOutput(String originalText) {
-		Matcher m;
-		m = exppattern.matcher(originalText);
-		if (m.matches()) {
+	private class ExpCommandOutputProcessor extends AbstractCommandProcessor {
+		public ExpCommandOutputProcessor() {
+			super(
+					"Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
+		}
+
+		@Override
+		protected boolean process(Matcher m) {
 			if (data.skillStatuses.get(data.goalSkill) == 100) {
 				printMessage("Goal %s: full", data.goalSkill);
 			} else {
@@ -270,6 +272,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				}
 
 			}
+			return false;
 		}
 	}
 
