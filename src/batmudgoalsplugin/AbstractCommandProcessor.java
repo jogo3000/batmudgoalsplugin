@@ -19,7 +19,7 @@ abstract class AbstractCommandProcessor {
 	 * @param regexp
 	 */
 	public AbstractCommandProcessor(String regexp) {
-		this.pattern = Pattern.compile(regexp);
+		this.pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
 	}
 
 	/**
@@ -27,11 +27,12 @@ abstract class AbstractCommandProcessor {
 	 * 
 	 * @param input
 	 */
-	public final void receive(String input) {
+	public final boolean receive(String input) {
 		Matcher m = pattern.matcher(input);
 		if (m.matches()) {
-			process(m);
+			return process(m);
 		}
+		return false;
 	}
 
 	/**
@@ -39,6 +40,7 @@ abstract class AbstractCommandProcessor {
 	 * matched in this method.
 	 * 
 	 * @param m
+	 * @return true if input should not be returned to the client for processing
 	 */
-	protected abstract void process(Matcher m);
+	protected abstract boolean process(Matcher m);
 }

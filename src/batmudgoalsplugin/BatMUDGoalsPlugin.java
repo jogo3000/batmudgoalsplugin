@@ -61,7 +61,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private int guildInfoCommandOutput_level;
 
 	private BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
-	private GuildCommandProcessor guildCommandProcessor;
+
+	private Collection<AbstractCommandProcessor> commandProcessors;
 
 	private class GuildCommandProcessor extends AbstractCommandProcessor {
 
@@ -70,28 +71,20 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 
 		@Override
-		protected void process(Matcher m) {
+		protected boolean process(Matcher m) {
 			guildnameFromInfoCommand = m.group(1);
+			return false; // Always forward the command to client
 		}
 
 	}
 
-	public BatMUDGoalsPlugin() {
-		guildCommandProcessor = new GuildCommandProcessor();
-	}
+	private class GoalCommandProcessor extends AbstractCommandProcessor {
+		public GoalCommandProcessor() {
+			super("goal\\s*(.+)*");
+		}
 
-	/*
-	 * Catches 'goal' command. (non-Javadoc)
-	 * 
-	 * @see
-	 * com.mythicscape.batclient.interfaces.BatClientPluginCommandTrigger#trigger
-	 * (java.lang.String)
-	 */
-	@Override
-	public String trigger(String input) {
-		// Handle goal command
-		Matcher m = goalcommandpattern.matcher(input);
-		if (m.matches()) {
+		@Override
+		protected boolean process(Matcher m) {
 			String goalParameter = m.group(1);
 			// If a skill is given as goal parameter, normalize skill name and
 			// set goal
@@ -108,11 +101,34 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 					printMessage("%s%s", skillName,
 							skillName.equals(data.goalSkill) ? " (*)" : "");
 			}
-			return ""; // Stop command from being processed by client
+			return true; // Stop command from being processed by client
 		}
+	}
 
-		// Handle <guildcommand> info commands
-		guildCommandProcessor.receive(input);
+	@SuppressWarnings("serial")
+	public BatMUDGoalsPlugin() {
+		commandProcessors = new ArrayList<AbstractCommandProcessor>() {
+			{
+				add(new GuildCommandProcessor());
+				add(new GoalCommandProcessor());
+			}
+		};
+	}
+
+	/*
+	 * Catches 'goal' command. (non-Javadoc)
+	 * 
+	 * @see
+	 * com.mythicscape.batclient.interfaces.BatClientPluginCommandTrigger#trigger
+	 * (java.lang.String)
+	 */
+	@Override
+	public String trigger(String input) {
+		for (AbstractCommandProcessor cp : commandProcessors) {
+			if (cp.receive(input)) {
+				return "";
+			}
+		}
 		return null;
 	}
 
