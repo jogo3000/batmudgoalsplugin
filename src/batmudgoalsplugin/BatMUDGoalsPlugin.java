@@ -38,8 +38,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			Pattern.CASE_INSENSITIVE);
 	private Pattern percentcostpattern = Pattern
 			.compile("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)");
-	private Pattern skillstatuspattern = Pattern
-			.compile("\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s+");
 	private Pattern exppattern = Pattern
 			.compile("Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
 	private Pattern trainpattern = Pattern
@@ -60,6 +58,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 	private BatMUDGoalsPluginData data;
 	private Collection<AbstractCommandProcessor> commandProcessors;
+	private Collection<AbstractCommandProcessor> outputProcessors;
 
 	/**
 	 * Catches guild info commands, e.g. 'barbarian info' and stores the guild
@@ -148,6 +147,11 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				add(new GoalCommandProcessor());
 			}
 		};
+		outputProcessors = new ArrayList<AbstractCommandProcessor>() {
+			{
+				add(new TrainCommandOutputProcessor());
+			}
+		};
 	}
 
 	/*
@@ -184,9 +188,11 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	@Override
 	public ParsedResult trigger(ParsedResult input) {
 		String originalText = input.getOriginalText();
+		for (AbstractCommandProcessor op : outputProcessors) {
+			op.receive(originalText);
+		}
 		catchSkillName(originalText);
 		catchPercentCost(originalText);
-		catchTrainCommandOutput(originalText);
 		catchTrainedSkillOutput(originalText);
 		catchExpCommandOutput(originalText);
 		catchGuildInfoCommandOutput(originalText);
@@ -291,13 +297,19 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		printMessage(String.format(format, args));
 	}
 
-	private void catchTrainCommandOutput(String originalText) {
-		Matcher skillstatusmatcher = skillstatuspattern.matcher(originalText);
-		if (skillstatusmatcher.matches()) {
-			String skillName = skillstatusmatcher.group(1).trim().toLowerCase();
-			String cur = skillstatusmatcher.group(2);
+	private class TrainCommandOutputProcessor extends AbstractCommandProcessor {
+		public TrainCommandOutputProcessor() {
+			super(
+					"\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s+");
+		}
+
+		@Override
+		protected boolean process(Matcher m) {
+			String skillName = m.group(1).trim().toLowerCase();
+			String cur = m.group(2);
 
 			data.getSkillStatuses().put(skillName, Integer.parseInt(cur));
+			return false;
 		}
 	}
 
