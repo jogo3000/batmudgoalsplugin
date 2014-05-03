@@ -141,12 +141,13 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	@Override
 	public ParsedResult trigger(ParsedResult input) {
-		catchSkillName(input);
-		catchPercentCost(input);
-		catchTrainCommandOutput(input);
-		catchTrainedSkillOutput(input);
-		catchExpCommandOutput(input);
-		catchGuildInfoCommandOutput(input);
+		String originalText = input.getOriginalText();
+		catchSkillName(originalText);
+		catchPercentCost(originalText);
+		catchTrainCommandOutput(originalText);
+		catchTrainedSkillOutput(originalText);
+		catchExpCommandOutput(originalText);
+		catchGuildInfoCommandOutput(originalText);
 
 		return input; // return input to be processed by the client
 	}
@@ -156,25 +157,24 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * skill at each level. This method parses all outputs from said info
 	 * command and stores {@link SkillMaxInfo}
 	 * 
-	 * @param input
+	 * @param originalText
 	 */
-	private void catchGuildInfoCommandOutput(ParsedResult input) {
-		Matcher m = guildInfoCommandOutput_playerlevel.matcher(input
-				.getOriginalText());
+	private void catchGuildInfoCommandOutput(String originalText) {
+		Matcher m = guildInfoCommandOutput_playerlevel.matcher(originalText);
 		if (m.matches()) {
 			data.getGuildlevels().put(guildnameFromInfoCommand,
 					Integer.parseInt(m.group(1)));
 		}
 
-		m = guildInfoCommandOutput_firstlevel.matcher(input.getOriginalText());
+		m = guildInfoCommandOutput_firstlevel.matcher(originalText);
 		if (m.matches()) {
 			guildInfoCommandOutput_level = 1;
 		}
-		m = guildInfoCommandOutput_nextlevels.matcher(input.getOriginalText());
+		m = guildInfoCommandOutput_nextlevels.matcher(originalText);
 		if (m.matches()) {
 			guildInfoCommandOutput_level = Integer.parseInt(m.group(1));
 		}
-		m = guildInfoCommandOutput_maytrain.matcher(input.getOriginalText());
+		m = guildInfoCommandOutput_maytrain.matcher(originalText);
 		if (m.matches()) {
 			data.getSkillMaxes().add(
 					new SkillMaxInfo(guildnameFromInfoCommand, m.group(1)
@@ -189,11 +189,11 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * Takes exp amount, outputs goal skill, needed exp and amount missing from
 	 * next percent
 	 * 
-	 * @param input
+	 * @param originalText
 	 */
-	private void catchExpCommandOutput(ParsedResult input) {
+	private void catchExpCommandOutput(String originalText) {
 		Matcher m;
-		m = exppattern.matcher(input.getOriginalText());
+		m = exppattern.matcher(originalText);
 		if (m.matches()) {
 			if (data.skillStatuses.get(data.goalSkill).cur == 100) {
 				printMessage("Goal %s: full", data.goalSkill);
@@ -232,8 +232,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 	}
 
-	private void catchTrainedSkillOutput(ParsedResult input) {
-		Matcher m = trainpattern.matcher(input.getOriginalText());
+	private void catchTrainedSkillOutput(String originalText) {
+		Matcher m = trainpattern.matcher(originalText);
 		if (m.matches()) {
 			String skillName = m.group(1).trim().toLowerCase();
 			String percent = m.group(2).trim();
@@ -253,9 +253,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		printMessage(String.format(format, args));
 	}
 
-	private void catchTrainCommandOutput(ParsedResult input) {
-		Matcher skillstatusmatcher = skillstatuspattern.matcher(input
-				.getOriginalText());
+	private void catchTrainCommandOutput(String originalText) {
+		Matcher skillstatusmatcher = skillstatuspattern.matcher(originalText);
 		if (skillstatusmatcher.matches()) {
 			String skillName = skillstatusmatcher.group(1).trim().toLowerCase();
 			String cur = skillstatusmatcher.group(2);
@@ -268,9 +267,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 	}
 
-	private void catchPercentCost(ParsedResult input) {
-		Matcher percentcostmatcher = percentcostpattern.matcher(input
-				.getOriginalText());
+	private void catchPercentCost(String input) {
+		Matcher percentcostmatcher = percentcostpattern.matcher(input);
 		while (percentcostmatcher.find()) {
 			Map<Integer, Integer> skilltable = data.skills.get(latestSkillName);
 			skilltable.put(Integer.parseInt(percentcostmatcher.group(1)),
@@ -278,8 +276,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 	}
 
-	private void catchSkillName(ParsedResult input) {
-		Matcher skillmatcher = skillpattern.matcher(input.getOriginalText());
+	private void catchSkillName(String originalText) {
+		Matcher skillmatcher = skillpattern.matcher(originalText);
 		if (skillmatcher.matches()) {
 			latestSkillName = skillmatcher.group(1).toLowerCase().trim();
 			if (!data.skills.containsKey(latestSkillName)) {
