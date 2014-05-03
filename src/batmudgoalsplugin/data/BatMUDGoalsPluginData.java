@@ -1,34 +1,31 @@
 package batmudgoalsplugin.data;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class BatMUDGoalsPluginData {
 
 	@XmlJavaTypeAdapter(SkillCostLibraryMapAdapter.class)
-	public Map<String, Map<Integer, Integer>> skillCosts;
+	private Map<String, Map<Integer, Integer>> skillCosts;
 	@XmlElement
 	private Map<String, Integer> skillStatuses;
-	public Set<SkillMaxInfo> skillMaxes;
-	public String goalSkill;
-	public Integer goalPercent;
-	public Map<String, Integer> guildlevels;
-
-	public BatMUDGoalsPluginData(Map<String, Map<Integer, Integer>> map,
-			Map<String, Integer> skillStatuses, Set<SkillMaxInfo> skillMaxInfo,
-			Map<String, Integer> guildlevels) {
-		this.skillCosts = map;
-		this.skillStatuses = skillStatuses;
-		this.skillMaxes = skillMaxInfo;
-		this.guildlevels = guildlevels;
-	}
+	@XmlElement
+	private Set<SkillMaxInfo> skillMaxes;
+	@XmlElement
+	private String goalSkill;
+	@XmlElement
+	private Map<String, Integer> guildlevels;
 
 	public BatMUDGoalsPluginData() {
 		// Needed by JAXB
@@ -44,7 +41,7 @@ public class BatMUDGoalsPluginData {
 	/**
 	 * @return the skills
 	 */
-	public Map<String, Map<Integer, Integer>> getSkillCosts() {
+	private Map<String, Map<Integer, Integer>> getSkillCosts() {
 		if (skillCosts == null) {
 			skillCosts = new HashMap<String, Map<Integer, Integer>>();
 		}
@@ -137,6 +134,17 @@ public class BatMUDGoalsPluginData {
 	}
 
 	/**
+	 * Returns the experience cost to improve a skill to the given percent
+	 * 
+	 * @param skill
+	 * @param percent
+	 * @return
+	 */
+	public int getSkillCost(String skill, int percent) {
+		return getSkillCosts().get(skill).get(percent);
+	}
+
+	/**
 	 * @return next percent of goal skill
 	 */
 	public int getGoalPercent() {
@@ -148,6 +156,30 @@ public class BatMUDGoalsPluginData {
 	 */
 	public int getImproveGoalSkillCost() {
 		return getSkillCosts().get(goalSkill).get(getGoalPercent());
+	}
+
+	/**
+	 * @return collection of the skills stored
+	 */
+	public Collection<String> getStoredSkills() {
+		return getSkillCosts().keySet();
+	}
+
+	/**
+	 * Tests if skill has been saved in library
+	 * 
+	 * @param skill
+	 * @return
+	 */
+	public boolean isSkillInCostLibrary(String skill) {
+		return getSkillCosts().containsKey(skill);
+	}
+
+	/**
+	 * @return current goal skill
+	 */
+	public String getGoalSkill() {
+		return goalSkill;
 	}
 
 }

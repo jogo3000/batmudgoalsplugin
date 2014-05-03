@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.regex.Matcher;
 
 import javax.xml.bind.JAXBContext;
@@ -73,7 +71,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		@Override
 		protected boolean process(Matcher m) {
-			for (String skillName : data.getSkillCosts().keySet())
+			for (String skillName : data.getStoredSkills())
 				printMessage("%s%s", skillName,
 						data.isGoalSkill(skillName) ? " (*)" : "");
 			return true;
@@ -95,11 +93,10 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			// If a skill is given as goal parameter, normalize skill name and
 			// set goal
 			data.setGoalSkill(normalizeSkillName(goalParameter));
-			if (!data.getSkillCosts().containsKey(data.goalSkill)) {
-				printMessage("%s not in library", data.goalSkill);
+			if (!data.isSkillInCostLibrary(data.getGoalSkill())) {
+				printMessage("%s not in library", data.getGoalSkill());
 			} else {
-				printMessage("Next goal is %s", data.goalSkill);
-				data.goalPercent = data.getGoalPercent();
+				printMessage("Next goal is %s", data.getGoalSkill());
 			}
 			return true; // Stop command from being processed by client
 		}
@@ -325,7 +322,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		@Override
 		protected boolean process(Matcher m) {
 			if (data.isGoalSkillMaxed()) {
-				printMessage("Goal %s: full", data.goalSkill);
+				printMessage("Goal %s: full", data.getGoalSkill());
 			} else {
 				// get skillmaxinfo for this skill
 				Collection<SkillMaxInfo> skillmaxinfo = new ArrayList<SkillMaxInfo>();
@@ -340,18 +337,18 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				}
 
 				if (skillmaxinfo.isEmpty()) {
-					printMessage("Goal %s: needs level", data.goalSkill);
+					printMessage("Goal %s: needs level", data.getGoalSkill());
 				} else {
 					int neededExp = data.getImproveGoalSkillCost();
 					int currentExp = Integer.parseInt(m.group(1));
 					if (currentExp < neededExp) {
 						printMessage("Goal %s: %d You need: %d",
-								data.goalSkill, neededExp, neededExp
+								data.getGoalSkill(), neededExp, neededExp
 										- currentExp);
 					} else {
 						printMessage(
 								"Goal %s: %d You have enough to advance in: %s",
-								data.goalSkill, neededExp,
+								data.getGoalSkill(), neededExp,
 								concatGuildNames(guilds));
 					}
 				}
@@ -435,8 +432,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		@Override
 		protected boolean process(Matcher m) {
-			Map<Integer, Integer> skilltable = data.getSkillCosts().get(skill);
-			skilltable.put(Integer.parseInt(m.group(1)),
+			data.setSkillCost(skill, Integer.parseInt(m.group(1)),
 					Integer.parseInt(m.group(2)));
 			return false;
 		}
@@ -461,10 +457,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		protected boolean process(Matcher m) {
 			String skill = m.group(1).toLowerCase().trim();
 			op.setSkill(skill);
-			if (!data.getSkillCosts().containsKey(skill)) {
-				data.getSkillCosts()
-						.put(skill, new HashMap<Integer, Integer>());
-			}
 			return false;
 		}
 	}
