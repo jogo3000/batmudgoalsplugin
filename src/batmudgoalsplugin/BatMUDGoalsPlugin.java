@@ -29,14 +29,18 @@ import com.mythicscape.batclient.interfaces.ParsedResult;
  * 
  * @author Jogo
  */
+/**
+ * @author jogo3000
+ *
+ */
+/**
+ * @author jogo3000
+ *
+ */
 public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		BatClientPluginCommandTrigger, BatClientPluginTrigger,
 		BatClientPluginUtil {
 
-	private Pattern guildInfoCommandOutput_firstlevel = Pattern
-			.compile("Abilities gained when joining:\\s+");
-	private Pattern guildInfoCommandOutput_nextlevels = Pattern
-			.compile("\\s*Level\\s+(\\d+):\\s*");
 	private Pattern guildInfoCommandOutput_maytrain = Pattern
 			.compile("\\s+May\\s+train\\s+skill\\s+(.+)\\s+to\\s+(\\d+)%\\s+");
 
@@ -143,6 +147,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				add(new CostOfTrainingSkillNameOutputProcessor());
 				add(new ExpCommandOutputProcessor());
 				add(new PlayerLevelOutputProcessor());
+				add(new InfoCommandFirstLevelProcessor());
+				add(new InfoCommandLevelNumberProcessor());
 			}
 		};
 	}
@@ -207,6 +213,42 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	}
 
 	/**
+	 * Processes output from guildname info command - e.g. 'barbarian info'.
+	 * First level skills are given after a message 'Abilities gained when
+	 * joining:'
+	 */
+	private class InfoCommandFirstLevelProcessor extends
+			AbstractCommandProcessor {
+		public InfoCommandFirstLevelProcessor() {
+			super("Abilities gained when joining:\\s+");
+		}
+
+		@Override
+		protected boolean process(Matcher m) {
+			guildInfoCommandOutput_level = 1;
+			return false;
+		}
+	}
+
+	/**
+	 * Processes output from guildname info command - e.g. 'ranger info'. Skill
+	 * maxes for each level are reported after a row containing the level
+	 * number.
+	 */
+	private class InfoCommandLevelNumberProcessor extends
+			AbstractCommandProcessor {
+		public InfoCommandLevelNumberProcessor() {
+			super("\\s*Level\\s+(\\d+):\\s*");
+		}
+
+		@Override
+		protected boolean process(Matcher m) {
+			guildInfoCommandOutput_level = Integer.parseInt(m.group(1));
+			return false;
+		}
+	}
+
+	/**
 	 * Player must use guildcommand info command to output max percents for each
 	 * skill at each level. This method parses all outputs from said info
 	 * command and stores {@link SkillMaxInfo}
@@ -216,14 +258,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private void catchGuildInfoCommandOutput(String originalText) {
 		Matcher m;
 
-		m = guildInfoCommandOutput_firstlevel.matcher(originalText);
-		if (m.matches()) {
-			guildInfoCommandOutput_level = 1;
-		}
-		m = guildInfoCommandOutput_nextlevels.matcher(originalText);
-		if (m.matches()) {
-			guildInfoCommandOutput_level = Integer.parseInt(m.group(1));
-		}
 		m = guildInfoCommandOutput_maytrain.matcher(originalText);
 		if (m.matches()) {
 			data.getSkillMaxes().add(
