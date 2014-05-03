@@ -36,4 +36,20 @@ public class TestBatMUDGoalsPluginData {
 		assertTrue(d.isGoalSkill("attack"));
 	}
 
+	@Test
+	public void testGoalSkillIs100False() throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		data.setGoalSkill("attack");
+		data.setSkillStatus("attack", 1);
+		assertFalse(data.isGoalSkillMaxed());
+	}
+
+	@Test
+	public void testGoalSkillIs100True() throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		data.setGoalSkill("attack");
+		data.setSkillStatus("attack", 100);
+		assertTrue(data.isGoalSkillMaxed());
+	}
+
 }

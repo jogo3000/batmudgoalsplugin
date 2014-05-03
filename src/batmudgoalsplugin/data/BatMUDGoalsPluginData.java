@@ -92,4 +92,21 @@ public class BatMUDGoalsPluginData {
 		return skill.equals(goalSkill);
 	}
 
+	/**
+	 * @return true if goal skill is maxed, false otherwise
+	 */
+	public boolean isGoalSkillMaxed() {
+		return getSkillStatuses().get(goalSkill) == 100;
+	}
+
+	/**
+	 * Sets the current percent of a skill
+	 * 
+	 * @param skill
+	 * @param percent
+	 */
+	public void setSkillStatus(String skill, int percent) {
+		getSkillStatuses().put(skill, percent);
+	}
+
 }

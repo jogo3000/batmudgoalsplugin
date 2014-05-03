@@ -324,7 +324,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		@Override
 		protected boolean process(Matcher m) {
-			if (data.skillStatuses.get(data.goalSkill) == 100) {
+			if (data.isGoalSkillMaxed()) {
 				printMessage("Goal %s: full", data.goalSkill);
 			} else {
 				// get skillmaxinfo for this skill
@@ -397,11 +397,16 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		@Override
 		protected boolean process(Matcher m) {
-			String skillName = m.group(1).trim().toLowerCase();
-			String cur = m.group(2);
-
-			data.getSkillStatuses().put(skillName, Integer.parseInt(cur));
+			data.setSkillStatus(readSkillName(m), readSkillStatus(m));
 			return false;
+		}
+
+		private int readSkillStatus(Matcher m) {
+			return Integer.parseInt(m.group(2));
+		}
+
+		private String readSkillName(Matcher m) {
+			return m.group(1).trim().toLowerCase();
 		}
 	}
 
