@@ -40,8 +40,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			.compile("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)");
 	private Pattern skillstatuspattern = Pattern
 			.compile("\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s+");
-	private Pattern goalcommandpattern = Pattern.compile("goal\\s*(.+)*",
-			Pattern.CASE_INSENSITIVE);
 	private Pattern exppattern = Pattern
 			.compile("Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
 	private Pattern trainpattern = Pattern
@@ -124,6 +122,21 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			}
 			return true; // Stop command from being processed by client
 		}
+
+		/**
+		 * Removes extra whitespaces and puts to lowercase
+		 * 
+		 * @param originalSkillName
+		 * @return normalized skill name
+		 */
+		private String normalizeSkillName(String originalSkillName) {
+			StringBuilder sb = new StringBuilder();
+			for (String s : originalSkillName.split("\\s")) {
+				sb.append(s);
+				sb.append(" ");
+			}
+			return sb.toString().trim().toLowerCase();
+		}
 	}
 
 	@SuppressWarnings("serial")
@@ -150,21 +163,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Removes extra whitespaces and puts to lowercase
-	 * 
-	 * @param originalSkillName
-	 * @return normalized skill name
-	 */
-	private String normalizeSkillName(String originalSkillName) {
-		StringBuilder sb = new StringBuilder();
-		for (String s : originalSkillName.split("\\s")) {
-			sb.append(s);
-			sb.append(" ");
-		}
-		return sb.toString().trim().toLowerCase();
 	}
 
 	private String concatGuildNames(Collection<String> guilds) {
