@@ -7,6 +7,13 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for guildname info command processor. When e.g. 'tzarakk info' is
+ * received by the processor, 'tzarakk' should be sent to all the
+ * {@link IGuildNameListener} implementations
+ * 
+ * @author jogo3000
+ */
 public class TestGuildCommandProcessor {
 
 	private IGuildNameListener callReceive(String input) {
