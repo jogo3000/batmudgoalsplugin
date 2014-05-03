@@ -331,9 +331,9 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				Collection<SkillMaxInfo> skillmaxinfo = new ArrayList<SkillMaxInfo>();
 				Collection<String> guilds = new HashSet<String>();
 				for (SkillMaxInfo s : data.getSkillMaxes()) {
-					if (s.skill.equals(data.goalSkill)
+					if (data.isGoalSkill(s.skill)
 							&& s.level <= data.getGuildlevels().get(s.guild)
-							&& s.max >= data.skillStatuses.get(data.goalSkill) + 1) {
+							&& s.max >= data.getGoalPercent()) {
 						skillmaxinfo.add(s);
 						guilds.add(s.guild);
 					}
