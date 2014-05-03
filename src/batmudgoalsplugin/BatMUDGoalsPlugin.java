@@ -105,30 +105,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	}
 
 	/**
-	 * Processes output from guildname info command - e.g. 'ranger info'. Skill
-	 * maxes for each level are reported after a row containing the level
-	 * number.
-	 */
-	private class InfoCommandLevelNumberProcessor extends
-			AbstractCommandProcessor {
-
-		private InfoCommandSkillMaxOutputProcessor op;
-
-		public InfoCommandLevelNumberProcessor(
-				InfoCommandSkillMaxOutputProcessor op,
-				BatMUDGoalsPluginData data) {
-			super("\\s*Level\\s+(\\d+):\\s*", null, data);
-			this.op = op;
-		}
-
-		@Override
-		protected boolean process(Matcher m) {
-			op.setLevel(Integer.parseInt(m.group(1)));
-			return false;
-		}
-	}
-
-	/**
 	 * Processes output from guildname info command, e.g. 'ranger info'. Stores
 	 * skill max from the output. This depends on the earlier rows printed by
 	 * the client telling the guild name and guild level.
