@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -29,20 +28,9 @@ import com.mythicscape.batclient.interfaces.ParsedResult;
  * 
  * @author Jogo
  */
-/**
- * @author jogo3000
- *
- */
-/**
- * @author jogo3000
- *
- */
 public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		BatClientPluginCommandTrigger, BatClientPluginTrigger,
 		BatClientPluginUtil {
-
-	private Pattern guildInfoCommandOutput_maytrain = Pattern
-			.compile("\\s+May\\s+train\\s+skill\\s+(.+)\\s+to\\s+(\\d+)%\\s+");
 
 	private String latestSkillName;
 	private String guildnameFromInfoCommand;
@@ -149,6 +137,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				add(new PlayerLevelOutputProcessor());
 				add(new InfoCommandFirstLevelProcessor());
 				add(new InfoCommandLevelNumberProcessor());
+				add(new InfoCommandSkillMaxOutputProcessor());
 			}
 		};
 	}
@@ -190,7 +179,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		for (AbstractCommandProcessor op : outputProcessors) {
 			op.receive(originalText);
 		}
-		catchGuildInfoCommandOutput(originalText);
 
 		return input; // return input to be processed by the client
 	}
@@ -249,21 +237,23 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	}
 
 	/**
-	 * Player must use guildcommand info command to output max percents for each
-	 * skill at each level. This method parses all outputs from said info
-	 * command and stores {@link SkillMaxInfo}
-	 * 
-	 * @param originalText
+	 * Processes output from guildname info command, e.g. 'ranger info'. Stores
+	 * skill max from the output. This depends on the earlier rows printed by
+	 * the client telling the guild name and guild level.
 	 */
-	private void catchGuildInfoCommandOutput(String originalText) {
-		Matcher m;
+	private class InfoCommandSkillMaxOutputProcessor extends
+			AbstractCommandProcessor {
+		public InfoCommandSkillMaxOutputProcessor() {
+			super("\\s+May\\s+train\\s+skill\\s+(.+)\\s+to\\s+(\\d+)%\\s+");
+		}
 
-		m = guildInfoCommandOutput_maytrain.matcher(originalText);
-		if (m.matches()) {
+		@Override
+		protected boolean process(Matcher m) {
 			data.getSkillMaxes().add(
 					new SkillMaxInfo(guildnameFromInfoCommand, m.group(1)
 							.toLowerCase(), guildInfoCommandOutput_level,
 							Integer.parseInt(m.group(2))));
+			return false;
 		}
 	}
 
