@@ -3,6 +3,8 @@ package batmudgoalsplugin;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.mythicscape.batclient.interfaces.ClientGUI;
+
 /**
  * Base implementation for command processors.
  * 
@@ -11,14 +13,18 @@ import java.util.regex.Pattern;
  */
 abstract class AbstractCommandProcessor {
 	private final Pattern pattern;
+	private ClientGUI clientGUI;
 
 	/**
 	 * Extending classes should call this constructor to provide a regular
-	 * expression
+	 * expression and optionally a ClientGUI if they want to print messages to
+	 * the user
 	 * 
 	 * @param regexp
+	 * @param clientGui
 	 */
-	public AbstractCommandProcessor(String regexp) {
+	public AbstractCommandProcessor(String regexp, ClientGUI clientGui) {
+		this.clientGUI = clientGui;
 		this.pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
 	}
 
@@ -54,4 +60,12 @@ abstract class AbstractCommandProcessor {
 	 * @return true if input should not be returned to the client for processing
 	 */
 	protected abstract boolean process(Matcher m);
+
+	protected void printMessage(String message) {
+		clientGUI.printText("generic", String.format("%s\n", message));
+	}
+
+	protected void printMessage(String format, Object... args) {
+		printMessage(String.format(format, args));
+	}
 }

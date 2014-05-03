@@ -17,6 +17,7 @@ import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import com.mythicscape.batclient.interfaces.BatClientPluginCommandTrigger;
 import com.mythicscape.batclient.interfaces.BatClientPluginTrigger;
 import com.mythicscape.batclient.interfaces.BatClientPluginUtil;
+import com.mythicscape.batclient.interfaces.ClientGUI;
 import com.mythicscape.batclient.interfaces.ParsedResult;
 
 /**
@@ -40,8 +41,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	private class GoalCommandWithoutParametersProcessor extends
 			AbstractCommandProcessor {
-		public GoalCommandWithoutParametersProcessor() {
-			super("\\s*goal\\s*");
+		public GoalCommandWithoutParametersProcessor(ClientGUI clientGUI) {
+			super("\\s*goal\\s*", clientGUI);
 		}
 
 		@Override
@@ -58,8 +59,13 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * if possible
 	 */
 	private class GoalCommandProcessor extends AbstractCommandProcessor {
-		public GoalCommandProcessor() {
-			super("goal\\s*(.+)\\s*");
+
+		BatMUDGoalsPluginData data;
+
+		public GoalCommandProcessor(ClientGUI clientGUI,
+				BatMUDGoalsPluginData data) {
+			super("goal\\s*(.+)\\s*", clientGUI);
+			this.data = data;
 		}
 
 		@Override
@@ -103,8 +109,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			{
 				add(new GuildCommandProcessor(playerLevelOutputProcessor,
 						infoCommandSkillMaxOutputProcessor));
-				add(new GoalCommandWithoutParametersProcessor());
-				add(new GoalCommandProcessor());
+				add(new GoalCommandWithoutParametersProcessor(getClientGUI()));
+				add(new GoalCommandProcessor(getClientGUI(), data));
 			}
 		};
 		outputProcessors = new ArrayList<AbstractCommandProcessor>() {
@@ -114,7 +120,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				add(new TrainedSkillOutputProcessor());
 				add(new CostOfTrainingSkillNameOutputProcessor(
 						percentCostOutputProcessor));
-				add(new ExpCommandOutputProcessor());
+				add(new ExpCommandOutputProcessor(getClientGUI()));
 				add(playerLevelOutputProcessor);
 				add(new InfoCommandFirstLevelProcessor(
 						infoCommandSkillMaxOutputProcessor));
@@ -167,7 +173,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		private String guild;
 
 		public PlayerLevelOutputProcessor() {
-			super("Your level:\\s+(\\d+)\\s+");
+			super("Your level:\\s+(\\d+)\\s+", null);
 		}
 
 		/*
@@ -199,7 +205,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		public InfoCommandFirstLevelProcessor(
 				InfoCommandSkillMaxOutputProcessor op) {
-			super("Abilities gained when joining:\\s+");
+			super("Abilities gained when joining:\\s+", null);
 			this.op = op;
 		}
 
@@ -222,7 +228,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		public InfoCommandLevelNumberProcessor(
 				InfoCommandSkillMaxOutputProcessor op) {
-			super("\\s*Level\\s+(\\d+):\\s*");
+			super("\\s*Level\\s+(\\d+):\\s*", null);
 			this.op = op;
 		}
 
@@ -245,7 +251,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		private String guild;
 
 		public InfoCommandSkillMaxOutputProcessor() {
-			super("\\s+May\\s+train\\s+skill\\s+(.+)\\s+to\\s+(\\d+)%\\s+");
+			super("\\s+May\\s+train\\s+skill\\s+(.+)\\s+to\\s+(\\d+)%\\s+",
+					null);
 		}
 
 		public void setLevel(int level) {
@@ -279,9 +286,10 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * next percent
 	 */
 	private class ExpCommandOutputProcessor extends AbstractCommandProcessor {
-		public ExpCommandOutputProcessor() {
+		public ExpCommandOutputProcessor(ClientGUI clientGUI) {
 			super(
-					"Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
+					"Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+",
+					clientGUI);
 		}
 
 		private String concatGuildNames(Collection<String> guilds) {
@@ -335,7 +343,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private class TrainedSkillOutputProcessor extends AbstractCommandProcessor {
 		public TrainedSkillOutputProcessor() {
 			super(
-					"You now have '([^']+)' at (\\d+)% without special bonuses.\\s+");
+					"You now have '([^']+)' at (\\d+)% without special bonuses.\\s+",
+					null);
 		}
 
 		@Override
@@ -351,10 +360,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		getClientGUI().printText("generic", String.format("%s\n", message));
 	}
 
-	private void printMessage(String format, Object... args) {
-		printMessage(String.format(format, args));
-	}
-
 	/**
 	 * Processes output from 'train' command. Stores the skill percents shown in
 	 * the train skill table.
@@ -362,7 +367,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private class TrainCommandOutputProcessor extends AbstractCommandProcessor {
 		public TrainCommandOutputProcessor() {
 			super(
-					"\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s+");
+					"\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s+",
+					null);
 		}
 
 		@Override
@@ -389,7 +395,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		private String skill;
 
 		public PercentCostOutputProcessor() {
-			super("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)");
+			super("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)", null);
 		}
 
 		public void setSkill(String skill) {
@@ -423,7 +429,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		public CostOfTrainingSkillNameOutputProcessor(
 				PercentCostOutputProcessor op) {
-			super("\\|\\s+Cost\\s+of\\s+training\\s+([^\\|]+)\\s+\\|\\s+");
+			super("\\|\\s+Cost\\s+of\\s+training\\s+([^\\|]+)\\s+\\|\\s+", null);
 			this.op = op;
 		}
 
