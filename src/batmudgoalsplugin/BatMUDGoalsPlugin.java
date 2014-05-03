@@ -63,27 +63,10 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
 	private GuildCommandProcessor guildCommandProcessor;
 
-	private abstract class CommandProcessor {
-		private final Pattern pattern;
-
-		public CommandProcessor(Pattern pattern) {
-			this.pattern = pattern;
-		}
-
-		public void receive(String input) {
-			Matcher m = pattern.matcher(input);
-			if (m.matches()) {
-				process(m);
-			}
-		}
-
-		protected abstract void process(Matcher m);
-	}
-
-	private class GuildCommandProcessor extends CommandProcessor {
+	private class GuildCommandProcessor extends AbstractCommandProcessor {
 
 		public GuildCommandProcessor() {
-			super(Pattern.compile("\\s*(.+)\\sinfo\\s*"));
+			super("\\s*(.+)\\sinfo\\s*");
 		}
 
 		@Override
