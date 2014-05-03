@@ -35,7 +35,7 @@ public class TestBatMUDGoalsPlugin {
 	public void testSetGoalSuccesfully() throws Exception {
 		MockGoalCommandPlugin plugin = initiatePlugin();
 		plugin.trigger("goal attack");
-		plugin.assertPluginPrints("Next goal is attack", 0);
+		plugin.assertPluginPrints("Next goal: attack", 0);
 	}
 
 	@Test

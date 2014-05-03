@@ -35,62 +35,22 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private Collection<AbstractCommandProcessor> commandProcessors;
 	private Collection<AbstractCommandProcessor> outputProcessors;
 
-	/**
-	 * Catches parameterised goal command, e.g. 'goal attack' and sets the goal
-	 * if possible
-	 */
-	private class GoalCommandProcessor extends AbstractCommandProcessor {
-
-		BatMUDGoalsPluginData data;
-
-		public GoalCommandProcessor(ClientGUI clientGUI,
-				BatMUDGoalsPluginData data) {
-			super("goal\\s*(.+)\\s*", clientGUI, data);
-			this.data = data;
-		}
-
-		@Override
-		protected boolean process(Matcher m) {
-			String goalParameter = m.group(1);
-			// If a skill is given as goal parameter, normalize skill name and
-			// set goal
-			data.setGoalSkill(normalizeSkillName(goalParameter));
-			if (!data.isSkillInCostLibrary(data.getGoalSkill())) {
-				printMessage("%s not in library", data.getGoalSkill());
-			} else {
-				printMessage("Next goal is %s", data.getGoalSkill());
-			}
-			return true; // Stop command from being processed by client
-		}
-
-		/**
-		 * Removes extra whitespaces and puts to lowercase
-		 * 
-		 * @param originalSkillName
-		 * @return normalized skill name
-		 */
-		private String normalizeSkillName(String originalSkillName) {
-			StringBuilder sb = new StringBuilder();
-			for (String s : originalSkillName.split("\\s")) {
-				sb.append(s);
-				sb.append(" ");
-			}
-			return sb.toString().trim().toLowerCase();
-		}
-	}
-
 	@SuppressWarnings("serial")
 	public BatMUDGoalsPlugin() {
 		data = new BatMUDGoalsPluginData();
-		final PlayerLevelOutputProcessor playerLevelOutputProcessor = new PlayerLevelOutputProcessor(data);
-		final InfoCommandSkillMaxOutputProcessor infoCommandSkillMaxOutputProcessor = new InfoCommandSkillMaxOutputProcessor(data);
-		final PercentCostOutputProcessor percentCostOutputProcessor = new PercentCostOutputProcessor(data);
+		final PlayerLevelOutputProcessor playerLevelOutputProcessor = new PlayerLevelOutputProcessor(
+				data);
+		final InfoCommandSkillMaxOutputProcessor infoCommandSkillMaxOutputProcessor = new InfoCommandSkillMaxOutputProcessor(
+				data);
+		final PercentCostOutputProcessor percentCostOutputProcessor = new PercentCostOutputProcessor(
+				data);
 
 		commandProcessors = new ArrayList<AbstractCommandProcessor>() {
 			{
 				add(new GuildCommandProcessor(playerLevelOutputProcessor,
 						infoCommandSkillMaxOutputProcessor));
-				add(new GoalCommandWithoutParametersProcessor(getClientGUI(), data));
+				add(new GoalCommandWithoutParametersProcessor(getClientGUI(),
+						data));
 				add(new GoalCommandProcessor(getClientGUI(), data));
 			}
 		};
@@ -185,7 +145,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		private InfoCommandSkillMaxOutputProcessor op;
 
 		public InfoCommandFirstLevelProcessor(
-				InfoCommandSkillMaxOutputProcessor op, BatMUDGoalsPluginData data) {
+				InfoCommandSkillMaxOutputProcessor op,
+				BatMUDGoalsPluginData data) {
 			super("Abilities gained when joining:\\s+", null, data);
 			this.op = op;
 		}
@@ -208,7 +169,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		private InfoCommandSkillMaxOutputProcessor op;
 
 		public InfoCommandLevelNumberProcessor(
-				InfoCommandSkillMaxOutputProcessor op, BatMUDGoalsPluginData data) {
+				InfoCommandSkillMaxOutputProcessor op,
+				BatMUDGoalsPluginData data) {
 			super("\\s*Level\\s+(\\d+):\\s*", null, data);
 			this.op = op;
 		}
@@ -267,7 +229,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * next percent
 	 */
 	private class ExpCommandOutputProcessor extends AbstractCommandProcessor {
-		public ExpCommandOutputProcessor(ClientGUI clientGUI, BatMUDGoalsPluginData data) {
+		public ExpCommandOutputProcessor(ClientGUI clientGUI,
+				BatMUDGoalsPluginData data) {
 			super(
 					"Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+",
 					clientGUI, data);
@@ -410,7 +373,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		public CostOfTrainingSkillNameOutputProcessor(
 				PercentCostOutputProcessor op, BatMUDGoalsPluginData data) {
-			super("\\|\\s+Cost\\s+of\\s+training\\s+([^\\|]+)\\s+\\|\\s+", null, data);
+			super("\\|\\s+Cost\\s+of\\s+training\\s+([^\\|]+)\\s+\\|\\s+",
+					null, data);
 			this.op = op;
 		}
 
