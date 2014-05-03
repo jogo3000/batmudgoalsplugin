@@ -33,8 +33,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		BatClientPluginUtil {
 
 	private String latestSkillName;
-	private String guildnameFromInfoCommand;
-	private int guildInfoCommandOutput_level;
 
 	private BatMUDGoalsPluginData data;
 	private Collection<AbstractCommandProcessor> commandProcessors;
@@ -46,13 +44,20 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	private class GuildCommandProcessor extends AbstractCommandProcessor {
 
-		public GuildCommandProcessor() {
+		private PlayerLevelOutputProcessor op;
+		private InfoCommandSkillMaxOutputProcessor op2;
+
+		public GuildCommandProcessor(PlayerLevelOutputProcessor op,
+				InfoCommandSkillMaxOutputProcessor op2) {
 			super("\\s*(.+)\\sinfo\\s*");
+			this.op = op;
+			this.op2 = op2;
 		}
 
 		@Override
 		protected boolean process(Matcher m) {
-			guildnameFromInfoCommand = m.group(1);
+			op.setGuild(m.group(1));
+			op2.setGuild(m.group(1));
 			return false; // Always forward the command to client
 		}
 
@@ -120,9 +125,12 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	@SuppressWarnings("serial")
 	public BatMUDGoalsPlugin() {
 		data = new BatMUDGoalsPluginData();
+		final PlayerLevelOutputProcessor playerLevelOutputProcessor = new PlayerLevelOutputProcessor();
+		final InfoCommandSkillMaxOutputProcessor infoCommandSkillMaxOutputProcessor = new InfoCommandSkillMaxOutputProcessor();
 		commandProcessors = new ArrayList<AbstractCommandProcessor>() {
 			{
-				add(new GuildCommandProcessor());
+				add(new GuildCommandProcessor(playerLevelOutputProcessor,
+						infoCommandSkillMaxOutputProcessor));
 				add(new GoalCommandWithoutParametersProcessor());
 				add(new GoalCommandProcessor());
 			}
@@ -134,10 +142,12 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				add(new TrainedSkillOutputProcessor());
 				add(new CostOfTrainingSkillNameOutputProcessor());
 				add(new ExpCommandOutputProcessor());
-				add(new PlayerLevelOutputProcessor());
-				add(new InfoCommandFirstLevelProcessor());
-				add(new InfoCommandLevelNumberProcessor());
-				add(new InfoCommandSkillMaxOutputProcessor());
+				add(playerLevelOutputProcessor);
+				add(new InfoCommandFirstLevelProcessor(
+						infoCommandSkillMaxOutputProcessor));
+				add(new InfoCommandLevelNumberProcessor(
+						infoCommandSkillMaxOutputProcessor));
+				add(infoCommandSkillMaxOutputProcessor);
 			}
 		};
 	}
@@ -188,14 +198,20 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * Stores the player level in that guild.
 	 */
 	private class PlayerLevelOutputProcessor extends AbstractCommandProcessor {
+
+		private String guild;
+
 		public PlayerLevelOutputProcessor() {
 			super("Your level:\\s+(\\d+)\\s+");
 		}
 
+		public void setGuild(String guild) {
+			this.guild = guild;
+		}
+
 		@Override
 		protected boolean process(Matcher m) {
-			data.getGuildlevels().put(guildnameFromInfoCommand,
-					Integer.parseInt(m.group(1)));
+			data.getGuildlevels().put(guild, Integer.parseInt(m.group(1)));
 			return false;
 		}
 	}
@@ -207,13 +223,18 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	private class InfoCommandFirstLevelProcessor extends
 			AbstractCommandProcessor {
-		public InfoCommandFirstLevelProcessor() {
+
+		private InfoCommandSkillMaxOutputProcessor op;
+
+		public InfoCommandFirstLevelProcessor(
+				InfoCommandSkillMaxOutputProcessor op) {
 			super("Abilities gained when joining:\\s+");
+			this.op = op;
 		}
 
 		@Override
 		protected boolean process(Matcher m) {
-			guildInfoCommandOutput_level = 1;
+			op.setLevel(1);
 			return false;
 		}
 	}
@@ -225,13 +246,18 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	private class InfoCommandLevelNumberProcessor extends
 			AbstractCommandProcessor {
-		public InfoCommandLevelNumberProcessor() {
+
+		private InfoCommandSkillMaxOutputProcessor op;
+
+		public InfoCommandLevelNumberProcessor(
+				InfoCommandSkillMaxOutputProcessor op) {
 			super("\\s*Level\\s+(\\d+):\\s*");
+			this.op = op;
 		}
 
 		@Override
 		protected boolean process(Matcher m) {
-			guildInfoCommandOutput_level = Integer.parseInt(m.group(1));
+			op.setLevel(Integer.parseInt(m.group(1)));
 			return false;
 		}
 	}
@@ -243,15 +269,26 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	private class InfoCommandSkillMaxOutputProcessor extends
 			AbstractCommandProcessor {
+
+		private int level;
+		private String guild;
+
 		public InfoCommandSkillMaxOutputProcessor() {
 			super("\\s+May\\s+train\\s+skill\\s+(.+)\\s+to\\s+(\\d+)%\\s+");
+		}
+
+		public void setLevel(int level) {
+			this.level = level;
+		}
+
+		public void setGuild(String guild) {
+			this.guild = guild;
 		}
 
 		@Override
 		protected boolean process(Matcher m) {
 			data.getSkillMaxes().add(
-					new SkillMaxInfo(guildnameFromInfoCommand, m.group(1)
-							.toLowerCase(), guildInfoCommandOutput_level,
+					new SkillMaxInfo(guild, m.group(1).toLowerCase(), level,
 							Integer.parseInt(m.group(2))));
 			return false;
 		}
