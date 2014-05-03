@@ -30,4 +30,25 @@ public class GoalCommandWithoutParametersProcessorTest {
 		data.setSkillCost("attack", 1, 1);
 		verifyGoalOutput(data).printText("generic", "attack\n");
 	}
+
+	@Test
+	public void testGoalCommandListsMultipleAvailableGoalSkills()
+			throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		data.setSkillCost("attack", 1, 1);
+		data.setSkillCost("brawling", 1, 1);
+		verifyGoalOutput(data).printText("generic", "attack\n");
+		verifyGoalOutput(data).printText("generic", "brawling\n");
+	}
+
+	@Test
+	public void testGoalCommandListsMultipleAvailableGoalSkillsAndMarksGoal()
+			throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		data.setSkillCost("attack", 1, 1);
+		data.setSkillCost("brawling", 1, 1);
+		data.setGoalSkill("brawling");
+		verifyGoalOutput(data).printText("generic", "attack\n");
+		verifyGoalOutput(data).printText("generic", "brawling (*)\n");
+	}
 }
