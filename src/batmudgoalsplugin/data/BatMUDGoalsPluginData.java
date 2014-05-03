@@ -32,7 +32,7 @@ public class BatMUDGoalsPluginData {
 		// Needed by JAXB
 	}
 
-	public Map<String, Integer> getSkillStatuses() {
+	private Map<String, Integer> getSkillStatuses() {
 		if (skillStatuses == null) {
 			skillStatuses = new HashMap<String, Integer>();
 		}
