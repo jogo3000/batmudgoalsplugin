@@ -28,7 +28,18 @@ abstract class AbstractCommandProcessor {
 	 * @param input
 	 */
 	public final boolean receive(String input) {
-		Matcher m = pattern.matcher(input);
+		return decideReturn(pattern.matcher(input));
+	}
+
+	/**
+	 * Extending classes may override this method to provide logic of deciding
+	 * what to return. They can also use other than Matcher.matches() to trigger
+	 * actions.
+	 * 
+	 * @param m
+	 * @return
+	 */
+	protected boolean decideReturn(Matcher m) {
 		if (m.matches()) {
 			return process(m);
 		}

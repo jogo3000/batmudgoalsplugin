@@ -36,8 +36,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private Pattern skillpattern = Pattern.compile(
 			"\\|\\s+Cost\\s+of\\s+training\\s+([^\\|]+)\\s+\\|\\s+",
 			Pattern.CASE_INSENSITIVE);
-	private Pattern percentcostpattern = Pattern
-			.compile("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)");
 	private Pattern exppattern = Pattern
 			.compile("Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
 	private Pattern trainpattern = Pattern
@@ -150,6 +148,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		outputProcessors = new ArrayList<AbstractCommandProcessor>() {
 			{
 				add(new TrainCommandOutputProcessor());
+				add(new PercentCostOutputProcessor());
 			}
 		};
 	}
@@ -192,7 +191,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			op.receive(originalText);
 		}
 		catchSkillName(originalText);
-		catchPercentCost(originalText);
 		catchTrainedSkillOutput(originalText);
 		catchExpCommandOutput(originalText);
 		catchGuildInfoCommandOutput(originalText);
@@ -313,13 +311,26 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 	}
 
-	private void catchPercentCost(String input) {
-		Matcher percentcostmatcher = percentcostpattern.matcher(input);
-		while (percentcostmatcher.find()) {
+	private class PercentCostOutputProcessor extends AbstractCommandProcessor {
+		public PercentCostOutputProcessor() {
+			super("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)");
+		}
+
+		@Override
+		protected boolean decideReturn(Matcher m) {
+			while (m.find()) {
+				process(m);
+			}
+			return false;
+		}
+
+		@Override
+		protected boolean process(Matcher m) {
 			Map<Integer, Integer> skilltable = data.getSkills().get(
 					latestSkillName);
-			skilltable.put(Integer.parseInt(percentcostmatcher.group(1)),
-					Integer.parseInt(percentcostmatcher.group(2)));
+			skilltable.put(Integer.parseInt(m.group(1)),
+					Integer.parseInt(m.group(2)));
+			return false;
 		}
 	}
 
