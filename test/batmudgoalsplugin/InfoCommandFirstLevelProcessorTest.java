@@ -5,8 +5,6 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import batmudgoalsplugin.BatMUDGoalsPlugin.InfoCommandSkillMaxOutputProcessor;
-
 public class InfoCommandFirstLevelProcessorTest {
 
 	@Test

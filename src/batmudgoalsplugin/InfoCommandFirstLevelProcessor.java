@@ -2,7 +2,6 @@ package batmudgoalsplugin;
 
 import java.util.regex.Matcher;
 
-import batmudgoalsplugin.BatMUDGoalsPlugin.InfoCommandSkillMaxOutputProcessor;
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 
 /**
