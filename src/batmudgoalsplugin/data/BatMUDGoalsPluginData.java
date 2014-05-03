@@ -25,7 +25,7 @@ public class BatMUDGoalsPluginData {
 	@XmlElement
 	private String goalSkill;
 	@XmlElement
-	private Map<String, Integer> guildlevels;
+	private Map<String, Integer> guildLevels;
 
 	public BatMUDGoalsPluginData() {
 		// Needed by JAXB
@@ -51,11 +51,11 @@ public class BatMUDGoalsPluginData {
 	/**
 	 * @return the guildlevels
 	 */
-	public Map<String, Integer> getGuildlevels() {
-		if (guildlevels == null) {
-			guildlevels = new HashMap<String, Integer>();
+	private Map<String, Integer> getGuildLevels() {
+		if (guildLevels == null) {
+			guildLevels = new HashMap<String, Integer>();
 		}
-		return guildlevels;
+		return guildLevels;
 	}
 
 	public Set<SkillMaxInfo> getSkillMaxes() {
@@ -182,4 +182,22 @@ public class BatMUDGoalsPluginData {
 		return goalSkill;
 	}
 
+	public void setGuildLevel(String guild, int level) {
+		getGuildLevels().put(guild, level);
+	}
+
+	public void setSkillMaxInfo(String guild, String skill, int level,
+			int skillMax) {
+		getSkillMaxes().add(new SkillMaxInfo(guild, skill, level, skillMax));
+	}
+
+	/**
+	 * Returns the level in the given guild
+	 * 
+	 * @param guild
+	 * @return
+	 */
+	public int getGuildLevel(String guild) {
+		return getGuildLevels().get(guild);
+	}
 }

@@ -207,7 +207,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		@Override
 		protected boolean process(Matcher m) {
-			data.getGuildlevels().put(guild, Integer.parseInt(m.group(1)));
+			data.setGuildLevel(guild, Integer.parseInt(m.group(1)));
 			return false;
 		}
 	}
@@ -289,9 +289,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		@Override
 		protected boolean process(Matcher m) {
-			data.getSkillMaxes().add(
-					new SkillMaxInfo(guild, m.group(1).toLowerCase(), level,
-							Integer.parseInt(m.group(2))));
+			data.setSkillMaxInfo(guild, m.group(1).toLowerCase(), level,
+					Integer.parseInt(m.group(2)));
 			return false;
 		}
 	}
@@ -329,7 +328,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				Collection<String> guilds = new HashSet<String>();
 				for (SkillMaxInfo s : data.getSkillMaxes()) {
 					if (data.isGoalSkill(s.skill)
-							&& s.level <= data.getGuildlevels().get(s.guild)
+							&& s.level <= data.getGuildLevel(s.guild)
 							&& s.max >= data.getGoalPercent()) {
 						skillmaxinfo.add(s);
 						guilds.add(s.guild);
