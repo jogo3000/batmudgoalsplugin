@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -13,7 +14,8 @@ public class BatMUDGoalsPluginData {
 
 	@XmlJavaTypeAdapter(SkillCostLibraryMapAdapter.class)
 	public Map<String, Map<Integer, Integer>> skillCosts;
-	public Map<String, Integer> skillStatuses;
+	@XmlElement
+	private Map<String, Integer> skillStatuses;
 	public Set<SkillMaxInfo> skillMaxes;
 	public String goalSkill;
 	public Integer goalPercent;
@@ -107,6 +109,16 @@ public class BatMUDGoalsPluginData {
 	 */
 	public void setSkillStatus(String skill, int percent) {
 		getSkillStatuses().put(skill, percent);
+	}
+
+	/**
+	 * Returns the current percent of a skill
+	 * 
+	 * @param skill
+	 * @return
+	 */
+	public int getCurrentSkillStatus(String skill) {
+		return getSkillStatuses().get(skill);
 	}
 
 	/**

@@ -99,7 +99,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				printMessage("%s not in library", data.goalSkill);
 			} else {
 				printMessage("Next goal is %s", data.goalSkill);
-				data.goalPercent = data.skillStatuses.get(data.goalSkill);
+				data.goalPercent = data.getGoalPercent();
 			}
 			return true; // Stop command from being processed by client
 		}
@@ -369,7 +369,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 
 		@Override
 		protected boolean process(Matcher m) {
-			data.skillStatuses.put(m.group(1).trim().toLowerCase(),
+			data.setSkillStatus(m.group(1).trim().toLowerCase(),
 					Integer.parseInt(m.group(2).trim()));
 			return false;
 		}
@@ -462,7 +462,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 			String skill = m.group(1).toLowerCase().trim();
 			op.setSkill(skill);
 			if (!data.getSkillCosts().containsKey(skill)) {
-				data.getSkillCosts().put(skill, new HashMap<Integer, Integer>());
+				data.getSkillCosts()
+						.put(skill, new HashMap<Integer, Integer>());
 			}
 			return false;
 		}

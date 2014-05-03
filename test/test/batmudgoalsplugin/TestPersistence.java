@@ -35,7 +35,7 @@ public class TestPersistence {
 		skillCostMap.put(2, 1002);
 		data.skillCosts.put("attack", skillCostMap);
 
-		data.skillStatuses.put("looting and burning", 76);
+		data.setSkillStatus("looting and burning", 76);
 
 		data.getSkillMaxes().add(new SkillMaxInfo("Rangers", "attack", 1, 1));
 
@@ -56,7 +56,7 @@ public class TestPersistence {
 		assertEquals(1001, ummap.get(1).intValue());
 		assertEquals(1002, ummap.get(2).intValue());
 
-		assertEquals(76, o.skillStatuses.get("looting and burning").intValue());
+		assertEquals(76, o.getCurrentSkillStatus("looting and burning"));
 
 		assertTrue(o.getSkillMaxes().contains(
 				new SkillMaxInfo("Rangers", "attack", 1, 1)));
