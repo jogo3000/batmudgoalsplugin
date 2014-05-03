@@ -33,13 +33,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		BatClientPluginCommandTrigger, BatClientPluginTrigger,
 		BatClientPluginUtil {
 
-	private Pattern skillpattern = Pattern.compile(
-			"\\|\\s+Cost\\s+of\\s+training\\s+([^\\|]+)\\s+\\|\\s+",
-			Pattern.CASE_INSENSITIVE);
 	private Pattern exppattern = Pattern
 			.compile("Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s+");
-	private Pattern trainpattern = Pattern
-			.compile("You now have '([^']+)' at (\\d+)% without special bonuses.\\s+");
 	private Pattern guildInfoCommandOutput_playerlevel = Pattern
 			.compile("Your level:\\s+(\\d+)\\s+");
 
@@ -150,6 +145,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				add(new TrainCommandOutputProcessor());
 				add(new PercentCostOutputProcessor());
 				add(new TrainedSkillOutputProcessor());
+				add(new CostOfTrainingSkillNameOutputProcessor());
 			}
 		};
 	}
@@ -191,7 +187,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		for (AbstractCommandProcessor op : outputProcessors) {
 			op.receive(originalText);
 		}
-		catchSkillName(originalText);
 		catchExpCommandOutput(originalText);
 		catchGuildInfoCommandOutput(originalText);
 
@@ -321,6 +316,10 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 	}
 
+	/**
+	 * Processes output from 'cost train <skill>' command. Stores the experience
+	 * costs of skill percents.
+	 */
 	private class PercentCostOutputProcessor extends AbstractCommandProcessor {
 		public PercentCostOutputProcessor() {
 			super("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)");
@@ -344,14 +343,24 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		}
 	}
 
-	private void catchSkillName(String originalText) {
-		Matcher skillmatcher = skillpattern.matcher(originalText);
-		if (skillmatcher.matches()) {
-			latestSkillName = skillmatcher.group(1).toLowerCase().trim();
+	/**
+	 * Processes output from 'cost train <skill>' command. Stores the skill name
+	 * from the outputted table.
+	 */
+	private class CostOfTrainingSkillNameOutputProcessor extends
+			AbstractCommandProcessor {
+		public CostOfTrainingSkillNameOutputProcessor() {
+			super("\\|\\s+Cost\\s+of\\s+training\\s+([^\\|]+)\\s+\\|\\s+");
+		}
+
+		@Override
+		protected boolean process(Matcher m) {
+			latestSkillName = m.group(1).toLowerCase().trim();
 			if (!data.getSkills().containsKey(latestSkillName)) {
 				data.getSkills().put(latestSkillName,
 						new HashMap<Integer, Integer>());
 			}
+			return false;
 		}
 	}
 
