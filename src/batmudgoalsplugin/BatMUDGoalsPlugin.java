@@ -105,30 +105,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	}
 
 	/**
-	 * Processes output from guildname info command - e.g. 'barbarian info'.
-	 * First level skills are given after a message 'Abilities gained when
-	 * joining:'
-	 */
-	private class InfoCommandFirstLevelProcessor extends
-			AbstractCommandProcessor {
-
-		private InfoCommandSkillMaxOutputProcessor op;
-
-		public InfoCommandFirstLevelProcessor(
-				InfoCommandSkillMaxOutputProcessor op,
-				BatMUDGoalsPluginData data) {
-			super("Abilities gained when joining:\\s+", null, data);
-			this.op = op;
-		}
-
-		@Override
-		protected boolean process(Matcher m) {
-			op.setLevel(1);
-			return false;
-		}
-	}
-
-	/**
 	 * Processes output from guildname info command - e.g. 'ranger info'. Skill
 	 * maxes for each level are reported after a row containing the level
 	 * number.
@@ -157,7 +133,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 * skill max from the output. This depends on the earlier rows printed by
 	 * the client telling the guild name and guild level.
 	 */
-	private class InfoCommandSkillMaxOutputProcessor extends
+	class InfoCommandSkillMaxOutputProcessor extends
 			AbstractCommandProcessor implements IGuildNameListener {
 
 		private int level;
