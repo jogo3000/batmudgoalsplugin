@@ -72,7 +72,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		protected boolean process(Matcher m) {
 			for (String skillName : data.getSkills().keySet())
 				printMessage("%s%s", skillName,
-						skillName.equals(data.goalSkill) ? " (*)" : "");
+						data.isGoalSkill(skillName) ? " (*)" : "");
 			return true;
 		}
 	}

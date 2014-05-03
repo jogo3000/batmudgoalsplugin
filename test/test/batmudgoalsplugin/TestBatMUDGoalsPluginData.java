@@ -22,4 +22,18 @@ public class TestBatMUDGoalsPluginData {
 		assertTrue(data.isGoalSet());
 	}
 
+	@Test
+	public void testIsGoalSkillFalse() throws Exception {
+		BatMUDGoalsPluginData d = new BatMUDGoalsPluginData();
+		d.setGoalSkill("attack");
+		assertFalse(d.isGoalSkill("looting and burning"));
+	}
+
+	@Test
+	public void testIsGoalSkillTrue() throws Exception {
+		BatMUDGoalsPluginData d = new BatMUDGoalsPluginData();
+		d.setGoalSkill("attack");
+		assertTrue(d.isGoalSkill("attack"));
+	}
+
 }

@@ -82,4 +82,14 @@ public class BatMUDGoalsPluginData {
 		return goalSkill != null;
 	}
 
+	/**
+	 * Tests if skill is goal skill
+	 * 
+	 * @param skill
+	 * @return true if skill is goal skill, false otherwise
+	 */
+	public boolean isGoalSkill(String skill) {
+		return skill.equals(goalSkill);
+	}
+
 }
