@@ -10,21 +10,24 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-@XmlRootElement
+@XmlRootElement(name = "batMUDGoalsPluginData")
+@XmlType(name = "batMUDGoalsPluginData")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BatMUDGoalsPluginData {
 
 	@XmlJavaTypeAdapter(SkillCostLibraryMapAdapter.class)
+	@XmlElement(name = "skillCosts")
 	private Map<String, Map<Integer, Integer>> skillCosts;
-	@XmlElement
+	@XmlElement(name = "skillStatuses")
 	private Map<String, Integer> skillStatuses;
-	@XmlElement
+	@XmlElement(name = "skillMaxes")
 	private Set<SkillMaxInfo> skillMaxes;
-	@XmlElement
+	@XmlElement(name = "goalSkill")
 	private String goalSkill;
-	@XmlElement
+	@XmlElement(name = "guildLevels")
 	private Map<String, Integer> guildLevels;
 
 	public BatMUDGoalsPluginData() {

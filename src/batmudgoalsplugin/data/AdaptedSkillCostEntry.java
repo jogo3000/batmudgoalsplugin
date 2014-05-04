@@ -12,11 +12,11 @@ public class AdaptedSkillCostEntry {
 		this.cost = cost;
 	}
 
-	@XmlAttribute
+	@XmlAttribute(name = "skill")
 	public String skill;
-	@XmlAttribute
+	@XmlAttribute(name = "percent")
 	public Integer percent;
-	@XmlAttribute
+	@XmlAttribute(name = "cost")
 	public Integer cost;
 
 	public AdaptedSkillCostEntry() {
