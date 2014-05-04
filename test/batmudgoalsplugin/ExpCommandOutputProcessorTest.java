@@ -162,7 +162,26 @@ public class ExpCommandOutputProcessorTest {
 
 		op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 		verify(clientGUI, never()).printText(anyString(), anyString());
-		;
+	}
+
+	@Test
+	public void testGoalSkillNotFullNoGuildsOfferMore() throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		ClientGUI clientGUI = mock(ClientGUI.class);
+		BatClientPlugin plugin = mock(BatClientPlugin.class);
+		when(plugin.getClientGUI()).thenReturn(clientGUI);
+
+		data.setGoalSkill("attack");
+		data.setSkillStatus("attack", 60);
+		data.setGuildLevel("tzarakk", 20);
+		data.setSkillMaxInfo("tzarakk", "attack", 20, 60);
+
+		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(plugin,
+				data);
+		op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
+
+		verify(clientGUI).printText("generic",
+				"None of your guilds offer more attack\n");
 	}
 
 }

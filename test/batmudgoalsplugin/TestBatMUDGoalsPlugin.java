@@ -205,6 +205,13 @@ public class TestBatMUDGoalsPlugin {
 		plugin.receiveText("   May train skill Push to 100%");
 		plugin.receiveText("   May train skill Bash to 10%");
 
+		plugin.receiveText("Abilities and requirements at each level:");
+		plugin.receiveText(" Level 3:");
+		plugin.receiveText("  Abilities:");
+		plugin.receiveText("   May train skill Attack to 90%");
+		plugin.receiveText("   May train skill Push to 100%");
+		plugin.receiveText("   May train skill Bash to 10%");
+
 		plugin.trigger("barbarian info");
 		plugin.receiveText("Name: Barbarian Guild");
 		plugin.receiveText("Command: barbarian");
