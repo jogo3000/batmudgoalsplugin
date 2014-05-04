@@ -72,6 +72,9 @@ abstract class AbstractCommandProcessor {
 	protected abstract boolean process(Matcher m);
 
 	protected void printMessage(String message) {
+		// Have to pull ClientGUI from plugin because plugin can't get a
+		// ClientGUI isntance when it is instantiating the
+		// AbstractCommandProcessors
 		plugin.getClientGUI().printText("generic",
 				String.format("%s\n", message));
 	}
