@@ -40,7 +40,9 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		logger = Logger.getLogger(getClass().toString());
 		logger.addHandler(new FileHandler("%t/batmudgoalsplugin.log"));
 		data = new BatMUDGoalsPluginData();
+	}
 
+	void initializeCommandProcessors() {
 		final PlayerLevelOutputProcessor playerLevelOutputProcessor = new PlayerLevelOutputProcessor(
 				data);
 		final InfoCommandSkillMaxOutputProcessor infoCommandSkillMaxOutputProcessor = new InfoCommandSkillMaxOutputProcessor(
@@ -131,6 +133,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		try {
 			data = (BatMUDGoalsPluginData) generateJAXBContext()
 					.createUnmarshaller().unmarshal(createPersistenceFile());
+			initializeCommandProcessors();
 		} catch (Throwable t) {
 			logger.log(Level.SEVERE, t.getMessage(), t);
 		}

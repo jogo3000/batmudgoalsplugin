@@ -149,6 +149,7 @@ public class TestBatMUDGoalsPlugin {
 
 	private MockGoalCommandPlugin initiatePlugin() throws Exception {
 		MockGoalCommandPlugin plugin = new MockGoalCommandPlugin();
+		plugin.initializeCommandProcessors();
 
 		plugin.receiveText(",-------------------------------------------------.");
 		plugin.receiveText("| Cost of training Attack                         |\n");
