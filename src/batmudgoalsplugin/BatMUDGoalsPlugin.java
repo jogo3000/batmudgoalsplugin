@@ -172,30 +172,6 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		getClientGUI().printText("generic", String.format("%s\n", message));
 	}
 
-	/**
-	 * Processes output from 'cost train <skill>' command. Stores the skill name
-	 * from the outputted table.
-	 */
-	private class CostOfTrainingSkillNameOutputProcessor extends
-			AbstractCommandProcessor {
-
-		private PercentCostOutputProcessor op;
-
-		public CostOfTrainingSkillNameOutputProcessor(
-				PercentCostOutputProcessor op, BatMUDGoalsPluginData data) {
-			super("\\|\\s+Cost\\s+of\\s+training\\s+([^\\|]+)\\s+\\|\\s+",
-					null, data);
-			this.op = op;
-		}
-
-		@Override
-		protected boolean process(Matcher m) {
-			String skill = m.group(1).toLowerCase().trim();
-			op.setSkill(skill);
-			return false;
-		}
-	}
-
 	@Override
 	public String getName() {
 		return "BatMUDGoalsPlugin";
