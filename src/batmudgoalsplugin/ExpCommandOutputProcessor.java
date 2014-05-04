@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 import batmudgoalsplugin.data.SkillMaxInfo;
 
-import com.mythicscape.batclient.interfaces.ClientGUI;
+import com.mythicscape.batclient.interfaces.BatClientPlugin;
 
 /**
  * Processes output from 'exp' command.
@@ -19,11 +19,11 @@ import com.mythicscape.batclient.interfaces.ClientGUI;
  * percent
  */
 class ExpCommandOutputProcessor extends AbstractCommandProcessor {
-	public ExpCommandOutputProcessor(ClientGUI clientGUI,
+	public ExpCommandOutputProcessor(BatClientPlugin plugin,
 			BatMUDGoalsPluginData data) {
 		super(
 				"Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s*",
-				clientGUI, data);
+				plugin, data);
 	}
 
 	private String concatGuildNames(Collection<String> guilds) {

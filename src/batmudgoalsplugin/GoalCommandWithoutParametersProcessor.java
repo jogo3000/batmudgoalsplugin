@@ -5,16 +5,16 @@ import java.util.regex.Matcher;
 
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 
-import com.mythicscape.batclient.interfaces.ClientGUI;
+import com.mythicscape.batclient.interfaces.BatClientPlugin;
 
 /**
  * Catches goal command without parameters and prints list of possible goal
  * skills
  */
 class GoalCommandWithoutParametersProcessor extends AbstractCommandProcessor {
-	public GoalCommandWithoutParametersProcessor(ClientGUI clientGUI,
+	public GoalCommandWithoutParametersProcessor(BatClientPlugin plugin,
 			BatMUDGoalsPluginData data) {
-		super("\\s*goal\\s*", clientGUI, data);
+		super("\\s*goal\\s*", plugin, data);
 	}
 
 	@Override

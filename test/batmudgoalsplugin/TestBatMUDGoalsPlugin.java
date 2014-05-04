@@ -12,8 +12,6 @@ import javax.swing.JTextPane;
 
 import org.junit.Test;
 
-import batmudgoalsplugin.BatMUDGoalsPlugin;
-
 import com.mythicscape.batclient.interfaces.BatButton;
 import com.mythicscape.batclient.interfaces.BatScrollPane;
 import com.mythicscape.batclient.interfaces.BatTooltipManager;
@@ -57,7 +55,7 @@ public class TestBatMUDGoalsPlugin {
 	}
 
 	@Test
-	public void testParseCostTrain() {
+	public void testParseCostTrain() throws Exception {
 		MockGoalCommandPlugin plugin = initiatePlugin();
 		plugin.trigger("goal attack");
 		plugin.receiveText("Exp: 2 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
@@ -70,7 +68,7 @@ public class TestBatMUDGoalsPlugin {
 	}
 
 	@Test
-	public void testExpOutputWithZeroValues() {
+	public void testExpOutputWithZeroValues() throws Exception {
 		MockGoalCommandPlugin plugin = initiatePlugin();
 		plugin.trigger("goal attack");
 		plugin.receiveText("Exp: 2 Money: 0 Bank: 0 Exp pool: 0\n");
@@ -149,7 +147,7 @@ public class TestBatMUDGoalsPlugin {
 				"Goal attack: 203 You have enough to advance in: ranger", 1);
 	}
 
-	private MockGoalCommandPlugin initiatePlugin() {
+	private MockGoalCommandPlugin initiatePlugin() throws Exception {
 		MockGoalCommandPlugin plugin = new MockGoalCommandPlugin();
 
 		plugin.receiveText(",-------------------------------------------------.");
@@ -244,6 +242,10 @@ public class TestBatMUDGoalsPlugin {
 	}
 
 	private static class MockGoalCommandPlugin extends BatMUDGoalsPlugin {
+		public MockGoalCommandPlugin() throws Exception {
+			super();
+		}
+
 		List<String> prints = new ArrayList<String>();
 
 		/**

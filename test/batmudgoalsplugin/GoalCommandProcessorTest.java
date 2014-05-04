@@ -2,18 +2,22 @@ package batmudgoalsplugin;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 
+import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 
 public class GoalCommandProcessorTest {
 
 	protected ClientGUI verifyOutput(BatMUDGoalsPluginData data, String input) {
 		ClientGUI mock = mock(ClientGUI.class);
-		new GoalCommandProcessor(mock, data).receive(input);
+		BatClientPlugin plugin = mock(BatClientPlugin.class);
+		when(plugin.getClientGUI()).thenReturn(mock);
+		new GoalCommandProcessor(plugin, data).receive(input);
 		ClientGUI verify = verify(mock);
 		return verify;
 	}

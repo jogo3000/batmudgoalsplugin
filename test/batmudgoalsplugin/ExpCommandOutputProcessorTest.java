@@ -4,11 +4,13 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 
+import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 
 public class ExpCommandOutputProcessorTest {
@@ -19,15 +21,18 @@ public class ExpCommandOutputProcessorTest {
 	@Test
 	public void testGoalIsFull() {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
-		ClientGUI clientGUI = mock(ClientGUI.class);
-		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(clientGUI,
+		ClientGUI mock = mock(ClientGUI.class);
+		BatClientPlugin plugin = mock(BatClientPlugin.class);
+		when(plugin.getClientGUI()).thenReturn(mock);
+
+		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(plugin,
 				data);
 
 		data.setGoalSkill("attack");
 		data.setSkillStatus("attack", 100);
 		op.receive("Exp: 135670 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-		verify(clientGUI).printText("generic", "Goal attack: full\n");
+		verify(mock).printText("generic", "Goal attack: full\n");
 	}
 
 	/**
@@ -39,7 +44,10 @@ public class ExpCommandOutputProcessorTest {
 	public void testNotEnoughExp() throws Exception {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
 		ClientGUI clientGUI = mock(ClientGUI.class);
-		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(clientGUI,
+		BatClientPlugin plugin = mock(BatClientPlugin.class);
+		when(plugin.getClientGUI()).thenReturn(clientGUI);
+
+		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(plugin,
 				data);
 
 		data.setGoalSkill("attack");
@@ -63,7 +71,9 @@ public class ExpCommandOutputProcessorTest {
 	public void testEnoughExp() throws Exception {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
 		ClientGUI clientGUI = mock(ClientGUI.class);
-		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(clientGUI,
+		BatClientPlugin plugin = mock(BatClientPlugin.class);
+		when(plugin.getClientGUI()).thenReturn(clientGUI);
+		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(plugin,
 				data);
 
 		data.setGoalSkill("attack");
@@ -86,7 +96,9 @@ public class ExpCommandOutputProcessorTest {
 	public void testEnoughExpToAdvanceInMultipleGuilds() throws Exception {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
 		ClientGUI clientGUI = mock(ClientGUI.class);
-		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(clientGUI,
+		BatClientPlugin plugin = mock(BatClientPlugin.class);
+		when(plugin.getClientGUI()).thenReturn(clientGUI);
+		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(plugin,
 				data);
 
 		data.setGoalSkill("attack");
@@ -114,7 +126,9 @@ public class ExpCommandOutputProcessorTest {
 	public void testGoalNeedsLevel() throws Exception {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
 		ClientGUI clientGUI = mock(ClientGUI.class);
-		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(clientGUI,
+		BatClientPlugin plugin = mock(BatClientPlugin.class);
+		when(plugin.getClientGUI()).thenReturn(clientGUI);
+		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(plugin,
 				data);
 
 		data.setGoalSkill("attack");
@@ -141,7 +155,9 @@ public class ExpCommandOutputProcessorTest {
 	public void testNoGoal() throws Exception {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
 		ClientGUI clientGUI = mock(ClientGUI.class);
-		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(clientGUI,
+		BatClientPlugin plugin = mock(BatClientPlugin.class);
+		when(plugin.getClientGUI()).thenReturn(clientGUI);
+		ExpCommandOutputProcessor op = new ExpCommandOutputProcessor(plugin,
 				data);
 
 		op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");

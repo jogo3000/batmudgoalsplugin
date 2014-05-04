@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 
+import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 
 /**
@@ -15,7 +16,7 @@ import com.mythicscape.batclient.interfaces.ClientGUI;
  */
 abstract class AbstractCommandProcessor {
 	private final Pattern pattern;
-	private ClientGUI clientGUI;
+	private BatClientPlugin plugin;
 	protected BatMUDGoalsPluginData data;
 
 	/**
@@ -25,14 +26,14 @@ abstract class AbstractCommandProcessor {
 	 * data scraped from commands and outputs
 	 * 
 	 * @param regexp
-	 * @param clientGui
+	 * @param plugin
 	 *            optional
 	 * @param data
 	 *            optional
 	 */
-	public AbstractCommandProcessor(String regexp, ClientGUI clientGui,
+	public AbstractCommandProcessor(String regexp, BatClientPlugin plugin,
 			BatMUDGoalsPluginData data) {
-		this.clientGUI = clientGui;
+		this.plugin = plugin;
 		this.data = data;
 		this.pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
 	}
@@ -71,7 +72,8 @@ abstract class AbstractCommandProcessor {
 	protected abstract boolean process(Matcher m);
 
 	protected void printMessage(String message) {
-		clientGUI.printText("generic", String.format("%s\n", message));
+		plugin.getClientGUI().printText("generic",
+				String.format("%s\n", message));
 	}
 
 	protected void printMessage(String format, Object... args) {

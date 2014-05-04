@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -23,17 +26,21 @@ import com.mythicscape.batclient.interfaces.ParsedResult;
  * 
  * @author Jogo
  */
+@SuppressWarnings("serial")
 public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		BatClientPluginCommandTrigger, BatClientPluginTrigger,
 		BatClientPluginUtil {
 
+	final Logger logger;
 	private BatMUDGoalsPluginData data;
 	private Collection<AbstractCommandProcessor> commandProcessors;
 	private Collection<AbstractCommandProcessor> outputProcessors;
 
-	@SuppressWarnings("serial")
-	public BatMUDGoalsPlugin() {
+	public BatMUDGoalsPlugin() throws SecurityException, IOException {
+		logger = Logger.getLogger(getClass().toString());
+		logger.addHandler(new FileHandler("%t/batmudgoalsplugin.log"));
 		data = new BatMUDGoalsPluginData();
+
 		final PlayerLevelOutputProcessor playerLevelOutputProcessor = new PlayerLevelOutputProcessor(
 				data);
 		final InfoCommandSkillMaxOutputProcessor infoCommandSkillMaxOutputProcessor = new InfoCommandSkillMaxOutputProcessor(
@@ -41,13 +48,14 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		final PercentCostOutputProcessor percentCostOutputProcessor = new PercentCostOutputProcessor(
 				data);
 
+		final BatClientPlugin plugin = this;
+
 		commandProcessors = new ArrayList<AbstractCommandProcessor>() {
 			{
 				add(new GuildCommandProcessor(playerLevelOutputProcessor,
 						infoCommandSkillMaxOutputProcessor));
-				add(new GoalCommandWithoutParametersProcessor(getClientGUI(),
-						data));
-				add(new GoalCommandProcessor(getClientGUI(), data));
+				add(new GoalCommandWithoutParametersProcessor(plugin, data));
+				add(new GoalCommandProcessor(plugin, data));
 			}
 		};
 		outputProcessors = new ArrayList<AbstractCommandProcessor>() {
@@ -57,7 +65,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 				add(new TrainedSkillOutputProcessor(data));
 				add(new CostOfTrainingSkillNameOutputProcessor(
 						percentCostOutputProcessor, data));
-				add(new ExpCommandOutputProcessor(getClientGUI(), data));
+				add(new ExpCommandOutputProcessor(plugin, data));
 				add(playerLevelOutputProcessor);
 				add(new InfoCommandFirstLevelProcessor(
 						infoCommandSkillMaxOutputProcessor, data));
@@ -75,10 +83,14 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	@Override
 	public String trigger(String input) {
-		for (AbstractCommandProcessor cp : commandProcessors) {
-			if (cp.receive(input)) {
-				return "";
+		try {
+			for (AbstractCommandProcessor cp : commandProcessors) {
+				if (cp.receive(input)) {
+					return "";
+				}
 			}
+		} catch (Throwable t) {
+			logger.log(Level.SEVERE, t.getMessage(), t);
 		}
 		return null;
 	}
@@ -92,16 +104,16 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	 */
 	@Override
 	public ParsedResult trigger(ParsedResult input) {
-		String originalText = input.getOriginalText();
-		for (AbstractCommandProcessor op : outputProcessors) {
-			op.receive(originalText);
+		try {
+			String originalText = input.getOriginalText();
+			for (AbstractCommandProcessor op : outputProcessors) {
+				op.receive(originalText);
+			}
+		} catch (Throwable t) {
+			logger.log(Level.SEVERE, t.getMessage(), t);
 		}
 
 		return input; // return input to be processed by the client
-	}
-
-	private void printMessage(String message) {
-		getClientGUI().printText("generic", String.format("%s\n", message));
 	}
 
 	@Override
@@ -119,9 +131,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		try {
 			data = (BatMUDGoalsPluginData) generateJAXBContext()
 					.createUnmarshaller().unmarshal(createPersistenceFile());
-		} catch (Exception e) {
-			printMessage(e.toString());
-			e.printStackTrace();
+		} catch (Throwable t) {
+			logger.log(Level.SEVERE, t.getMessage(), t);
 		}
 	}
 
@@ -136,9 +147,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 		try {
 			generateJAXBContext().createMarshaller().marshal(data,
 					createPersistenceFile());
-		} catch (JAXBException | IOException e) {
-			printMessage(e.toString());
-			e.printStackTrace();
+		} catch (Throwable t) {
+			logger.log(Level.SEVERE, t.getMessage(), t);
 		}
 	}
 
@@ -151,8 +161,11 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 	private File createPersistenceFile() throws IOException {
 		File file = new File(getClientGUI().getBaseDirectory()
 				+ "/conf/batmudgoalsplugin/BatMUDGoalsInfo.xml");
-		if (!file.exists())
+		if (!file.exists()) {
+			File dir = file.getParentFile();
+			dir.mkdirs();
 			file.createNewFile();
+		}
 		return file;
 	}
 

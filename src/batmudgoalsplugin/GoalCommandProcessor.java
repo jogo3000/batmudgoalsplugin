@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 
-import com.mythicscape.batclient.interfaces.ClientGUI;
+import com.mythicscape.batclient.interfaces.BatClientPlugin;
 
 /**
  * Catches parameterised goal command, e.g. 'goal attack' and sets the goal if
@@ -12,8 +12,8 @@ import com.mythicscape.batclient.interfaces.ClientGUI;
  */
 class GoalCommandProcessor extends AbstractCommandProcessor {
 
-	public GoalCommandProcessor(ClientGUI clientGUI, BatMUDGoalsPluginData data) {
-		super("goal\\s*(.+)\\s*", clientGUI, data);
+	public GoalCommandProcessor(BatClientPlugin plugin, BatMUDGoalsPluginData data) {
+		super("goal\\s*(.+)\\s*", plugin, data);
 	}
 
 	@Override
