@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
  * Catches guild info commands, e.g. 'barbarian info' and stores the guild name
  * from that command.
  */
-public class GuildCommandProcessor extends AbstractCommandProcessor {
+class GuildCommandProcessor extends AbstractCommandProcessor {
 
 	private Collection<IGuildNameListener> listeners;
 
