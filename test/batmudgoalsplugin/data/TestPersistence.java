@@ -1,4 +1,4 @@
-package test.batmudgoalsplugin;
+package batmudgoalsplugin.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
