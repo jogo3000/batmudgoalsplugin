@@ -82,4 +82,19 @@ abstract class AbstractCommandProcessor {
 	protected void printMessage(String format, Object... args) {
 		printMessage(String.format(format, args));
 	}
+
+	/**
+	 * Removes extra whitespaces and puts to lowercase
+	 * 
+	 * @param originalSkillName
+	 * @return normalized skill name
+	 */
+	protected String normalizeSkillName(String originalSkillName) {
+		StringBuilder sb = new StringBuilder();
+		for (String s : originalSkillName.split("\\s+")) {
+			sb.append(s);
+			sb.append(" ");
+		}
+		return sb.toString().trim().toLowerCase();
+	}
 }

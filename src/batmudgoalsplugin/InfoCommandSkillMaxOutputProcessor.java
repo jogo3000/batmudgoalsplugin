@@ -16,8 +16,9 @@ class InfoCommandSkillMaxOutputProcessor extends AbstractCommandProcessor
 	private String guild;
 
 	public InfoCommandSkillMaxOutputProcessor(BatMUDGoalsPluginData data) {
-		super("\\s*May\\s+train\\s+skill\\s+(.+)\\s+to\\s+(\\d+)%\\s*", null,
-				data);
+		super(
+				"\\s*May\\s+(?:train\\s+skill|study\\s+spell)\\s+(.+)\\s+to\\s+(\\d+)%\\s*",
+				null, data);
 	}
 
 	public void setLevel(int level) {
@@ -36,7 +37,7 @@ class InfoCommandSkillMaxOutputProcessor extends AbstractCommandProcessor
 
 	@Override
 	protected boolean process(Matcher m) {
-		data.setSkillMaxInfo(guild, m.group(1).toLowerCase(), level,
+		data.setSkillMaxInfo(guild, normalizeSkillName(m.group(1)), level,
 				Integer.parseInt(m.group(2)));
 		return false;
 	}

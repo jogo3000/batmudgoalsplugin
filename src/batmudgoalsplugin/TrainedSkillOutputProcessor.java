@@ -6,20 +6,23 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 
 /**
  * Processes output from train skill command. Sets the current skill percent to
- * the new percent.
+ * the new percent. Output from studying a spell or skill e.g. <code>
  * 
- * @author jogo3000
- *
+ * This costs you 4830 experience points.
+ * Studied total 1% of the spell.
+ * You now have 'Make scar' at 51% without special bonuses.
+ * With current bonuses it is at 51%. Current maximum without bonuses is 100%.
+ * </code>
  */
 class TrainedSkillOutputProcessor extends AbstractCommandProcessor {
 	public TrainedSkillOutputProcessor(BatMUDGoalsPluginData data) {
-		super("You now have '([^']+)' at (\\d+)% without special bonuses.\\s+",
+		super("You now have '([^']+)' at (\\d+)% without special bonuses.\\s*",
 				null, data);
 	}
 
 	@Override
 	protected boolean process(Matcher m) {
-		data.setSkillStatus(m.group(1).trim().toLowerCase(),
+		data.setSkillStatus(normalizeSkillName(m.group(1)),
 				Integer.parseInt(m.group(2).trim()));
 		return false;
 	}

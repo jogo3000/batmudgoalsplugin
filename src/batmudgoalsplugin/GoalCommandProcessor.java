@@ -29,19 +29,4 @@ class GoalCommandProcessor extends AbstractCommandProcessor {
 		}
 		return true; // Stop command from being processed by client
 	}
-
-	/**
-	 * Removes extra whitespaces and puts to lowercase
-	 * 
-	 * @param originalSkillName
-	 * @return normalized skill name
-	 */
-	private String normalizeSkillName(String originalSkillName) {
-		StringBuilder sb = new StringBuilder();
-		for (String s : originalSkillName.split("\\s+")) {
-			sb.append(s);
-			sb.append(" ");
-		}
-		return sb.toString().trim().toLowerCase();
-	}
 }
