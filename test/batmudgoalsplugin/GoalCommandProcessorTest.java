@@ -25,7 +25,7 @@ public class GoalCommandProcessorTest {
 	@Test
 	public void testSkillNotInLibrary() {
 		verifyOutput(new BatMUDGoalsPluginData(), "goal vandalism").printText(
-				"generic", "vandalism not in library\n");
+				"generic", String.format("vandalism not in library%n"));
 	}
 
 	@Test
@@ -33,7 +33,7 @@ public class GoalCommandProcessorTest {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
 		data.setSkillCost("torch creation", 1, 1);
 		verifyOutput(data, "goal torch creation").printText("generic",
-				"Next goal: torch creation\n");
+				String.format("Next goal: torch creation%n"));
 	}
 
 	@Test
@@ -41,6 +41,6 @@ public class GoalCommandProcessorTest {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
 		data.setSkillCost("torch creation", 1, 1);
 		verifyOutput(data, "goal torch   Creation").printText("generic",
-				"Next goal: torch creation\n");
+				String.format("Next goal: torch creation%n"));
 	}
 }

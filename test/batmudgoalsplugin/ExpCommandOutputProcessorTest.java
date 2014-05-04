@@ -32,7 +32,7 @@ public class ExpCommandOutputProcessorTest {
 		data.setSkillStatus("attack", 100);
 		op.receive("Exp: 135670 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-		verify(mock).printText("generic", "Goal attack: full\n");
+		verify(mock).printText("generic", String.format("Goal attack: full%n"));
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class ExpCommandOutputProcessorTest {
 		op.receive("Exp: 13 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
 		verify(clientGUI).printText("generic",
-				String.format("Goal attack: 200 You need: %d\n", 200 - 13));
+				String.format("Goal attack: 200 You need: %d%n", 200 - 13));
 	}
 
 	/**
@@ -83,8 +83,10 @@ public class ExpCommandOutputProcessorTest {
 		data.setSkillMaxInfo("tzarakk", "attack", 1, 12);
 		op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-		verify(clientGUI).printText("generic",
-				"Goal attack: 200 You have enough to advance in: tzarakk\n");
+		verify(clientGUI)
+				.printText(
+						"generic",
+						String.format("Goal attack: 200 You have enough to advance in: tzarakk%n"));
 	}
 
 	/**
@@ -113,8 +115,9 @@ public class ExpCommandOutputProcessorTest {
 		op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
 		verify(clientGUI)
-				.printText("generic",
-						"Goal attack: 200 You have enough to advance in: tarmalen, tzarakk\n");
+				.printText(
+						"generic",
+						String.format("Goal attack: 200 You have enough to advance in: tarmalen, tzarakk%n"));
 	}
 
 	/**
@@ -142,7 +145,8 @@ public class ExpCommandOutputProcessorTest {
 		data.setSkillMaxInfo("tarmalen", "attack", 1, 1);
 		op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-		verify(clientGUI).printText("generic", "Goal attack: needs level\n");
+		verify(clientGUI).printText("generic",
+				String.format("Goal attack: needs level%n"));
 
 	}
 
@@ -181,7 +185,7 @@ public class ExpCommandOutputProcessorTest {
 		op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
 		verify(clientGUI).printText("generic",
-				"None of your guilds offer more attack\n");
+				String.format("None of your guilds offer more attack%n"));
 	}
 
 }

@@ -76,7 +76,7 @@ abstract class AbstractCommandProcessor {
 		// ClientGUI isntance when it is instantiating the
 		// AbstractCommandProcessors
 		plugin.getClientGUI().printText("generic",
-				String.format("%s\n", message));
+				String.format("%s%n", message));
 	}
 
 	protected void printMessage(String format, Object... args) {

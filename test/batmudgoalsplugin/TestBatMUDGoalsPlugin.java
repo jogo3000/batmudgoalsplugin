@@ -264,7 +264,8 @@ public class TestBatMUDGoalsPlugin {
 		 */
 		public void assertPluginPrints(String expected, int printNumber) {
 			assertTrue(prints.size() - 1 >= printNumber);
-			assertEquals(expected + "\n", prints.get(printNumber));
+			assertEquals(String.format("%s%n", expected),
+					prints.get(printNumber));
 		}
 
 		/**
@@ -273,7 +274,7 @@ public class TestBatMUDGoalsPlugin {
 		 * @param text
 		 */
 		public void receiveText(String text) {
-			trigger(new ParsedResult(String.format("%s\n", text)));
+			trigger(new ParsedResult(String.format("%s%n", text)));
 		}
 
 		@Override

@@ -32,7 +32,7 @@ public class GoalCommandWithoutParametersProcessorTest {
 	public void testGoalCommandListsAvailableGoalSkills() throws Exception {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
 		data.setSkillCost("attack", 1, 1);
-		verifyGoalOutput(data).printText("generic", "attack\n");
+		verifyGoalOutput(data).printText("generic", String.format("attack%n"));
 	}
 
 	@Test
@@ -41,8 +41,9 @@ public class GoalCommandWithoutParametersProcessorTest {
 		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
 		data.setSkillCost("attack", 1, 1);
 		data.setSkillCost("brawling", 1, 1);
-		verifyGoalOutput(data).printText("generic", "attack\n");
-		verifyGoalOutput(data).printText("generic", "brawling\n");
+		verifyGoalOutput(data).printText("generic", String.format("attack%n"));
+		verifyGoalOutput(data)
+				.printText("generic", String.format("brawling%n"));
 	}
 
 	@Test
@@ -52,7 +53,8 @@ public class GoalCommandWithoutParametersProcessorTest {
 		data.setSkillCost("attack", 1, 1);
 		data.setSkillCost("brawling", 1, 1);
 		data.setGoalSkill("brawling");
-		verifyGoalOutput(data).printText("generic", "attack\n");
-		verifyGoalOutput(data).printText("generic", "brawling (*)\n");
+		verifyGoalOutput(data).printText("generic", String.format("attack%n"));
+		verifyGoalOutput(data).printText("generic",
+				String.format("brawling (*)%n"));
 	}
 }
