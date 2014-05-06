@@ -1,5 +1,6 @@
 package batmudgoalsplugin;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,5 +43,17 @@ public class GoalCommandProcessorTest {
 		data.setSkillCost("torch creation", 1, 1);
 		verifyOutput(data, "goal torch   Creation").printText("generic",
 				String.format("Next goal: torch creation%n"));
+	}
+
+	@Test
+	public void testInvalidParameterShouldNotClearGoal() throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		data.setGoalSkill("attack");
+		BatMUDGoalsPlugin plugin = mock(BatMUDGoalsPlugin.class);
+		when(plugin.getClientGUI()).thenReturn(mock(ClientGUI.class));
+		GoalCommandProcessor cp = new GoalCommandProcessor(plugin, data);
+
+		cp.receive("goal foo");
+		assertEquals("attack", data.getGoalSkill());
 	}
 }

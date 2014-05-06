@@ -12,20 +12,21 @@ import com.mythicscape.batclient.interfaces.BatClientPlugin;
  */
 class GoalCommandProcessor extends AbstractCommandProcessor {
 
-	public GoalCommandProcessor(BatClientPlugin plugin, BatMUDGoalsPluginData data) {
+	public GoalCommandProcessor(BatClientPlugin plugin,
+			BatMUDGoalsPluginData data) {
 		super("goal\\s*(.+)\\s*", plugin, data);
 	}
 
 	@Override
 	protected boolean process(Matcher m) {
-		String goalParameter = m.group(1);
 		// If a skill is given as goal parameter, normalize skill name and
 		// set goal
-		data.setGoalSkill(normalizeSkillName(goalParameter));
-		if (!data.isSkillInCostLibrary(data.getGoalSkill())) {
-			printMessage("%s not in library", data.getGoalSkill());
+		String skillName = normalizeSkillName(m.group(1));
+		if (!data.isSkillInCostLibrary(skillName)) {
+			printMessage("%s not in library", skillName);
 		} else {
-			printMessage("Next goal: %s", data.getGoalSkill());
+			data.setGoalSkill(skillName);
+			printMessage("Next goal: %s", skillName);
 		}
 		return true; // Stop command from being processed by client
 	}
