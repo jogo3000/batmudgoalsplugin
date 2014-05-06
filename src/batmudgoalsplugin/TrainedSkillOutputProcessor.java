@@ -22,8 +22,9 @@ class TrainedSkillOutputProcessor extends AbstractCommandProcessor {
 
 	@Override
 	protected boolean process(Matcher m) {
-		data.setSkillStatus(normalizeSkillName(m.group(1)),
-				Integer.parseInt(m.group(2).trim()));
+		String skillName = normalizeSkillName(m.group(1));
+		data.setSkillStatus(skillName, Integer.parseInt(m.group(2).trim()));
+		data.clearPartialTrains(skillName);
 		return false;
 	}
 

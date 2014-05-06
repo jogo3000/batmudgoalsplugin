@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import batmudgoalsplugin.data.BatMUDGoalsPluginData;
-
 public class TestBatMUDGoalsPluginData {
 
 	@Test
@@ -76,6 +74,41 @@ public class TestBatMUDGoalsPluginData {
 		data.setSkillStatus("brawling", 0);
 		data.setSkillCost("brawling", 1, 1011);
 		assertEquals(1011, data.getImproveGoalSkillCost());
+	}
+
+	/**
+	 * Player can use 300k to train or study partially. Each partial train
+	 * lessens the cost of next percent by 250k.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testTrainPartially() throws Exception {
+		int skillCost = 600000;
+
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		data.setGoalSkill("attack");
+		data.setSkillCost("attack", 10, skillCost);
+		data.setSkillStatus("attack", 9);
+		assertEquals(skillCost, data.getImproveGoalSkillCost());
+		data.trainPartially("attack");
+		assertEquals(skillCost - 250000, data.getImproveGoalSkillCost());
+		data.trainPartially("attack");
+		assertEquals(skillCost - 2 * 250000, data.getImproveGoalSkillCost());
+	}
+
+	@Test
+	public void testClearPartialTrains() throws Exception {
+		int skillCost = 60000;
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		data.setGoalSkill("attack");
+		data.setSkillCost("attack", 10, skillCost);
+		data.setSkillStatus("attack", 9);
+		assertEquals(skillCost, data.getImproveGoalSkillCost());
+		data.trainPartially("attack");
+		assertEquals(skillCost - 250000, data.getImproveGoalSkillCost());
+		data.clearPartialTrains("attack");
+		assertEquals(skillCost, data.getImproveGoalSkillCost());
 	}
 
 }

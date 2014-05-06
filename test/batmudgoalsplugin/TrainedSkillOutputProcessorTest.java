@@ -1,6 +1,8 @@
 package batmudgoalsplugin;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
@@ -42,7 +44,14 @@ public class TrainedSkillOutputProcessorTest {
 		op.receive("With current bonuses it is at 51%. Current maximum without bonuses is 100%.");
 
 		assertEquals(51, data.getCurrentSkillStatus("make scar"));
-
 	}
 
+	@Test
+	public void testClearsPartialTrains() throws Exception {
+		BatMUDGoalsPluginData mock = mock(BatMUDGoalsPluginData.class);
+		TrainedSkillOutputProcessor op = new TrainedSkillOutputProcessor(mock);
+		op.receive("You now have 'Make scar' at 51% without special bonuses.");
+
+		verify(mock).clearPartialTrains("make scar");
+	}
 }

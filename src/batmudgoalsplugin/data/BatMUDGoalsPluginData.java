@@ -29,9 +29,18 @@ public class BatMUDGoalsPluginData {
 	private String goalSkill;
 	@XmlElement(name = "guildLevels")
 	private Map<String, Integer> guildLevels;
+	@XmlElement(name = "partialTrains")
+	private Map<String, Integer> partialTrains;
 
 	public BatMUDGoalsPluginData() {
 		// Needed by JAXB
+	}
+
+	public Map<String, Integer> getPartialTrains() {
+		if (partialTrains == null) {
+			partialTrains = new HashMap<String, Integer>();
+		}
+		return partialTrains;
 	}
 
 	private Map<String, Integer> getSkillStatuses() {
@@ -158,7 +167,13 @@ public class BatMUDGoalsPluginData {
 	 * @return cost to improve the goal skill to the given percent value
 	 */
 	public int getImproveGoalSkillCost() {
-		return getSkillCosts().get(goalSkill).get(getGoalPercent());
+		int partials = 0;
+		Map<String, Integer> map = getPartialTrains();
+		if (map.containsKey(goalSkill)) {
+			partials = map.get(goalSkill);
+		}
+		return getSkillCosts().get(goalSkill).get(getGoalPercent()) - partials
+				* 250000;
 	}
 
 	/**
@@ -202,5 +217,27 @@ public class BatMUDGoalsPluginData {
 	 */
 	public int getGuildLevel(String guild) {
 		return getGuildLevels().get(guild);
+	}
+
+	/**
+	 * Marks that a skill has been partially trained.
+	 * 
+	 * @param skill
+	 */
+	public void trainPartially(String skill) {
+		Map<String, Integer> map = getPartialTrains();
+		if (!map.containsKey(skill)) {
+			map.put(skill, 0);
+		}
+		map.put(skill, map.get(skill) + 1);
+	}
+
+	/**
+	 * Clears partial trains for a skill
+	 * 
+	 * @param skillname
+	 */
+	public void clearPartialTrains(String skillname) {
+		getPartialTrains().remove(skillname);
 	}
 }
