@@ -35,4 +35,12 @@ public class TrainCommandOutputProcessorTest {
 		assertEquals(1, data.getCurrentSkillStatus("paranoia"));
 	}
 
+	@Test
+	public void testTrainCommandOutputWithPartialTrains() throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		TrainCommandOutputProcessor op = new TrainCommandOutputProcessor(data);
+		op.receive("| Bladed fury | 93 | 85 | 100 | 968645 | (partially trained)");
+		assertEquals(93, data.getCurrentSkillStatus("bladed fury"));
+	}
+
 }
