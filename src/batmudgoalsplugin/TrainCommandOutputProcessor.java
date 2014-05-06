@@ -17,7 +17,7 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 class TrainCommandOutputProcessor extends AbstractCommandProcessor {
 	public TrainCommandOutputProcessor(BatMUDGoalsPluginData data) {
 		super(
-				"\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s*(?:\\(partially trained\\))?\\s*",
+				"\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s*(?:\\(partially (?:trained|studied)\\))?\\s*",
 				null, data);
 	}
 

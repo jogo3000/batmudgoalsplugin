@@ -43,4 +43,12 @@ public class TrainCommandOutputProcessorTest {
 		assertEquals(93, data.getCurrentSkillStatus("bladed fury"));
 	}
 
+	@Test
+	public void testTrainCommandOutputWithPartialStudy() throws Exception {
+		BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+		TrainCommandOutputProcessor op = new TrainCommandOutputProcessor(data);
+		op.receive("| Cure critical wounds | 93 | 85 | 100 | 968645 | (partially studied)");
+		assertEquals(93, data.getCurrentSkillStatus("cure critical wounds"));
+	}
+
 }
