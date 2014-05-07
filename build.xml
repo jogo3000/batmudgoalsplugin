@@ -32,6 +32,7 @@
 	<target name="package" description="Builds jar-files" depends="compile">
 
 		<delete file="${build.dir}/batmudgoalsplugin.jar" />
+		<delete file="${build.dir}/batmudgoalsplugin.zip" />
 		<jar jarfile="${build.dir}/batmudgoalsplugin.jar">
 
 			<manifest>
@@ -44,6 +45,10 @@
 			</fileset>
 
 		</jar>
+		<copy file="${basedir}/README.md" todir="${build.dir}" />
+		<zip destfile="${build.dir}/batmudgoalsplugin.zip" basedir="${build.dir}">
+		</zip>
+
 	</target>
 
 	<target name="all" depends="package" />
