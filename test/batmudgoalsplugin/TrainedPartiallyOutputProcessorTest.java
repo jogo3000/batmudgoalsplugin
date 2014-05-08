@@ -38,6 +38,13 @@ public class TrainedPartiallyOutputProcessorTest {
 
 	}
 
+	@Test
+	public void testCRLF() throws Exception {
+		verifyPartialTrain(
+				"You partially train bladed fury which cost you 300000 experience.\r\n",
+				"bladed fury");
+	}
+
 	private void verifyPartialTrain(String input, String skill) {
 		BatMUDGoalsPluginData mock = mock(BatMUDGoalsPluginData.class);
 		TrainedPartiallyOutputProcessor op = new TrainedPartiallyOutputProcessor(
