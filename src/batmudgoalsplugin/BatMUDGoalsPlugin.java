@@ -75,6 +75,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin implements
 						infoCommandSkillMaxOutputProcessor, data));
 				add(infoCommandSkillMaxOutputProcessor);
 				add(new ImproveSkillByUseOutputProcessor(data));
+				add(new TrainedPartiallyOutputProcessor(data));
 			}
 		};
 	}
