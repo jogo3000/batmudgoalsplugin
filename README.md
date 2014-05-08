@@ -1,14 +1,14 @@
 BatMUDGoalsPlugin
 =================
 
-1. General Info
+# General Info
 
 Goal command allows the player to set a goal to improve a skill or a spell. 
 After setting a goal 'exp' command outputs extra information showing what the 
 goal skill/spell is, how much experience is needed for improving said 
 skill/spell, and how much experience is missing from the needed amount.
 
-2. Usage
+# Usage
 
 First the plug in needs some data to work on. Let's say the player is in the 
 Ranger guild. The player should read the guild info by typing
@@ -40,7 +40,7 @@ bit erratic if e.g.
 
 is used. Delimiting these commands should be avoided.
 
-3. Dev info
+# Dev info
 
 Sources located in:
 https://github.com/jogo3000/batmudgoalsplugin
