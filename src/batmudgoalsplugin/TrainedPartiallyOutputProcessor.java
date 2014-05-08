@@ -12,7 +12,7 @@ class TrainedPartiallyOutputProcessor extends AbstractCommandProcessor {
 
 	public TrainedPartiallyOutputProcessor(BatMUDGoalsPluginData data) {
 		super(
-				"You partially (?:train|study) ([\\w\\s]+) which cost you 300000 experience.",
+				"You partially (?:train|study) ([\\w\\s]+) which cost you 300000 experience.\\s*",
 				null, data);
 	}
 

@@ -30,6 +30,14 @@ public class TrainedPartiallyOutputProcessorTest {
 				"cure light wounds");
 	}
 
+	@Test
+	public void testHandlesWhitespace() throws Exception {
+		verifyPartialTrain(
+				"You partially train attack which cost you 300000 experience.\n",
+				"attack");
+
+	}
+
 	private void verifyPartialTrain(String input, String skill) {
 		BatMUDGoalsPluginData mock = mock(BatMUDGoalsPluginData.class);
 		TrainedPartiallyOutputProcessor op = new TrainedPartiallyOutputProcessor(
