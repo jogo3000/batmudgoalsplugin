@@ -52,3 +52,6 @@ Sources located in:
 https://github.com/jogo3000/batmudgoalsplugin
 
 Source includes Eclipse project and Ant build file /build.xml
+
+## Logging
+Logging goes to Users' AppData/Local/Temp in Windows. It has been configured to the "system temporary directory" as specified in java.uti.logging.FileHandler
