@@ -1,6 +1,12 @@
 BatMUDGoalsPlugin
 =================
 
+##  IMPORTANT !!!
+
+http://www.bat.org/play/batclient
+
+Official batclient is now Javaless but should still support Java plugins. I haven't tested this so be aware there might be some issues.
+
 ## General Info
 
 Goal command allows the player to set a goal to improve a skill or a spell. 
