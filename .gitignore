@@ -2,3 +2,6 @@
 /build
 /gradle
 /.gradle
+/.settings
+/.project
+/.classpath
