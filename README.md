@@ -1,18 +1,19 @@
 BatMUDGoalsPlugin
 =================
 
-##  IMPORTANT !!!
-
-http://www.bat.org/play/batclient
-
-Official batclient is now Javaless but should still support Java plugins. I haven't tested this so be aware there might be some issues.
 
 ## General Info
+http://www.bat.org/play/batclient
 
+Official batclient is now Javaless but still supports plugins.
 Goal command allows the player to set a goal to improve a skill or a spell. 
 After setting a goal 'exp' command outputs extra information showing what the 
 goal skill/spell is, how much experience is needed for improving said 
 skill/spell, and how much experience is missing from the needed amount.
+
+## Installing
+
+Build the plugin with gradle build. Copy the .jar file to your /plugins directory, and you're good to go.
 
 ## Usage
 
