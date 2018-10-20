@@ -39,7 +39,7 @@ public class GoalCommandWithoutParametersProcessorTest {
 
     @Test
     public void testGoalCommandListsAvailableGoalSkills() throws Exception {
-        data.setSkillCost("attack", 1, 1);
+        data.setSkillCostForLevel("attack", 1, 1);
         whenGoalCalled();
 
         Mockito.verify(model).printText("generic", String.format("attack%n"));
@@ -47,8 +47,8 @@ public class GoalCommandWithoutParametersProcessorTest {
 
     @Test
     public void testGoalCommandListsMultipleAvailableGoalSkills() throws Exception {
-        data.setSkillCost("attack", 1, 1);
-        data.setSkillCost("brawling", 1, 1);
+        data.setSkillCostForLevel("attack", 1, 1);
+        data.setSkillCostForLevel("brawling", 1, 1);
         whenGoalCalled();
 
         Mockito.verify(model).printText("generic", String.format("attack%n"));
@@ -57,8 +57,8 @@ public class GoalCommandWithoutParametersProcessorTest {
 
     @Test
     public void testGoalCommandListsMultipleAvailableGoalSkillsAndMarksGoal() throws Exception {
-        data.setSkillCost("attack", 1, 1);
-        data.setSkillCost("brawling", 1, 1);
+        data.setSkillCostForLevel("attack", 1, 1);
+        data.setSkillCostForLevel("brawling", 1, 1);
         data.setGoalSkill("brawling");
         whenGoalCalled();
 

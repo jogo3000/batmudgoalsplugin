@@ -137,7 +137,7 @@ public class BatMUDGoalsPluginData {
      * @param percent
      * @param cost
      */
-    public void setSkillCost(String skill, int percent, int cost) {
+    public void setSkillCostForLevel(String skill, int percent, int cost) {
         Map<String, Map<Integer, Integer>> skillcosts = getSkillCosts();
         if (!skillcosts.containsKey(skill)) {
             skillcosts.put(skill, new HashMap<Integer, Integer>());

@@ -72,7 +72,7 @@ public class TestBatMUDGoalsPluginData {
         BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
         data.setGoalSkill("brawling");
         data.setSkillStatus("brawling", 0);
-        data.setSkillCost("brawling", 1, 1011);
+        data.setSkillCostForLevel("brawling", 1, 1011);
         assertEquals(1011, data.getImproveGoalSkillCost());
     }
 
@@ -88,7 +88,7 @@ public class TestBatMUDGoalsPluginData {
 
         BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
         data.setGoalSkill("attack");
-        data.setSkillCost("attack", 10, skillCost);
+        data.setSkillCostForLevel("attack", 10, skillCost);
         data.setSkillStatus("attack", 9);
         assertEquals(skillCost, data.getImproveGoalSkillCost());
         data.trainPartially("attack");
@@ -102,7 +102,7 @@ public class TestBatMUDGoalsPluginData {
         int skillCost = 60000;
         BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
         data.setGoalSkill("attack");
-        data.setSkillCost("attack", 10, skillCost);
+        data.setSkillCostForLevel("attack", 10, skillCost);
         data.setSkillStatus("attack", 9);
         assertEquals(skillCost, data.getImproveGoalSkillCost());
         data.trainPartially("attack");

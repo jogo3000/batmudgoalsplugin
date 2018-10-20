@@ -20,8 +20,8 @@ public class TestPersistence {
 
         data.setGoalSkill("attack");
 
-        data.setSkillCost("attack", 1, 1001);
-        data.setSkillCost("attack", 2, 1002);
+        data.setSkillCostForLevel("attack", 1, 1001);
+        data.setSkillCostForLevel("attack", 2, 1002);
 
         data.setSkillStatus("looting and burning", 76);
         data.setSkillStatus("attack", 0);

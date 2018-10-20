@@ -5,7 +5,6 @@ import java.util.regex.Pattern;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
 
-import batmudgoalsplugin.ClientGUIModel;
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 
 /**
@@ -67,10 +66,12 @@ abstract class AbstractCommandProcessor {
      */
     protected abstract boolean process(Matcher m);
 
+    /**
+     * Prints message to the batclient text input area
+     * 
+     * @param message
+     */
     protected void printMessage(String message) {
-        // Have to pull ClientGUI from plugin because plugin can't get a
-        // ClientGUI isntance when it is instantiating the
-        // AbstractCommandProcessors
         gui.printText("generic", String.format("%s%n", message));
     }
 

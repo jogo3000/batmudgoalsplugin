@@ -10,28 +10,33 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
  */
 class PercentCostOutputProcessor extends AbstractCommandProcessor {
 
-	private String skill;
+    private String skill;
 
-	public PercentCostOutputProcessor(BatMUDGoalsPluginData data) {
-		super("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)", null, data);
-	}
+    public PercentCostOutputProcessor(BatMUDGoalsPluginData data) {
+        super("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)", null, data);
+    }
 
-	public void setSkill(String skill) {
-		this.skill = skill;
-	}
+    public void setSkill(String skill) {
+        this.skill = skill;
+    }
 
-	@Override
-	protected boolean decideReturn(Matcher m) {
-		while (m.find()) {
-			process(m);
-		}
-		return false;
-	}
+    @Override
+    protected boolean decideReturn(Matcher m) {
+        processAllMatchesOnALine(m);
+        return false;
+    }
 
-	@Override
-	protected boolean process(Matcher m) {
-		data.setSkillCost(skill, Integer.parseInt(m.group(1)),
-				Integer.parseInt(m.group(2)));
-		return false;
-	}
+    private void processAllMatchesOnALine(Matcher matcher) {
+        while (matcher.find()) {
+            process(matcher);
+        }
+    }
+
+    @Override
+    protected boolean process(Matcher m) {
+        int skillLevel = Integer.parseInt(m.group(1));
+        int skillCost = Integer.parseInt(m.group(2));
+        data.setSkillCostForLevel(skill, skillLevel, skillCost);
+        return false;
+    }
 }

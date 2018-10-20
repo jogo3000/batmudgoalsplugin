@@ -38,21 +38,21 @@ public class BatMUDGoalsPlugin extends BatClientPlugin
 
     public BatMUDGoalsPlugin() throws SecurityException, IOException {
         logger = Logger.getLogger(getClass().toString());
+        configureLogFile();
+        data = new BatMUDGoalsPluginData();
+        clientGUIModel = new ClientGUIModel(this);
+    }
+
+    private void configureLogFile() throws IOException {
         FileHandler handler = new FileHandler("%t/batmudgoalsplugin.log");
         handler.setFormatter(new SimpleFormatter());
         logger.addHandler(handler);
-        logger.setLevel(Level.FINEST);
-        data = new BatMUDGoalsPluginData();
-        clientGUIModel = new ClientGUIModel(this);
     }
 
     public BatMUDGoalsPlugin(BatMUDGoalsPluginData data, ClientGUIModel clientGUIModel)
             throws SecurityException, IOException {
         logger = Logger.getLogger(getClass().toString());
-        FileHandler handler = new FileHandler("%t/batmudgoalsplugin.log");
-        handler.setFormatter(new SimpleFormatter());
-        logger.addHandler(handler);
-        logger.setLevel(Level.FINEST);
+        configureLogFile();
         this.data = data;
         this.clientGUIModel = clientGUIModel;
     }
@@ -88,14 +88,8 @@ public class BatMUDGoalsPlugin extends BatClientPlugin
     public String trigger(String input) {
         try {
             for (AbstractCommandProcessor cp : commandProcessors) {
-                try {
-
-                    if (cp.receive(input)) {
-                        return "";
-                    }
-                } catch (Throwable t) {
-                    logger.log(Level.SEVERE, cp + " threw an Exception", t);
-                    throw t;
+                if (cp.receive(input)) {
+                    return "";
                 }
             }
         } catch (Throwable t) {

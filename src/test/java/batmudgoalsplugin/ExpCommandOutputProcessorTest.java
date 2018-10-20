@@ -43,7 +43,7 @@ public class ExpCommandOutputProcessorTest {
 
         data.setGoalSkill("attack");
         data.setSkillStatus("attack", 1);
-        data.setSkillCost("attack", 2, 200);
+        data.setSkillCostForLevel("attack", 2, 200);
         data.setGuildLevel("tzarakk", 1);
         data.setSkillMaxInfo("tzarakk", "attack", 1, 12);
         op.receive("Exp: 13 Money: 0.00 Bank: 644404.00 Exp pool: 0");
@@ -63,7 +63,7 @@ public class ExpCommandOutputProcessorTest {
 
         data.setGoalSkill("attack");
         data.setSkillStatus("attack", 1);
-        data.setSkillCost("attack", 2, 200);
+        data.setSkillCostForLevel("attack", 2, 200);
         data.setGuildLevel("tzarakk", 1);
         data.setSkillMaxInfo("tzarakk", "attack", 1, 12);
         op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
@@ -83,7 +83,7 @@ public class ExpCommandOutputProcessorTest {
 
         data.setGoalSkill("attack");
         data.setSkillStatus("attack", 1);
-        data.setSkillCost("attack", 2, 200);
+        data.setSkillCostForLevel("attack", 2, 200);
         data.setGuildLevel("tzarakk", 1);
         data.setSkillMaxInfo("tzarakk", "attack", 1, 12);
         data.setGuildLevel("tarmalen", 12);
@@ -107,7 +107,7 @@ public class ExpCommandOutputProcessorTest {
 
         data.setGoalSkill("attack");
         data.setSkillStatus("attack", 1);
-        data.setSkillCost("attack", 2, 200);
+        data.setSkillCostForLevel("attack", 2, 200);
         data.setGuildLevel("tzarakk", 1);
         data.setSkillMaxInfo("tzarakk", "attack", 12, 12);
         data.setGuildLevel("tarmalen", 12);

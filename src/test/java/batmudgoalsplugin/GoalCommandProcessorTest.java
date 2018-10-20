@@ -33,14 +33,14 @@ public class GoalCommandProcessorTest {
     @Test
     public void testSkillInLibrary() throws Exception {
         BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
-        data.setSkillCost("torch creation", 1, 1);
+        data.setSkillCostForLevel("torch creation", 1, 1);
         verifyOutput(data, "goal torch creation").printText("generic", String.format("Next goal: torch creation%n"));
     }
 
     @Test
     public void testSkillInLibrary_MixedCaseAndWhiteSpace() throws Exception {
         BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
-        data.setSkillCost("torch creation", 1, 1);
+        data.setSkillCostForLevel("torch creation", 1, 1);
         verifyOutput(data, "goal torch   Creation").printText("generic", String.format("Next goal: torch creation%n"));
     }
 
