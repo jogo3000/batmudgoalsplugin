@@ -62,14 +62,14 @@ public class BatMUDGoalsPluginData {
 
     public Map<String, Integer> getPartialTrains() {
         if (partialTrains == null) {
-            partialTrains = new HashMap<String, Integer>();
+            partialTrains = new HashMap<>();
         }
         return partialTrains;
     }
 
     private Map<String, Integer> getSkillStatuses() {
         if (skillStatuses == null) {
-            skillStatuses = new HashMap<String, Integer>();
+            skillStatuses = new HashMap<>();
         }
         return skillStatuses;
     }
