@@ -10,7 +10,7 @@ public class SkillCostLibraryMapAdapterTest {
     @Test
     public void testAdaptSkillCosts() throws Exception {
         SkillCostLibraryMapAdapter adapter = new SkillCostLibraryMapAdapter();
-        Map<String, Map<Integer, Integer>> map = new HashMap<String, Map<Integer, Integer>>();
+        Map<String, Map<Integer, Integer>> map = new HashMap<>();
         map.put("attack", new HashMap<Integer, Integer>());
         for (int i = 0; i < 10; i++) {
             map.get("attack").put(i, i);
