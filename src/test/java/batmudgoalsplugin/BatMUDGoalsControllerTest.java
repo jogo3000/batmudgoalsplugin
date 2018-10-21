@@ -224,6 +224,7 @@ public class BatMUDGoalsControllerTest {
     public void testNeedAnotherLevel() throws Exception {
         goalsModel.trigger(new ParsedResult("| Attack                      |  85 |  85 | 85 |       22015 |\n"));
         givenPlayerSetsTheirGoalToAttack();
+
         goalsModel.trigger(new ParsedResult("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
         verifyPrint("Goal attack: needs level");
     }
@@ -233,27 +234,34 @@ public class BatMUDGoalsControllerTest {
     public void testSkillIsFull() throws Exception {
         goalsModel.trigger(new ParsedResult("| Attack                      |  100 |  85 | 100 |       (n/a) |\n"));
         givenPlayerSetsTheirGoalToAttack();
+
         goalsModel.trigger(new ParsedResult("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
         verifyPrint("Goal attack: full");
 
     }
 
     @Test
+    @DisplayName("Given player trains the skill to max, when player uses 'exp' command they are informed the goal is full")
     public void testTrainOutput() throws Exception {
-        goalsModel.trigger(new ParsedResult("You now have 'Attack' at 100% without special bonuses.\n"));
+        givenPlayerTrainsAttackToMax();
         givenPlayerSetsTheirGoalToAttack();
+
         goalsModel.trigger(new ParsedResult("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
         verifyPrint("Goal attack: full");
+    }
+
+    private void givenPlayerTrainsAttackToMax() {
+        goalsModel.trigger(new ParsedResult("You now have 'Attack' at 100% without special bonuses.\n"));
     }
 
     @Test
     public void testGuildinfo() throws Exception {
-
         goalsModel.trigger("train");
         goalsModel.trigger(new ParsedResult("| Skills available at level  1  | Cur | Rac | Max | Exp         |"));
         goalsModel.trigger(new ParsedResult("| Attack                        |   0 |  85 | 10  |       22015 |"));
 
         givenPlayerSetsTheirGoalToAttack();
+
         goalsModel.trigger(new ParsedResult("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n"));
 
         verifyPrint("Next goal: attack");

@@ -29,7 +29,8 @@ class PlayerLevelOutputProcessor extends AbstractCommandProcessor implements
 
 	@Override
 	protected boolean process(Matcher m) {
-		data.setGuildLevel(guild, Integer.parseInt(m.group(1)));
+		int level = Integer.parseInt(m.group(1));
+        data.setGuildLevel(guild, level);
 		return false;
 	}
 }

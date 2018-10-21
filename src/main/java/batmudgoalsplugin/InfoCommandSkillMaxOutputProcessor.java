@@ -37,8 +37,10 @@ class InfoCommandSkillMaxOutputProcessor extends AbstractCommandProcessor
 
 	@Override
 	protected boolean process(Matcher m) {
-		data.setSkillMaxInfo(guild, normalizeSkillName(m.group(1)), level,
-				Integer.parseInt(m.group(2)));
+		String skillName = normalizeSkillName(m.group(1));
+        int skillMax = Integer.parseInt(m.group(2));
+        data.setSkillMaxInfo(guild, skillName, level,
+				skillMax);
 		return false;
 	}
 }
