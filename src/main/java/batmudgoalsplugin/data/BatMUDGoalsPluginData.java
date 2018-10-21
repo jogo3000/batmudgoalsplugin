@@ -1,11 +1,14 @@
 package batmudgoalsplugin.data;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -34,6 +37,27 @@ public class BatMUDGoalsPluginData {
 
     public BatMUDGoalsPluginData() {
         // Needed by JAXB
+    }
+
+    public static BatMUDGoalsPluginData fromXMLFile(File file) {
+
+        BatMUDGoalsPluginData data;
+        try {
+            data = (BatMUDGoalsPluginData) generateJAXBContext().createUnmarshaller()
+                    .unmarshal(file);
+        } catch (JAXBException e) {
+            data = new BatMUDGoalsPluginData();
+        }
+        return data;
+    }
+
+    public static void persistToXmlFile(BatMUDGoalsPluginData data, File file) throws JAXBException {
+        generateJAXBContext().createMarshaller().marshal(data, file);
+    }
+
+    private static JAXBContext generateJAXBContext() throws JAXBException {
+        JAXBContext ctx = JAXBContext.newInstance(BatMUDGoalsPluginData.class);
+        return ctx;
     }
 
     public Map<String, Integer> getPartialTrains() {

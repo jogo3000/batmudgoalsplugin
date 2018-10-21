@@ -9,9 +9,6 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 
 /**
  * Base implementation for command processors.
- * 
- * @author Matti
- *
  */
 abstract class AbstractCommandProcessor {
     private final Pattern pattern;
