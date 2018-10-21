@@ -7,6 +7,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class AdaptedSkillCostList {
-	@XmlElement(name = "list")
-	public List<AdaptedSkillCostEntry> list;
+    @XmlElement(name = "list")
+    public List<AdaptedSkillCostEntry> list;
+
+    public AdaptedSkillCostList() {
+    }
+
+    public AdaptedSkillCostList(List<AdaptedSkillCostEntry> list) {
+        this.list = list;
+    }
+
 }

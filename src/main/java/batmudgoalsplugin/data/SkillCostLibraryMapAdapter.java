@@ -1,9 +1,8 @@
 package batmudgoalsplugin.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -13,27 +12,25 @@ public class SkillCostLibraryMapAdapter extends
     @Override
     public Map<String, Map<Integer, Integer>> unmarshal(AdaptedSkillCostList v)
             throws Exception {
-        Map<String, Map<Integer, Integer>> map = new HashMap<>();
-        for (AdaptedSkillCostEntry entry : v.list) {
-            if (!map.containsKey(entry.skill))
-                map.put(entry.skill, new HashMap<Integer, Integer>());
-            map.get(entry.skill).put(entry.percent, entry.cost);
-        }
-        return map;
+        return v.list
+                .stream()
+                .collect(
+                        Collectors.groupingBy(e -> e.skill,
+                                Collectors.mapping(Function.identity(),
+                                        Collectors.toMap(e -> e.percent, e -> e.cost))));
+
     }
 
     @Override
     public AdaptedSkillCostList marshal(Map<String, Map<Integer, Integer>> v)
             throws Exception {
-        AdaptedSkillCostList list = new AdaptedSkillCostList();
-        list.list = new ArrayList<>();
-        for (Entry<String, Map<Integer, Integer>> skillEntry : v.entrySet()) {
-            for (Entry<Integer, Integer> valueEntry : skillEntry.getValue()
-                    .entrySet()) {
-                list.list.add(new AdaptedSkillCostEntry(skillEntry.getKey(),
-                        valueEntry.getKey(), valueEntry.getValue()));
-            }
-        }
-        return list;
+        return new AdaptedSkillCostList(
+                v.entrySet()
+                        .stream()
+                        .flatMap(skillCosts -> skillCosts.getValue().entrySet().stream()
+                                .map(costPerLevel -> new AdaptedSkillCostEntry(skillCosts.getKey(),
+                                        costPerLevel.getKey(),
+                                        costPerLevel.getValue())))
+                        .collect(Collectors.toList()));
     }
 }
