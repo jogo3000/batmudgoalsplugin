@@ -25,7 +25,13 @@ public class ClientGUIModel {
         return getGui().getBaseDirectory();
     }
 
-    public void printText(String string, String format) {
-        getGui().printText(string, format);
+    /**
+     * Prints message to the batclient text input area
+     * 
+     * @param message
+     */
+    protected void printMessage(String message) {
+        getGui().printText("generic", String.format("%s%n", message));
     }
+
 }

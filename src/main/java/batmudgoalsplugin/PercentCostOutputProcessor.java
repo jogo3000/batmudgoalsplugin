@@ -8,12 +8,14 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
  * Processes output from 'cost train <skill>' command. Stores the experience
  * costs of skill percents.
  */
-class PercentCostOutputProcessor extends AbstractCommandProcessor {
+class PercentCostOutputProcessor extends AbstractOutputProcessor {
 
+    private final BatMUDGoalsPluginData data;
     private String skill;
 
     public PercentCostOutputProcessor(BatMUDGoalsPluginData data) {
-        super("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)", null, data);
+        super("\\|\\s+(\\d+)%\\s+=\\s+(\\d+)");
+        this.data = data;
     }
 
     public void setSkill(String skill) {
@@ -21,9 +23,8 @@ class PercentCostOutputProcessor extends AbstractCommandProcessor {
     }
 
     @Override
-    protected boolean decideReturn(Matcher m) {
+    protected void decideProcess(Matcher m) {
         processAllMatchesOnALine(m);
-        return false;
     }
 
     private void processAllMatchesOnALine(Matcher matcher) {
@@ -33,10 +34,9 @@ class PercentCostOutputProcessor extends AbstractCommandProcessor {
     }
 
     @Override
-    protected boolean process(Matcher m) {
+    protected void process(Matcher m) {
         int skillLevel = Integer.parseInt(m.group(1));
         int skillCost = Integer.parseInt(m.group(2));
         data.setSkillCostForLevel(skill, skillLevel, skillCost);
-        return false;
     }
 }

@@ -16,9 +16,14 @@ import batmudgoalsplugin.data.SkillMaxInfo;
  * Takes exp amount, outputs goal skill, needed exp and amount missing from next
  * percent
  */
-class ExpCommandOutputProcessor extends AbstractCommandProcessor {
-    public ExpCommandOutputProcessor(ClientGUIModel model, BatMUDGoalsPluginData data) {
-        super("Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s*", model, data);
+class ExpCommandOutputProcessor extends AbstractOutputProcessor {
+    private final ClientGUIModel guiModel;
+    private BatMUDGoalsPluginData data;
+
+    public ExpCommandOutputProcessor(ClientGUIModel guiModel, BatMUDGoalsPluginData data) {
+        super("Exp: (\\d+) Money: (\\d+)\\.?(\\d*) Bank: (\\d+)\\.?(\\d*) Exp pool: (\\d+)\\.?(\\d*)\\s*");
+        this.guiModel = guiModel;
+        this.data = data;
     }
 
     private String concatGuildNames(Collection<String> guilds) {
@@ -26,36 +31,37 @@ class ExpCommandOutputProcessor extends AbstractCommandProcessor {
     }
 
     @Override
-    protected boolean process(Matcher m) {
+    protected void process(Matcher m) {
         if (data.isGoalSet()) {
             if (data.isGoalSkillMaxed()) {
-                printMessage("Goal %s: full", data.getGoalSkill());
+                guiModel.printMessage(String.format("Goal %s: full", data.getGoalSkill()));
             } else {
                 Collection<SkillMaxInfo> skillmaxinfo = selectGreaterThanGoalPercent(data.getSkillMaxes(),
                         data.getGoalPercent());
 
                 if (skillmaxinfo.isEmpty()) {
-                    printMessage("None of your guilds offer more %s", data.getGoalSkill());
+                    guiModel.printMessage(String.format("None of your guilds offer more %s", data.getGoalSkill()));
                 } else {
                     Collection<SkillMaxInfo> available = selectAvailableOnThisLevel(skillmaxinfo);
                     if (available.isEmpty()) {
-                        printMessage("Goal %s: needs level", data.getGoalSkill());
+                        guiModel.printMessage(String.format("Goal %s: needs level", data.getGoalSkill()));
                     } else {
                         int neededExp = data.getImproveGoalSkillCost();
                         int currentExp = Integer.parseInt(m.group(1));
                         if (currentExp < neededExp) {
-                            printMessage("Goal %s: %d You need: %d", data.getGoalSkill(), neededExp,
-                                    neededExp - currentExp);
+                            guiModel.printMessage(
+                                    String.format("Goal %s: %d You need: %d", data.getGoalSkill(), neededExp,
+                                            neededExp - currentExp));
                         } else {
-                            printMessage("Goal %s: %d You have enough to advance in: %s", data.getGoalSkill(),
-                                    neededExp, concatGuildNames(selectGuildNames(available)));
+                            guiModel.printMessage(
+                                    String.format("Goal %s: %d You have enough to advance in: %s", data.getGoalSkill(),
+                                            neededExp, concatGuildNames(selectGuildNames(available))));
                         }
                     }
                 }
 
             }
         }
-        return false;
     }
 
     private Collection<String> selectGuildNames(Collection<SkillMaxInfo> available) {

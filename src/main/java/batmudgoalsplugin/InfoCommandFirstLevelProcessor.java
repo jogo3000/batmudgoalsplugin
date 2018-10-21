@@ -2,25 +2,22 @@ package batmudgoalsplugin;
 
 import java.util.regex.Matcher;
 
-import batmudgoalsplugin.data.BatMUDGoalsPluginData;
-
 /**
  * Processes output from guildname info command - e.g. 'barbarian info'. First
  * level skills are given after a message 'Abilities gained when joining:'
  */
-class InfoCommandFirstLevelProcessor extends AbstractCommandProcessor {
+class InfoCommandFirstLevelProcessor extends AbstractOutputProcessor {
 
-	private InfoCommandSkillMaxOutputProcessor op;
+    private InfoCommandSkillMaxOutputProcessor op;
 
-	public InfoCommandFirstLevelProcessor(
-			InfoCommandSkillMaxOutputProcessor op, BatMUDGoalsPluginData data) {
-		super("Abilities gained when joining:\\s*", null, data);
-		this.op = op;
-	}
+    public InfoCommandFirstLevelProcessor(
+            InfoCommandSkillMaxOutputProcessor op) {
+        super("Abilities gained when joining:\\s*");
+        this.op = op;
+    }
 
-	@Override
-	protected boolean process(Matcher m) {
-		op.setLevel(1);
-		return false;
-	}
+    @Override
+    protected void process(Matcher m) {
+        op.setLevel(1);
+    }
 }

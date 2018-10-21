@@ -154,7 +154,7 @@ public class BatMUDGoalsControllerTest {
     }
 
     private void verifyPrint(String expected) {
-        verify(guiModel).printText("generic", String.format("%s%n", expected));
+        verify(guiModel).printMessage(expected);
     }
 
     @Test

@@ -14,18 +14,19 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
  * With current bonuses it is at 51%. Current maximum without bonuses is 100%.
  * </code>
  */
-class TrainedSkillOutputProcessor extends AbstractCommandProcessor {
-	public TrainedSkillOutputProcessor(BatMUDGoalsPluginData data) {
-		super("You now have '([^']+)' at (\\d+)% without special bonuses.\\s*",
-				null, data);
-	}
+class TrainedSkillOutputProcessor extends AbstractOutputProcessor {
+    private final BatMUDGoalsPluginData data;
 
-	@Override
-	protected boolean process(Matcher m) {
-		String skillName = normalizeSkillName(m.group(1));
-		data.setSkillStatus(skillName, Integer.parseInt(m.group(2).trim()));
-		data.clearPartialTrains(skillName);
-		return false;
-	}
+    public TrainedSkillOutputProcessor(BatMUDGoalsPluginData data) {
+        super("You now have '([^']+)' at (\\d+)% without special bonuses.\\s*");
+        this.data = data;
+    }
+
+    @Override
+    protected void process(Matcher m) {
+        String skillName = normalizeSkillName(m.group(1));
+        data.setSkillStatus(skillName, Integer.parseInt(m.group(2).trim()));
+        data.clearPartialTrains(skillName);
+    }
 
 }

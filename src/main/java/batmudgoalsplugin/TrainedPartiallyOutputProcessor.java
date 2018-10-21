@@ -8,17 +8,18 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
  * Partially training causes player to use 250k of experience to improve a skill
  * or a spell partially and gets charged a total of 300k exp.
  */
-class TrainedPartiallyOutputProcessor extends AbstractCommandProcessor {
+class TrainedPartiallyOutputProcessor extends AbstractOutputProcessor {
 
-	public TrainedPartiallyOutputProcessor(BatMUDGoalsPluginData data) {
-		super(
-				"You partially (?:train|study) ([\\w\\s]+) which cost you 300000 experience.\\s*",
-				null, data);
-	}
+    private final BatMUDGoalsPluginData data;
 
-	@Override
-	protected boolean process(Matcher m) {
-		data.trainPartially(normalizeSkillName(m.group(1)));
-		return false;
-	}
+    public TrainedPartiallyOutputProcessor(BatMUDGoalsPluginData data) {
+        super(
+                "You partially (?:train|study) ([\\w\\s]+) which cost you 300000 experience.\\s*");
+        this.data = data;
+    }
+
+    @Override
+    protected void process(Matcher m) {
+        data.trainPartially(normalizeSkillName(m.group(1)));
+    }
 }

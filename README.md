@@ -52,7 +52,7 @@ is used. Delimiting these commands should be avoided.
 Sources located in:
 https://github.com/jogo3000/batmudgoalsplugin
 
-Source includes Eclipse project and Ant build file /build.xml
+I've tried too keep this without many dependencies. In fact, not counting the bat client's interface definitions, I'm only using test dependencies at the moment.
 
 ## Logging
 Logging goes to Users' AppData/Local/Temp in Windows. It has been configured to the "system temporary directory" as specified in java.uti.logging.FileHandler

@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 /**
  * Base implementation for command processors.
  */
-abstract class AbstractCommandProcessor {
+abstract class AbstractOutputProcessor {
     private final Pattern pattern;
 
     /**
@@ -17,7 +17,7 @@ abstract class AbstractCommandProcessor {
      * @param regexp
      * @param plugin optional
      */
-    public AbstractCommandProcessor(String regexp) {
+    public AbstractOutputProcessor(String regexp) {
         this.pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
     }
 
@@ -26,22 +26,20 @@ abstract class AbstractCommandProcessor {
      * 
      * @param input
      */
-    public final boolean receive(String input) {
-        return decideReturn(pattern.matcher(input));
+    public final void receive(String input) {
+        decideProcess(pattern.matcher(input));
     }
 
     /**
-     * Extending classes may override this method to provide logic of deciding what
-     * to return. They can also use other than Matcher.matches() to trigger actions.
+     * Extending classes may override this method to provide logic of deciding when
+     * to process
      * 
      * @param m
-     * @return
      */
-    protected boolean decideReturn(Matcher m) {
+    protected void decideProcess(Matcher m) {
         if (m.matches()) {
-            return process(m);
+            process(m);
         }
-        return false;
     }
 
     /**
@@ -49,9 +47,8 @@ abstract class AbstractCommandProcessor {
      * in this method.
      * 
      * @param m
-     * @return true if input should not be returned to the client for processing
      */
-    protected abstract boolean process(Matcher m);
+    protected abstract void process(Matcher m);
 
     /**
      * Removes extra whitespaces and puts to lowercase

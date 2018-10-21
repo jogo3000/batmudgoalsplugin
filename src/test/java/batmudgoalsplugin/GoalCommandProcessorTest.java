@@ -26,22 +26,21 @@ public class GoalCommandProcessorTest {
 
     @Test
     public void testSkillNotInLibrary() {
-        verifyOutput(new BatMUDGoalsPluginData(), "goal vandalism").printText("generic",
-                String.format("vandalism not in library%n"));
+        verifyOutput(new BatMUDGoalsPluginData(), "goal vandalism").printMessage("vandalism not in library");
     }
 
     @Test
     public void testSkillInLibrary() throws Exception {
         BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
         data.setSkillCostForLevel("torch creation", 1, 1);
-        verifyOutput(data, "goal torch creation").printText("generic", String.format("Next goal: torch creation%n"));
+        verifyOutput(data, "goal torch creation").printMessage("Next goal: torch creation");
     }
 
     @Test
     public void testSkillInLibrary_MixedCaseAndWhiteSpace() throws Exception {
         BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
         data.setSkillCostForLevel("torch creation", 1, 1);
-        verifyOutput(data, "goal torch   Creation").printText("generic", String.format("Next goal: torch creation%n"));
+        verifyOutput(data, "goal torch   Creation").printMessage("Next goal: torch creation");
     }
 
     @Test

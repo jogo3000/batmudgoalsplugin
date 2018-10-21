@@ -10,9 +10,14 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
  * skills
  */
 class GoalCommandWithoutParametersProcessor extends AbstractCommandProcessor {
+    private final ClientGUIModel guiModel;
+    private final BatMUDGoalsPluginData data;
+
     public GoalCommandWithoutParametersProcessor(ClientGUIModel guiModel,
             BatMUDGoalsPluginData data) {
-        super("\\s*goal\\s*", guiModel, data);
+        super("\\s*goal\\s*");
+        this.guiModel = guiModel;
+        this.data = data;
     }
 
     @Override
@@ -20,10 +25,11 @@ class GoalCommandWithoutParametersProcessor extends AbstractCommandProcessor {
 
         Collection<String> storedSkills = data.getStoredSkills();
         if (storedSkills.isEmpty()) {
-            printMessage("No data.");
+            guiModel.printMessage("No data.");
         } else {
             storedSkills
-                    .forEach(skillName -> printMessage("%s%s", skillName, data.isGoalSkill(skillName) ? " (*)" : ""));
+                    .forEach(skillName -> guiModel.printMessage(String.format("%s%s", skillName,
+                            data.isGoalSkill(skillName) ? " (*)" : "")));
 
         }
         return true;

@@ -25,7 +25,7 @@ public class BatMUDGoalsController
     private final Logger logger;
     private BatMUDGoalsPluginData data;
     private Collection<AbstractCommandProcessor> commandProcessors;
-    private Collection<AbstractCommandProcessor> outputProcessors;
+    private Collection<AbstractOutputProcessor> outputProcessors;
     private final ClientGUIModel clientGUIModel;
 
     public BatMUDGoalsController(Logger logger, BatMUDGoalsPluginData data, ClientGUIModel clientGUIModel)
@@ -49,12 +49,14 @@ public class BatMUDGoalsController
                 new GoalCommandWithoutParametersProcessor(clientGUIModel, data),
                 new GoalCommandProcessor(clientGUIModel, data));
 
-        outputProcessors = Arrays.asList(new TrainCommandOutputProcessor(data), percentCostOutputProcessor,
+        outputProcessors = Arrays.asList(new TrainCommandOutputProcessor(data),
+                percentCostOutputProcessor,
                 new TrainedSkillOutputProcessor(data),
-                new CostOfTrainingSkillNameOutputProcessor(percentCostOutputProcessor, data),
-                new ExpCommandOutputProcessor(clientGUIModel, data), playerLevelOutputProcessor,
-                new InfoCommandFirstLevelProcessor(infoCommandSkillMaxOutputProcessor, data),
-                new InfoCommandLevelNumberProcessor(infoCommandSkillMaxOutputProcessor, data),
+                new CostOfTrainingSkillNameOutputProcessor(percentCostOutputProcessor),
+                new ExpCommandOutputProcessor(clientGUIModel, data),
+                playerLevelOutputProcessor,
+                new InfoCommandFirstLevelProcessor(infoCommandSkillMaxOutputProcessor),
+                new InfoCommandLevelNumberProcessor(infoCommandSkillMaxOutputProcessor),
                 infoCommandSkillMaxOutputProcessor,
                 new ImproveSkillByUseOutputProcessor(data),
                 new TrainedPartiallyOutputProcessor(data));
@@ -89,7 +91,7 @@ public class BatMUDGoalsController
     public ParsedResult trigger(ParsedResult input) {
         try {
             String originalText = input.getOriginalText();
-            for (AbstractCommandProcessor op : outputProcessors) {
+            for (AbstractOutputProcessor op : outputProcessors) {
                 op.receive(originalText);
             }
         } catch (Throwable t) {

@@ -14,17 +14,18 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
  * | Detect alignment              |  50 | 101 | 100 |        2444 |
  * | Paranoia                      |   1 | 101 | 100 |          25 |</code>
  */
-class TrainCommandOutputProcessor extends AbstractCommandProcessor {
+class TrainCommandOutputProcessor extends AbstractOutputProcessor {
+    private final BatMUDGoalsPluginData data;
+
     public TrainCommandOutputProcessor(BatMUDGoalsPluginData data) {
         super(
-                "\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s*(?:\\(partially (?:trained|studied)\\))?\\s*",
-                null, data);
+                "\\|\\s+([^\\|]+)\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+)\\s+\\|\\s+(\\d+|\\(n/a\\))\\s+\\|\\s*(?:\\(partially (?:trained|studied)\\))?\\s*");
+        this.data = data;
     }
 
     @Override
-    protected boolean process(Matcher m) {
+    protected void process(Matcher m) {
         data.setSkillStatus(readSkillName(m), readSkillStatus(m));
-        return false;
     }
 
     private int readSkillStatus(Matcher m) {

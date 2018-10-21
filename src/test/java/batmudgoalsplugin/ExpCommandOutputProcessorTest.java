@@ -32,7 +32,7 @@ public class ExpCommandOutputProcessorTest {
     public void testNoGoal() throws Exception {
         op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-        verify(guiModel, never()).printText(anyString(), anyString());
+        verify(guiModel, never()).printMessage(anyString());
     }
 
     @Nested
@@ -51,11 +51,11 @@ public class ExpCommandOutputProcessorTest {
 
             op.receive("Exp: 135670 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-            assertPrints(String.format("Goal attack: full%n"));
+            assertPrints("Goal attack: full");
         }
 
         private void assertPrints(String expected) {
-            verify(guiModel).printText("generic", expected);
+            verify(guiModel).printMessage(expected);
         }
 
         @Test
@@ -67,7 +67,7 @@ public class ExpCommandOutputProcessorTest {
 
             op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-            assertPrints(String.format("None of your guilds offer more attack%n"));
+            assertPrints("None of your guilds offer more attack");
         }
 
         @Nested
@@ -88,7 +88,7 @@ public class ExpCommandOutputProcessorTest {
 
                 op.receive("Exp: 13 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-                assertPrints(String.format("Goal attack: 200 You need: %d%n", 200 - 13));
+                assertPrints(String.format("Goal attack: 200 You need: %d", 200 - 13));
             }
 
             @Test
@@ -100,7 +100,7 @@ public class ExpCommandOutputProcessorTest {
 
                 op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-                assertPrints(String.format("Goal attack: 200 You have enough to advance in: tzarakk%n"));
+                assertPrints("Goal attack: 200 You have enough to advance in: tzarakk");
             }
 
             @Test
@@ -116,7 +116,7 @@ public class ExpCommandOutputProcessorTest {
 
                 op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-                assertPrints(String.format("Goal attack: 200 You have enough to advance in: tarmalen, tzarakk%n"));
+                assertPrints("Goal attack: 200 You have enough to advance in: tarmalen, tzarakk");
             }
 
             @Test
@@ -132,7 +132,7 @@ public class ExpCommandOutputProcessorTest {
 
                 op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
-                assertPrints(String.format("Goal attack: needs level%n"));
+                assertPrints("Goal attack: needs level");
             }
         }
 

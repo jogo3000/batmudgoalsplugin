@@ -34,7 +34,7 @@ public class GoalCommandWithoutParametersProcessorTest {
     public void testGoalCommandListsAvailableGoalSkills_noCommands() {
         whenGoalCalled();
 
-        Mockito.verify(model).printText("generic", "No data.\n");
+        Mockito.verify(model).printMessage("No data.");
     }
 
     @Test
@@ -42,7 +42,7 @@ public class GoalCommandWithoutParametersProcessorTest {
         data.setSkillCostForLevel("attack", 1, 1);
         whenGoalCalled();
 
-        Mockito.verify(model).printText("generic", String.format("attack%n"));
+        Mockito.verify(model).printMessage("attack");
     }
 
     @Test
@@ -51,8 +51,8 @@ public class GoalCommandWithoutParametersProcessorTest {
         data.setSkillCostForLevel("brawling", 1, 1);
         whenGoalCalled();
 
-        Mockito.verify(model).printText("generic", String.format("attack%n"));
-        Mockito.verify(model).printText("generic", String.format("brawling%n"));
+        Mockito.verify(model).printMessage("attack");
+        Mockito.verify(model).printMessage("brawling");
     }
 
     @Test
@@ -62,7 +62,7 @@ public class GoalCommandWithoutParametersProcessorTest {
         data.setGoalSkill("brawling");
         whenGoalCalled();
 
-        Mockito.verify(model).printText("generic", String.format("attack%n"));
-        Mockito.verify(model).printText("generic", String.format("brawling (*)%n"));
+        Mockito.verify(model).printMessage("attack");
+        Mockito.verify(model).printMessage("brawling (*)");
     }
 }

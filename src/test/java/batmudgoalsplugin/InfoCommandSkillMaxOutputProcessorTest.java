@@ -24,7 +24,7 @@ public class InfoCommandSkillMaxOutputProcessorTest {
         op.receive(" May train skill Looting and burning to 100%");
 
         assertFalse(data.getSkillMaxes().isEmpty(), "Processor didn't catch skillmax info");
-        Set<SkillMaxInfo> expected = new HashSet<SkillMaxInfo>();
+        Set<SkillMaxInfo> expected = new HashSet<>();
         expected.add(new SkillMaxInfo("tzarakk", "attack", 12, 20));
         expected.add(new SkillMaxInfo("tzarakk", "looting and burning", 12, 100));
         assertEquals(expected, data.getSkillMaxes());
@@ -51,7 +51,7 @@ public class InfoCommandSkillMaxOutputProcessorTest {
         op.receive("May study spell Infravision to 100%");
         op.receive("May study spell Cleanse weapon to 100%");
 
-        Set<SkillMaxInfo> expected = new HashSet<SkillMaxInfo>();
+        Set<SkillMaxInfo> expected = new HashSet<>();
         expected.add(new SkillMaxInfo("spider", "throw weight", 10, 40));
         expected.add(new SkillMaxInfo("spider", "leadership", 10, 17));
         expected.add(new SkillMaxInfo("spider", "infravision", 10, 100));

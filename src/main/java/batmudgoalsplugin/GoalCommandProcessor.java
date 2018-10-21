@@ -10,14 +10,19 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
  */
 class GoalCommandProcessor extends AbstractCommandProcessor {
 
+    private final ClientGUIModel guiModel;
+    private final BatMUDGoalsPluginData data;
+
     public GoalCommandProcessor(ClientGUIModel guiModel, BatMUDGoalsPluginData data) {
-        super("goal\\s*(.+)\\s*", guiModel, data);
+        super("goal\\s*(.+)\\s*");
+        this.data = data;
         if (guiModel == null) {
             throw new IllegalStateException("Cannot function without access to the GUI");
         }
         if (data == null) {
             throw new IllegalStateException("Cannot function without data model!");
         }
+        this.guiModel = guiModel;
     }
 
     @Override
@@ -26,10 +31,10 @@ class GoalCommandProcessor extends AbstractCommandProcessor {
         // set goal
         String skillName = normalizeSkillName(m.group(1));
         if (!data.isSkillInCostLibrary(skillName)) {
-            printMessage("%s not in library", skillName);
+            guiModel.printMessage(String.format("%s not in library", skillName));
         } else {
             data.setGoalSkill(skillName);
-            printMessage("Next goal: %s", skillName);
+            guiModel.printMessage(String.format("Next goal: %s", skillName));
         }
         return true; // Stop command from being processed by client
     }

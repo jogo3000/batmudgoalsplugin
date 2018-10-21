@@ -10,7 +10,7 @@ public class InfoCommandFirstLevelProcessorTest {
     @Test
     public void testAbilitiesGainedWhenJoining() {
         InfoCommandSkillMaxOutputProcessor mock = mock(InfoCommandSkillMaxOutputProcessor.class);
-        new InfoCommandFirstLevelProcessor(mock, null).receive("Abilities gained when joining:");
+        new InfoCommandFirstLevelProcessor(mock).receive("Abilities gained when joining:");
 
         verify(mock).setLevel(1);
     }
