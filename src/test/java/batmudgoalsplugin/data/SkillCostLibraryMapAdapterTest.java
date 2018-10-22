@@ -1,5 +1,6 @@
 package batmudgoalsplugin.data;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class SkillCostLibraryMapAdapterTest {
@@ -19,6 +21,7 @@ public class SkillCostLibraryMapAdapterTest {
     SkillCostLibraryMapAdapter adapter = new SkillCostLibraryMapAdapter();
 
     @Test
+    @DisplayName("Given skillcost map has 'attack' skill costs between 1-10, they are adapted")
     public void testAdaptSkillCosts() throws Exception {
         Map<Integer, Integer> skillCostsPerLevel = IntStream.rangeClosed(1, 10)
                 .boxed()
@@ -44,6 +47,7 @@ public class SkillCostLibraryMapAdapterTest {
     }
 
     @Test
+    @DisplayName("Given adapted skillcosts contain 'attack' between 1-9 and 'looting and burning' at 10, they are back-adapted to a map")
     void testBackwardAdaptSkillCosts() throws Exception {
         AdaptedSkillCostList toBeAdapted = new AdaptedSkillCostList(Arrays.asList(
                 new AdaptedSkillCostEntry("attack", 1, 1),
@@ -58,10 +62,12 @@ public class SkillCostLibraryMapAdapterTest {
                 new AdaptedSkillCostEntry("looting and burning", 10, 10)));
 
         Map<String, Map<Integer, Integer>> actual = adapter.unmarshal(toBeAdapted);
-        assertEquals(Stream.of("attack", "looting and burning").collect(Collectors.toSet()), actual.keySet());
 
-        assertEquals(mapOfIntegers(1, 9), actual.get("attack"));
-        assertEquals(mapOfIntegers(10, 10), actual.get("looting and burning"));
+        assertAll("Keys 1-9 go to 'attack' and key 10 goes to 'looting and burning'",
+                () -> assertEquals(Stream.of("attack", "looting and burning").collect(Collectors.toSet()),
+                        actual.keySet()),
+                () -> assertEquals(mapOfIntegers(1, 9), actual.get("attack")),
+                () -> assertEquals(mapOfIntegers(10, 10), actual.get("looting and burning")));
     }
 
     private Map<Integer, Integer> mapOfIntegers(int start, int end) {
