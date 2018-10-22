@@ -3,15 +3,14 @@ package batmudgoalsplugin.data;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -56,16 +55,19 @@ public class SkillCostLibraryMapAdapterTest {
                 new AdaptedSkillCostEntry("attack", 7, 7),
                 new AdaptedSkillCostEntry("attack", 8, 8),
                 new AdaptedSkillCostEntry("attack", 9, 9),
-                new AdaptedSkillCostEntry("attack", 10, 10)));
+                new AdaptedSkillCostEntry("looting and burning", 10, 10)));
 
         Map<String, Map<Integer, Integer>> actual = adapter.unmarshal(toBeAdapted);
-        assertIterableEquals(Arrays.asList("attack"), actual.keySet());
-        assertEquals(IntStream.rangeClosed(1, 10)
+        assertEquals(Stream.of("attack", "looting and burning").collect(Collectors.toSet()), actual.keySet());
+
+        assertEquals(mapOfIntegers(1, 9), actual.get("attack"));
+        assertEquals(mapOfIntegers(10, 10), actual.get("looting and burning"));
+    }
+
+    private Map<Integer, Integer> mapOfIntegers(int start, int end) {
+        return IntStream.rangeClosed(start, end)
                 .boxed()
-                .map(i -> new AbstractMap.SimpleEntry<>(i, i))
-                .collect(Collectors.toSet()),
-                actual.values().stream().map(Map::entrySet).flatMap(Set::stream)
-                        .collect(Collectors.toSet()));
+                .collect(Collectors.toMap(Function.identity(), Function.identity()));
     }
 
 }
