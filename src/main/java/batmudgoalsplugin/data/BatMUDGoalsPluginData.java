@@ -1,63 +1,124 @@
 package batmudgoalsplugin.data;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-@XmlRootElement(name = "batMUDGoalsPluginData")
-@XmlType(name = "batMUDGoalsPluginData")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class BatMUDGoalsPluginData {
 
-    @XmlJavaTypeAdapter(SkillCostLibraryMapAdapter.class)
-    @XmlElement(name = "skillCosts")
     private Map<String, Map<Integer, Integer>> skillCosts;
-    @XmlElement(name = "skillStatuses")
     private Map<String, Integer> skillStatuses;
-    @XmlElement(name = "skillMaxes")
     private Set<SkillMaxInfo> skillMaxes;
-    @XmlElement(name = "goalSkill")
     private String goalSkill;
-    @XmlElement(name = "guildLevels")
     private Map<String, Integer> guildLevels;
-    @XmlElement(name = "partialTrains")
     private Map<String, Integer> partialTrains;
 
     public BatMUDGoalsPluginData() {
-        // Needed by JAXB
     }
 
-    public static BatMUDGoalsPluginData fromXMLFile(File file) {
+    private static void skipReaderTo(BufferedReader reader, String marker) throws IOException {
+        while(!marker.equals(reader.readLine()));
+    }
 
-        BatMUDGoalsPluginData data;
-        try {
-            data = (BatMUDGoalsPluginData) generateJAXBContext().createUnmarshaller()
-                    .unmarshal(file);
-        } catch (JAXBException e) {
-            data = new BatMUDGoalsPluginData();
-        }
+    public static BatMUDGoalsPluginData fromFile(File file) {
+        BatMUDGoalsPluginData data = new BatMUDGoalsPluginData();
+        String line;
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            skipReaderTo(reader, ">Skill costs");
+            while (!"<Skill costs".equals((line = reader.readLine()))) {
+                String skill = line.substring(1);
+                while(!"<".equals((line = reader.readLine()))) {
+                    String[] parts = line.split(",");
+                    data.setSkillCostForLevel(skill, Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+                }
+            }
+            
+            skipReaderTo(reader, ">Skill statuses");
+            while(!"<Skill statuses".equals((line = reader.readLine()))) {
+                String[] parts = line.split(",");
+                data.setSkillStatus(parts[0], Integer.parseInt(parts[1]));
+            }
+            
+            skipReaderTo(reader, ">Skill maxes");
+            while(!"<Skill maxes".equals((line = reader.readLine()))) {
+                String[] parts = line.split(",");
+                data.setSkillMaxInfo(parts[0], parts[3], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+            }
+            skipReaderTo(reader, ">Goal skill");
+            while(!"<Goal skill".equals((line = reader.readLine()))) {
+                data.setGoalSkill(line);
+            }
+
+            skipReaderTo(reader, ">Guild levels");
+            while(!"<Guild levels".equals((line = reader.readLine()))) {
+                String[] parts = line.split(",");
+                data.setGuildLevel(parts[0], Integer.parseInt(parts[1]));
+            }
+
+            skipReaderTo(reader, ">Partial trains");
+            while(!"<Partial trains".equals((line = reader.readLine()))) {
+                String[] parts = line.split(",");
+                for(int i = 0; i < Integer.parseInt(parts[1]); i++) {
+                    data.trainPartially(parts[0]);
+                }
+            }
+            
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot deserialize Batmud goals data!");}
         return data;
     }
 
-    public static void persistToXmlFile(BatMUDGoalsPluginData data, File file) throws JAXBException {
-        generateJAXBContext().createMarshaller().marshal(data, file);
-    }
+    public static void persistToFile(BatMUDGoalsPluginData data, File file) {
+        try (PrintWriter writer = new PrintWriter(file)) {
+            writer.println(">Skill costs");
+            data.getSkillCosts().forEach(
+                                         (skill, costs) -> {
+                                             writer.println(">" + skill);
+                                             costs.forEach((level, cost) -> {
+                                                     writer.println(level + "," + cost);
+                                                 });
+                                             writer.println("<");
+                                             });
+            writer.println("<Skill costs");
+            
+            writer.println(">Skill statuses");
+            data.getSkillStatuses().forEach((skill, level) -> {
+                    writer.println(skill + "," + level);
+                });
+            writer.println("<Skill statuses");
+            
+            writer.println(">Skill maxes");
+            data.getSkillMaxes().forEach(skillmax -> {
+                    writer.println(skillmax.guild + "," + skillmax.level + "," + skillmax.max + "," + skillmax.skill);
+                });
+            writer.println("<Skill maxes");
+            
+            writer.println(">Goal skill");
+            writer.println(data.getGoalSkill());
+            writer.println("<Goal skill");
+            
+            writer.println(">Guild levels");
+            data.getGuildLevels().forEach((guild, level) -> {
+                    writer.println(guild + "," + level);
+                });
+            writer.println("<Guild levels");
 
-    private static JAXBContext generateJAXBContext() throws JAXBException {
-        JAXBContext ctx = JAXBContext.newInstance(BatMUDGoalsPluginData.class);
-        return ctx;
+            writer.println(">Partial trains");
+            data.getPartialTrains().forEach((skill, partial) -> {
+                    writer.println(skill + "," + partial);
+                });
+            writer.println("<Partial trains");
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Cannot serialize the Batmud goals data!");
+        }
     }
 
     public Map<String, Integer> getPartialTrains() {

@@ -1,8 +1,5 @@
 package batmudgoalsplugin.data;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class SkillMaxInfo {
 	/*
 	 * (non-Javadoc)
@@ -75,7 +72,6 @@ public class SkillMaxInfo {
 	}
 
 	public SkillMaxInfo() {
-		// Needed by JAXB
 	}
 
 }

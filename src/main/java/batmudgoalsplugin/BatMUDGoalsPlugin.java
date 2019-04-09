@@ -78,7 +78,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin
     public void loadPlugin() {
         try {
             logger.info("loading plugin");
-            data = BatMUDGoalsPluginData.fromXMLFile(createPersistenceFile());
+            data = BatMUDGoalsPluginData.fromFile(createPersistenceFile());
             model = new BatMUDGoalsController(logger, data, clientGUIModel);
         } catch (Throwable t) {
             logger.log(Level.SEVERE, t.getMessage(), t);
@@ -93,7 +93,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin
     @Override
     public void clientExit() {
         try {
-            BatMUDGoalsPluginData.persistToXmlFile(data, createPersistenceFile());
+            BatMUDGoalsPluginData.persistToFile(data, createPersistenceFile());
         } catch (Throwable t) {
             logger.log(Level.SEVERE, t.getMessage(), t);
         }
@@ -107,7 +107,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin
      */
     private File createPersistenceFile() throws IOException {
         logger.info("Locating persistence file");
-        File file = new File(clientGUIModel.baseDirectory() + "/conf/batmudgoalsplugin/BatMUDGoalsInfo.xml");
+        File file = new File(clientGUIModel.baseDirectory() + "/conf/batmudgoalsplugin/BatMUDGoalsInfo.data");
         if (!file.exists()) {
             logger.info("Creating new file");
             File dir = file.getParentFile();
