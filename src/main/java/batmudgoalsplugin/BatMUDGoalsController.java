@@ -70,6 +70,7 @@ public class BatMUDGoalsController
     @Override
     public String trigger(String input) {
         try {
+            // Can't use foreach here since I need to return "" as soon as the first cp returns true
             for (AbstractCommandProcessor cp : commandProcessors) {
                 if (cp.receive(input)) {
                     return "";
@@ -91,9 +92,7 @@ public class BatMUDGoalsController
     public ParsedResult trigger(ParsedResult input) {
         try {
             String originalText = input.getOriginalText();
-            for (AbstractOutputProcessor op : outputProcessors) {
-                op.receive(originalText);
-            }
+            outputProcessors.forEach(op -> op.receive(originalText));
         } catch (Throwable t) {
             logger.log(Level.SEVERE, t.getMessage(), t);
         }
