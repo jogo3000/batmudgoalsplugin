@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
-
+/*
+ * Tests player level command output processing
+ */
 public class PlayerLevelOutputProcessorTest {
 
     @Test
