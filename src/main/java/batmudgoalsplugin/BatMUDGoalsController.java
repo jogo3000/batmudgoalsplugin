@@ -16,19 +16,19 @@ import batmudgoalsplugin.data.BatMUDGoalsPluginData;
  * Plugin for BatClient. Player can set a goal of improving a skill in her
  * guild. Experience needed to reach the next percent is then shown upon 'exp'
  * command.
- * 
+ *
  * @author Jogo
  */
 public class BatMUDGoalsController
         implements BatClientPluginCommandTrigger, BatClientPluginTrigger {
 
     private final Logger logger;
-    private BatMUDGoalsPluginData data;
+    private final BatMUDGoalsPluginData data;
     private Collection<AbstractCommandProcessor> commandProcessors;
     private Collection<AbstractOutputProcessor> outputProcessors;
     private final ClientGUIModel clientGUIModel;
 
-    public BatMUDGoalsController(Logger logger, BatMUDGoalsPluginData data, ClientGUIModel clientGUIModel)
+    public BatMUDGoalsController(final Logger logger, final BatMUDGoalsPluginData data, final ClientGUIModel clientGUIModel)
             throws SecurityException, IOException {
         this.logger = logger;
         this.data = data;
@@ -68,14 +68,14 @@ public class BatMUDGoalsController
      * (java.lang.String)
      */
     @Override
-    public String trigger(String input) {
+    public String trigger(final String input) {
         try {
-            for (AbstractCommandProcessor cp : commandProcessors) {
+            for (final AbstractCommandProcessor cp : commandProcessors) {
                 if (cp.receive(input)) {
                     return "";
                 }
             }
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             logger.log(Level.SEVERE, t.getMessage(), t);
         }
         return null;
@@ -83,18 +83,18 @@ public class BatMUDGoalsController
 
     /*
      * Catch output from 'cost train skill' and 'train' commands (non-Javadoc)
-     * 
+     *
      * @see com.mythicscape.batclient.interfaces.BatClientPluginTrigger#trigger(com
      * .mythicscape.batclient.interfaces.ParsedResult)
      */
     @Override
-    public ParsedResult trigger(ParsedResult input) {
+    public ParsedResult trigger(final ParsedResult input) {
         try {
-            String originalText = input.getOriginalText();
-            for (AbstractOutputProcessor op : outputProcessors) {
+            final String originalText = input.getOriginalText();
+            for (final AbstractOutputProcessor op : outputProcessors) {
                 op.receive(originalText);
             }
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             logger.log(Level.SEVERE, t.getMessage(), t);
         }
 
