@@ -145,7 +145,7 @@ public class BatMUDGoalsControllerTest {
         batmudPrints("|    9% =           155  |   59% =         15583  |\n");
         batmudPrints("|   10% =           177  |   60% =         16643  |\n");
         batmudPrints("|   11% =           203  |   86% =         17768  |\n");
-        batmudPrints("|   1% to 86% =         200000000  |\n"));
+        batmudPrints("|   1% to 86% =         200000000  |\n");
     }
 
     @Test
