@@ -287,6 +287,7 @@ public class BatMUDGoalsControllerTest {
     }
 
     @Test
+    @DisplayName("Given player has enough exp to advance in one of their guilds, they are advised so")
     public void testGuildinfoCanAdvanceInOneOfGuilds() throws Exception {
         userTypes("train");
         // Attack at max in barbarians but this will still allow improvement in
@@ -295,6 +296,7 @@ public class BatMUDGoalsControllerTest {
                      "| Attack                        |   10 |  85 | 10  |       22015 |");
         givenPlayerSetsTheirGoalToAttack();
 
+        userTypes("exp");
         batmudPrints("Exp: 12920 Money: 211.10 Bank: 64440.00 Exp pool: 100.0\n");
 
         verifyPrint("Goal attack: 203 You have enough to advance in: ranger");
