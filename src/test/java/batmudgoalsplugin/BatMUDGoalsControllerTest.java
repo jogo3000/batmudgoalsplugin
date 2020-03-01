@@ -2,10 +2,11 @@ package batmudgoalsplugin;
 
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import java.util.Arrays;
+import com.mythicscape.batclient.interfaces.ParsedResult;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.mythicscape.batclient.interfaces.ParsedResult;
 
 import batmudgoalsplugin.data.BatMUDGoalsPluginData;
 
