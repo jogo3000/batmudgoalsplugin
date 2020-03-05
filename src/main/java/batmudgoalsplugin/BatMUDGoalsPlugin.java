@@ -31,7 +31,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin
 
     /**
      * Needed by the plugin framework.
-     * 
+     *
      * @throws SecurityException
      * @throws IOException
      */
@@ -55,7 +55,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin
 
     /*
      * Catch output from 'cost train skill' and 'train' commands (non-Javadoc)
-     * 
+     *
      * @see com.mythicscape.batclient.interfaces.BatClientPluginTrigger#trigger(com
      * .mythicscape.batclient.interfaces.ParsedResult)
      */
@@ -71,7 +71,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin
 
     /*
      * Load state from persistent storage (non-Javadoc)
-     * 
+     *
      * @see com.mythicscape.batclient.interfaces.BatClientPlugin#loadPlugin()
      */
     @Override
@@ -87,7 +87,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin
 
     /*
      * Persist current goal and stored skill information (non-Javadoc)
-     * 
+     *
      * @see com.mythicscape.batclient.interfaces.BatClientPluginUtil#clientExit()
      */
     @Override
@@ -101,7 +101,7 @@ public class BatMUDGoalsPlugin extends BatClientPlugin
 
     /**
      * If file exists opens the file, otherwise a new one is created
-     * 
+     *
      * @return {@link File} used to store plugin's state
      * @throws IOException
      */
