@@ -17,7 +17,7 @@ public class GoalCommandProcessorTest {
     @Mock
     ClientGUIModel model;
 
-    protected ClientGUIModel verifyOutput(BatMUDGoalsPluginData data, String input) {
+    private ClientGUIModel verifyOutput(BatMUDGoalsPluginData data, String input) {
         assertNotNull(model);
         new GoalCommandProcessor(model, data).receive(input);
         ClientGUIModel verify = verify(model);
