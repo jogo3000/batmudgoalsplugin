@@ -49,9 +49,14 @@ public class ExpCommandOutputProcessorTest {
         public void testGoalIsFull() {
             data.setSkillStatus("attack", 100);
 
-            op.receive("Exp: 135670 Money: 0.00 Bank: 644404.00 Exp pool: 0");
+            String input = "Exp: 135670 Money: 0.00 Bank: 644404.00 Exp pool: 0";
+            batmudPrints(input);
 
             assertPrints("Goal attack: full");
+        }
+
+        private void batmudPrints(String input) {
+            op.receive(input);
         }
 
         private void assertPrints(String expected) {
@@ -65,7 +70,7 @@ public class ExpCommandOutputProcessorTest {
             data.setGuildLevel("tzarakk", 20);
             data.setSkillMaxInfo("tzarakk", "attack", 20, 60);
 
-            op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
+            batmudPrints("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
             assertPrints("None of your guilds offer more attack");
         }
@@ -86,7 +91,7 @@ public class ExpCommandOutputProcessorTest {
                 data.setGuildLevel("tzarakk", 1);
                 data.setSkillMaxInfo("tzarakk", "attack", 1, 12);
 
-                op.receive("Exp: 13 Money: 0.00 Bank: 644404.00 Exp pool: 0");
+                batmudPrints("Exp: 13 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
                 assertPrints(String.format("Goal attack: 200 You need: %d", 200 - 13));
             }
@@ -98,7 +103,7 @@ public class ExpCommandOutputProcessorTest {
                 data.setGuildLevel("tzarakk", 1);
                 data.setSkillMaxInfo("tzarakk", "attack", 1, 12);
 
-                op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
+                batmudPrints("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
                 assertPrints("Goal attack: 200 You have enough to advance in: tzarakk");
             }
@@ -114,7 +119,7 @@ public class ExpCommandOutputProcessorTest {
                 data.setGuildLevel("barbarian", 1);
                 data.setSkillMaxInfo("tarmalen", "attack", 1, 1);
 
-                op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
+                batmudPrints("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
                 assertPrints("Goal attack: 200 You have enough to advance in: tarmalen, tzarakk");
             }
@@ -130,7 +135,7 @@ public class ExpCommandOutputProcessorTest {
                 data.setGuildLevel("barbarian", 1);
                 data.setSkillMaxInfo("tarmalen", "attack", 1, 1);
 
-                op.receive("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
+                batmudPrints("Exp: 1300 Money: 0.00 Bank: 644404.00 Exp pool: 0");
 
                 assertPrints("Goal attack: needs level");
             }
